@@ -1,0 +1,17 @@
+.navList{
+  display: flex;
+  justify-content: space-between;
+  background-color: aqua;
+  list-style-type: none;
+  height: auto;
+}
+
+.navActions{
+  display: flex;
+  gap: 20px;
+  flex-wrap: nowrap;
+}
+
+.navLink{
+  padding: 10px 20px;
+}
