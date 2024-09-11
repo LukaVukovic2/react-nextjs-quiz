@@ -2,7 +2,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 interface Answer {
   id: string;
-  questionid: string;
+  question_id: string;
   answer: string;
 }
 
@@ -14,15 +14,15 @@ export default async function QuizPage({params}: {params: { id: string };}) {
   const { data: questions } = await supabase
   .from('question')
   .select('*', { count: 'exact' })
-  .eq('quizid', id);
+  .eq('quizId', id);
 
   const questionIds = questions?.map((q) => q.id);
 
-  const { data: answers } = await supabase.from('answer').select('*').in('questionid', questionIds ?? []);
+  const { data: answers } = await supabase.from('answer').select('*').in('question_id', questionIds ?? []);
 
   const groupedAnswers = answers?.reduce((acc, answer) => {
-    acc[answer.questionid] = acc[answer.questionid] || [];
-    acc[answer.questionid].push(answer);
+    acc[answer.question_id] = acc[answer.question_id] || [];
+    acc[answer.question_id].push(answer);
     return acc;
   }, {} as { [key: string]: Answer[] });
 
@@ -33,8 +33,8 @@ export default async function QuizPage({params}: {params: { id: string };}) {
       <div>
         <h1>{quiz.title}</h1>
         <p>{quiz.category}</p>
-        <p>{date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear()}</p>
-        <p>{quiz.time}</p>
+        <p>{date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear()}</p>
+        <p>{quiz.timer}</p>
         <div>
           {questions?.map((question, index) => (
               <div key={question.id}>
