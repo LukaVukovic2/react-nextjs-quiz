@@ -1,8 +1,8 @@
 "use server";
 import { Question } from "@/app/typings/question";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
+import { getUser } from "../utils/getUser";
+import { createClient } from "../utils/createClient";
 
 interface FormData {
   quiz: {
@@ -16,15 +16,10 @@ interface FormData {
 }
 
 export const supabaseInsert = async (d: FormData) => {
-  const cookieStore = cookies();
+  const {data: {user}} = await getUser();
+  const supabase = createClient();
 
-  const supabase = createServerComponentClient({ cookies: () => cookieStore });
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const quiz = d.quiz;
-  quiz.user_id = user?.id || "";
+  const quiz = { ...d.quiz, user_id: user?.id || "" };
   
   const answers = d.questions.questions.flatMap((question) => question.answers);
   const questions = d.questions.questions.map((question) => {
@@ -38,10 +33,8 @@ export const supabaseInsert = async (d: FormData) => {
     supabase.from('answer').insert(answers),
   ]);
 
-  console.log(response1, response2, response3);
-
   revalidatePath("/", 'layout');
 
-  const success = false;
+  const success = response1.error || response2.error || response3.error ? false : true;
   return success;
 };

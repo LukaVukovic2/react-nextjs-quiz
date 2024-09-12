@@ -1,4 +1,4 @@
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/components/shared/utils/createClient";
 
 interface Answer {
   id: string;
@@ -9,7 +9,7 @@ interface Answer {
 export default async function QuizPage({params}: {params: { id: string };}) {
   const { id } = params;
 
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
   const { data: quiz } = await supabase.from('quiz').select('*').eq('id', id).single();
   const { data: questions } = await supabase
   .from('question')

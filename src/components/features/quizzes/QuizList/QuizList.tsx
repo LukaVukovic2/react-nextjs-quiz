@@ -1,12 +1,10 @@
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
 import styles from "./QuizList.module.css";
 import { Card, CardBody, Text } from "@chakra-ui/react";
 import Link from "next/link";
+import { createClient } from "@/components/shared/utils/createClient";
 
 export default async function QuizList() {
-  const cookieStore = cookies();
-  const supabase = createServerComponentClient({ cookies: () => cookieStore });
+  const supabase = createClient();
 
   const { data: quizzes, error } = await supabase
     .from("quiz")
