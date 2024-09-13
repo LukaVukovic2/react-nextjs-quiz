@@ -16,10 +16,10 @@ interface FormData {
 }
 
 export const supabaseInsert = async (d: FormData) => {
-  const {data: {user}} = await getUser();
   const supabase = createClient();
+  const {data: {user}} = await getUser();
 
-  const quiz = { ...d.quiz, user_id: user?.id || "" };
+  const quiz = { ...d.quiz, user_id: user?.id };
   
   const answers = d.questions.questions.flatMap((question) => question.answers);
   const questions = d.questions.questions.map((question) => {
@@ -27,14 +27,25 @@ export const supabaseInsert = async (d: FormData) => {
     return question;
   });
 
-  const [response1, response2, response3] = await Promise.all([
-    supabase.from('quiz').insert(quiz),
-    supabase.from('question').insert(questions),
-    supabase.from('answer').insert(answers),
-  ]);
+  try {
+    const response1 = await supabase.from('quiz').insert(quiz);
+    if (response1.error) throw response1.error;
+    console.log(response1);
+  
+    const response2 = await supabase.from('question').insert(questions);
+    if (response2.error) throw response2.error;
+    console.log(response2);
+  
+    const response3 = await supabase.from('answer').insert(answers);
+    if (response3.error) throw response3.error;
+    console.log(response3);
 
-  revalidatePath("/", 'layout');
+    const success = response1.error || response2.error || response3.error ? false : true;
+    revalidatePath("/", 'layout');
+    return success;
+  } catch (error) {
+    await supabase.from('quiz').delete().match({ id: quiz.id });
+    console.error('Error occurred:', error);
 
-  const success = response1.error || response2.error || response3.error ? false : true;
-  return success;
+  }
 };

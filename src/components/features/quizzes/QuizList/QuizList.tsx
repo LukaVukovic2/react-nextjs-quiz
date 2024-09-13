@@ -19,14 +19,14 @@ export default async function QuizList() {
     <>
       <h1 className={styles.title}>Quiz List</h1> 
       <div className={styles.quizListContainer}>
-        {quizzes && quizzes.map((quiz) => (
+        {(quizzes && quizzes?.length > 0) ? quizzes.map((quiz) => (
           <Card key={quiz.id}>
             <CardBody as={Link} href={`/quizzes/${quiz.id}`}>
               <Text>{quiz.title}</Text>
               <Text>{quiz.category}</Text>
             </CardBody>  
           </Card>
-        ))}
+        )): <Text>No quizzes found</Text>}
       </div>
     </>
   );

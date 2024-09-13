@@ -19,7 +19,14 @@ import {
   chakra,
   Text,
   useToast,
+  Card,
+  CardBody,
+  Stack,
+  StackDivider,
+  List,
+  ListItem,
 } from "@chakra-ui/react";
+import { AddIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { supabaseInsert } from "@/components/shared/Supabase/insert";
@@ -42,6 +49,7 @@ export default function QuizForm() {
 
   const [questions, setQuestions] = useState<Question[]>([]);
   const [quizId] = useState(uuidv4());
+  const [questionTitle, setQuestionTitle] = useState('');
   const [question_id, setQuestionId] = useState(uuidv4());
   const [answers, setAnswers] = useState<Answer[]>([]);
   const {
@@ -65,18 +73,20 @@ export default function QuizForm() {
       setCurrentQuestion((prev) => ({ ...prev, incorrect: true }));
     }
   };
+  const isQuestionValid = !currentQuestion.correct || !currentQuestion.incorrect || questionTitle === "";
 
   const questionList = questions.map((question, index) => (
-    <Box key={index}>
-      <p>{question.title}</p>
+    <ListItem key={question.id} mb={2}>
+      {index + 1 + ". " + question.title}
       {question.answers &&
         question.answers.map((answer, index) => (
-          <p key={index}>
-            {answer.answer}{" "}
-            {answer.correct_answer && <i className="fa-solid fa-check"></i>}
-          </p>
-        ))}
-    </Box>
+          <Text key={index}>
+            {answer.answer + " "}
+            {answer.correct_answer && <CheckCircleIcon color="green.400" />}
+          </Text>
+        ))
+      }
+    </ListItem>
   ));
 
   const addAnswer = () => {
@@ -141,7 +151,7 @@ export default function QuizForm() {
   };
 
   return (
-    <div>
+    <chakra.div px={20} py={5}>
       <Stepper
         size="lg"
         index={activeStep}
@@ -169,15 +179,15 @@ export default function QuizForm() {
         ))}
       </Stepper>
 
-      <h1>Quiz Form</h1>
-
       <chakra.form
         as={Flex}
         flexDirection="column"
-        gap="10px"
+        gap={10}
+        my={5}
+        mx={activeStep === 0 ? "20%" : 0}
       >
         {activeStep === 0 && (
-          <div>
+          <Flex gap={5} flexDir="column">
             <FormControl>
               <Input
                 placeholder="Title"
@@ -200,75 +210,98 @@ export default function QuizForm() {
                 onBlur={() => trigger("category")}
               />
             </FormControl>
-          </div>
-        )}
-        {activeStep === 1 && (
-          <Flex gap={10}>
-            <chakra.div flex={1}>
-              <FormControl>
-                <Input
-                  placeholder="Question title"
-                  {...register("questionTitle", { required: true })}
-                  onBlur={() => trigger("questionTitle")}
-                />
-              </FormControl>
-              <FormControl>
-                <Input
-                  placeholder="Answer"
-                  {...register("answer", { required: true })}
-                  onBlur={() => trigger("answer")}
-                />
-              </FormControl>
-              <FormControl>
-                <Checkbox
-                  isDisabled={currentQuestion.correct}
-                  {...register("correctAnswer")}
-                  isChecked={isCorrect}
-                  onChange={(e) => setIsCorrect(e.target.checked)}
-                >
-                  Correct Answer
-                </Checkbox>
-              </FormControl>
-              <Button
-                isDisabled={!getValues("answer")}
-                onClick={addAnswer}
-              >
-                New Answer
-              </Button>
-            </chakra.div>
-            <chakra.div flex={1}>
-              <Text>Current Question:</Text>
-              <Text>Title: {getValues().questionTitle}</Text> <br />
-              <Text>Answers:</Text>
-              {answers.map((answer, index) => (
-                <Box key={index}>
-                  <p>
-                    {answer.answer}{" "}
-                    {answer.correct_answer && (
-                      <i className="fa-solid fa-check"></i>
-                    )}
-                  </p>
-                </Box>
-              ))}
-              <Button
-                isDisabled={
-                  !currentQuestion.correct || !currentQuestion.incorrect
-                }
-                onClick={addQuestion}
-              >
-                Add Question
-              </Button>
-            </chakra.div>
           </Flex>
         )}
-        <Text>Your Questions:</Text>
-        {questionList}
-        {activeStep === 2 && (
+        {activeStep === 1 && (
           <>
-            <p>Step 3</p>
-            <Text>This is your Quiz!</Text>
-            {questionList}
+            <Flex gap={10}>
+              <chakra.div flex={1}>
+                <Card>
+                  <CardBody>
+                    <Stack divider={<StackDivider />} spacing='4'>
+                      <Box>
+                        <FormControl>
+                          <Input
+                            placeholder="Question title"
+                            {...register("questionTitle", { required: true })}
+                            onChange={(e) => {
+                              setQuestionTitle(e.target.value);
+                              trigger("questionTitle");
+                            }}
+                          />
+                        </FormControl>
+                      </Box>
+                      <Box>
+                        <FormControl>
+                          <Input
+                            placeholder="Add answer option"
+                            {...register("answer", { required: true })}
+                            onBlur={() => trigger("answer")}
+                          />
+                        </FormControl>
+                      </Box>
+                      <Box>
+                        <FormControl>
+                          <Checkbox
+                            isDisabled={currentQuestion.correct}
+                            {...register("correctAnswer")}
+                            isChecked={isCorrect}
+                            onChange={(e) => setIsCorrect(e.target.checked)}
+                          >
+                            Correct Answer
+                          </Checkbox>
+                        </FormControl>
+                      </Box>
+                    </Stack>
+                    <Button
+                      isDisabled={!getValues("answer")}
+                      onClick={addAnswer}
+                    >
+                      New Answer
+                    </Button>
+                  </CardBody>
+                </Card>
+              </chakra.div>
+              <chakra.div flex={1}>
+                <Text>Current Question</Text>
+                <Text mb={2}>Title: {getValues("questionTitle")}</Text>
+                <Text>Answers:</Text>
+                {answers.map((answer, index) => (
+                  <Box key={index}>
+                    <p>
+                      {answer.answer}{" "}
+                      {answer.correct_answer && (
+                        <CheckCircleIcon color="green.400" />
+                      )}
+                    </p>
+                  </Box>
+                ))}
+                <Button
+                  isDisabled={isQuestionValid}
+                  onClick={addQuestion}
+                  gap={2}
+                  bg="green.400"
+                  color="white"
+                >
+                  <AddIcon boxSize={4} />
+                  Add Question
+                </Button>
+              </chakra.div>
+            </Flex>
+            <Text>Your Questions:</Text>
+            <List>
+              {questionList}
+            </List>
           </>
+        )}
+        {activeStep === 2 && (
+          <div>
+            <Text>This is your Quiz!</Text>
+            <b>{getValues("title")}</b>
+            <List>
+              {questionList}
+            </List>
+          </div>
         )}
         <Flex justifyContent="space-between">
           <Button
@@ -289,6 +322,6 @@ export default function QuizForm() {
           )}
         </Flex>
       </chakra.form>
-    </div>
+    </chakra.div>
   );
 }
