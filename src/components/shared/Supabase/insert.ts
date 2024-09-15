@@ -46,6 +46,5 @@ export const supabaseInsert = async (d: FormData) => {
   } catch (error) {
     await supabase.from('quiz').delete().match({ id: quiz.id });
     console.error('Error occurred:', error);
-
   }
 };

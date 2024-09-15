@@ -1,7 +1,10 @@
 "use client";
-import { fetchAvatar } from "@/components/shared/utils/fetchAvatar";
-import { uploadAvatar } from "@/components/shared/utils/uploadAvatar";
-import { Input, Spinner } from "@chakra-ui/react";
+import { deleteAvatar } from "@/components/shared/utils/avatar/deleteAvatar";
+import { fetchAvatar } from "@/components/shared/utils/avatar/fetchAvatar";
+import { uploadAvatar } from "@/components/shared/utils/avatar/uploadAvatar";
+import { updateUsername } from "@/components/shared/utils/updateUsername";
+import { DeleteIcon } from "@chakra-ui/icons";
+import { Button, Card, CardBody, Flex, Input, Spinner } from "@chakra-ui/react";
 import Image from "next/image";
 import { ChangeEvent, useEffect, useState } from "react";
 
@@ -14,15 +17,12 @@ interface IMyProfileProps {
 }
 
 export default function MyProfile({ id, profile }: IMyProfileProps) {
-  const [avatar, setAvatar] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function getAvatar() {
-      const name = await fetchAvatar(id);
-      const url = `https://yihokqocgijpqfemclfy.supabase.co/storage/v1/object/public/avatars/${id}/${name}`;
-      setAvatar(url);
-    };
+      await fetchAvatar(id);
+    }
     getAvatar();
   }, []);
 
@@ -33,36 +33,73 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("id", id);
-    const data = await uploadAvatar(formData);
-    const url = `https://yihokqocgijpqfemclfy.supabase.co/storage/v1/object/public/avatars/${data.path}`;
-    setAvatar(url);
+    await uploadAvatar(formData);
     setIsLoading(false);
   };
 
+  const handleUsernameUpdate = async (e: ChangeEvent<HTMLInputElement>) => {
+    const formData = new FormData();
+    formData.append("username", e.target.value);
+    formData.append("id", id);
+
+    await updateUsername(formData);
+  };
+
   return (
-    <div>
-      <h1>My Profile</h1>
-      <p>{profile?.username}</p>
-      {isLoading ? (
-        <Spinner
-          thickness="4px"
-          speed="0.65s"
-          size="xl"
-        />
-      ): 
-        <Image
-          style={{ borderRadius: "50%" }}
-          src={avatar ? avatar : "https://fakeimg.pl/100x100/"}
-          alt="profile avatar"
-          width={100}
-          height={100}
-          priority={true}
-        />
-      }
-      <Input
-        type="file"
-        onChange={(e) => handleAvatarUpload(e)}
-      />
-    </div>
+    <Flex
+      flexDir="column"
+      gap={2}
+      align="center"
+      mt={8}
+    >
+      <Card>
+        <CardBody border="1px solid grey">
+          <h1>My Profile</h1>
+          <div>
+            <label>Username:</label>
+            <Input
+              type="text"
+              defaultValue={profile?.username}
+              onBlur={(e) => handleUsernameUpdate(e)}
+            />
+          </div>
+
+          {isLoading ? (
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              size="xl"
+            />
+          ) : (
+            <>
+              <Image
+                style={{ borderRadius: "50%", width: "100px", height: "100px" }}
+                src={
+                  profile.avatar ? profile.avatar : "https://fakeimg.pl/100x100/"
+                }
+                alt="profile avatar"
+                width={100}
+                height={100}
+                priority={true}
+              />
+            </>
+          )}
+          <Flex gap={2} align="baseline">
+            {profile.avatar && (
+              <Button onClick={() => deleteAvatar(profile.avatar)} colorScheme="red">
+                <DeleteIcon></DeleteIcon>
+              </Button>
+            )}
+            <Input
+              type="file"
+              onChange={(e) => handleAvatarUpload(e)}
+              border={0}
+            />
+          </Flex>
+
+        </CardBody>
+
+      </Card>
+    </Flex>
   );
 }
