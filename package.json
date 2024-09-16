@@ -9,12 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@chakra-ui/icon": "^3.2.0",
+    "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@libsql/client": "^0.10.0",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/auth-ui-react": "^0.4.7",
+    "@supabase/ssr": "^0.5.1",
     "@supabase/supabase-js": "^2.45.3",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.33.0",
