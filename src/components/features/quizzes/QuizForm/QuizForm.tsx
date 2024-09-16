@@ -6,15 +6,6 @@ import {
   Flex,
   FormControl,
   Input,
-  Step,
-  StepDescription,
-  StepIcon,
-  StepIndicator,
-  StepNumber,
-  Stepper,
-  StepSeparator,
-  StepStatus,
-  StepTitle,
   useSteps,
   chakra,
   Text,
@@ -22,9 +13,7 @@ import {
   Card,
   CardBody,
   Stack,
-  StackDivider,
-  List,
-  ListItem,
+  StackDivider
 } from "@chakra-ui/react";
 import { AddIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import { useState } from "react";
@@ -33,12 +22,9 @@ import { supabaseInsert } from "@/components/shared/Supabase/insert";
 import { v4 as uuidv4 } from "uuid";
 import { Question } from "@/app/typings/question";
 import { Answer } from "@/app/typings/answer";
-
-const steps = [
-  { title: "First", description: "Quiz Info" },
-  { title: "Second", description: "Add Questions" },
-  { title: "Third", description: "Create Quiz" },
-];
+import StepperProgress from "@/components/shared/StepperProgress/StepperProgress";
+import { steps } from "@/components/shared/utils/steps";
+import QuestionList from "@/components/shared/QuestionList/QuestionList";
 
 export default function QuizForm() {
   const toast = useToast();
@@ -74,20 +60,6 @@ export default function QuizForm() {
     }
   };
   const isQuestionValid = !currentQuestion.correct || !currentQuestion.incorrect || questionTitle === "";
-
-  const questionList = questions.map((question, index) => (
-    <ListItem key={question.id} mb={2}>
-      {index + 1 + ". " + question.title}
-      {question.answers &&
-        question.answers.map((answer, index) => (
-          <Text key={index}>
-            {answer.answer + " "}
-            {answer.correct_answer && <CheckCircleIcon color="green.400" />}
-          </Text>
-        ))
-      }
-    </ListItem>
-  ));
 
   const addAnswer = () => {
     const answer = {
@@ -152,32 +124,7 @@ export default function QuizForm() {
 
   return (
     <chakra.div px={20} py={5}>
-      <Stepper
-        size="lg"
-        index={activeStep}
-      >
-        {steps.map((step, index) => (
-          <Step
-            key={index}
-            onClick={() => setStepIfValid(index)}
-          >
-            <StepIndicator>
-              <StepStatus
-                complete={<StepIcon />}
-                incomplete={<StepNumber />}
-                active={<StepNumber />}
-              />
-            </StepIndicator>
-
-            <Box flexShrink="0">
-              <StepTitle>{step.title}</StepTitle>
-              <StepDescription>{step.description}</StepDescription>
-            </Box>
-
-            <StepSeparator />
-          </Step>
-        ))}
-      </Stepper>
+      <StepperProgress activeStep={activeStep} setStepIfValid={setStepIfValid} />
 
       <chakra.form
         as={Flex}
@@ -289,18 +236,14 @@ export default function QuizForm() {
               </chakra.div>
             </Flex>
             <Text>Your Questions:</Text>
-            <List>
-              {questionList}
-            </List>
+            <QuestionList questions={questions} />
           </>
         )}
         {activeStep === 2 && (
           <div>
             <Text>This is your Quiz!</Text>
             <b>{getValues("title")}</b>
-            <List>
-              {questionList}
-            </List>
+            <QuestionList questions={questions} />
           </div>
         )}
         <Flex justifyContent="space-between">

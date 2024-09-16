@@ -1,18 +1,22 @@
 "use client";
 import { Quiz } from "@/app/typings/quiz";
-import { deleteQuiz } from "@/components/shared/utils/quiz/deleteQuiz";
-import { Flex, List, ListItem, Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react";
+import { Flex, List, ListItem } from "@chakra-ui/react";
+import QuizMenuDropdown from "../QuizMenuDropdown/QuizMenuDropdown";
+import { Question } from "@/app/typings/question";
+import { Answer } from "@/app/typings/answer";
 
-export default function MyQuizzes({ quizzes }: { quizzes: Quiz[] }) {
-  const openModal = async (id: string) => {
-    console.log(id);
-    
-  }
+interface MyQuizzesProps {
+  quizzes: Array<{
+    quiz: Quiz; 
+    questions_and_answers: Array<{
+      question: Question;
+      answers: Answer[];
+    }>;
+  }>;
+}
 
-  const handleQuizDelete = async (id: string) => {
-    const success = await deleteQuiz(id);
-    console.log(success);
-  }
+
+export default function MyQuizzes(quizzes: MyQuizzesProps) {
 
   return (
     <Flex
@@ -24,9 +28,9 @@ export default function MyQuizzes({ quizzes }: { quizzes: Quiz[] }) {
           width: "500px",
         }}
       >
-        {quizzes.map((quiz: Quiz) => (
+        {quizzes.quizzes.length > 0 && quizzes.quizzes.map((quiz: {quiz: Quiz}, index) => (
           <ListItem
-            key={quiz.id}
+            key={quiz.quiz.id}
             display="flex"
             justifyContent="space-between"
             alignItems="center"
@@ -37,28 +41,11 @@ export default function MyQuizzes({ quizzes }: { quizzes: Quiz[] }) {
             }}
           >
             <div>
-              <h2>{quiz.title}</h2>
-              <p>{quiz.category}</p>
-              <p>{quiz.timer}</p>
+              <h2>{quiz.quiz.title}</h2>
+              <p>{quiz.quiz.category}</p>
+              <p>{quiz.quiz.timer}</p>
             </div>
-            <Menu>
-              <MenuButton
-                px={4}
-                py={2}
-                transition='all 0.2s'
-                borderRadius='md'
-                borderWidth='1px'
-                _hover={{ bg: 'gray.400' }}
-                _expanded={{ bg: 'blue.400' }}
-                _focus={{ boxShadow: 'outline' }}
-              >
-                <i className="fa-solid fa-ellipsis-vertical"></i>
-              </MenuButton>
-              <MenuList>
-                <MenuItem onClick={() => openModal(quiz.id)}>Edit</MenuItem>
-                <MenuItem onClick={() => handleQuizDelete(quiz.id)}>Delete</MenuItem>
-              </MenuList>
-            </Menu>
+            <QuizMenuDropdown quiz={quiz.quiz} questions_and_answers={quizzes.quizzes[index].questions_and_answers} />
           </ListItem>
         ))}
       </List>
