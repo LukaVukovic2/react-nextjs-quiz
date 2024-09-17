@@ -3,6 +3,7 @@ import { Question } from "@/app/typings/question";
 import { Quiz } from "@/app/typings/quiz";
 import { deleteAnswer } from "@/components/shared/utils/quiz/answer/deleteAnswer";
 import { deleteQuestion } from "@/components/shared/utils/quiz/question/deleteQuestion";
+import { updateQuiz } from "@/components/shared/utils/quiz/updateQuiz";
 import { CheckCircleIcon, DeleteIcon } from "@chakra-ui/icons";
 import {
   Button,
@@ -17,6 +18,7 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
+import { FocusEvent, useState } from "react";
 import { useForm } from "react-hook-form";
 
 interface QuizUpdateFormProps {
@@ -37,9 +39,13 @@ export default function QuizUpdateForm({
     formState: { isValid },
   } = useForm();
 
-  const toast = useToast();
+  const [dirtyQuizFields, setDirtyQuizFields] = useState<Quiz>();
+  const [dirtyQuestions, setDirtyQuestions] = useState<Question[]>([]);
+  const [dirtyAnswers] = useState<Answer[]>();
 
-  console.log(quiz);
+  console.log(dirtyQuestions);
+
+  const toast = useToast();
 
   const handleDeleteQuestion = async (id: string) => {
     const success = await deleteQuestion(id);
@@ -64,6 +70,62 @@ export default function QuizUpdateForm({
     });
   };
 
+  const handleUpdateQuiz = async (e: FocusEvent<HTMLInputElement, Element>, id: string) => { 
+    const { name, value } = e.target;
+
+    console.log(name, value);
+
+    const validateInput = await trigger(name);
+    if (!validateInput) return;
+
+    setDirtyQuizFields((prev) => ({
+      ...prev,
+      id,
+      [name]: value,
+    } as Quiz));
+  };
+
+  const handleUpdateQuestion = async (e: FocusEvent<HTMLInputElement, Element>, q: Question, index: number) => {
+    const { value } = e.target;
+
+    const validateInput = await trigger('q_title' + index);
+    if (!validateInput) return;
+
+    setDirtyQuestions((prev) => {
+      console.log(prev);
+      const questionIndex = prev.findIndex((question) => question.id === q.id);
+  
+      if (questionIndex === -1) {
+        return [
+          ...prev,
+          {
+            id: q.id,
+            title: value,
+            quizId: q.quizId,
+          } as Question,
+        ];
+      } else {
+        const updatedQuestions = [...prev];
+        updatedQuestions[questionIndex] = {
+          id: q.id,
+          title: value,
+          quizId: q.quizId,
+        } as Question;
+        return updatedQuestions;
+      }
+    });
+  }
+
+  const handleSubmit = async () => {
+    const formData = new FormData();
+    formData.append("quiz", JSON.stringify(dirtyQuizFields));
+    formData.append("questions", JSON.stringify(dirtyQuestions));
+    formData.append("answers", JSON.stringify(dirtyAnswers));
+
+    const data = await updateQuiz(formData);
+    console.log(data);
+  };
+
   return (
     <chakra.form style={{ overflow: "scroll", height: "70vh" }}>
       <FormControl>
@@ -72,7 +134,7 @@ export default function QuizUpdateForm({
           placeholder="Quiz Title"
           defaultValue={quiz.title}
           {...register("title", { required: true })}
-          onBlur={() => trigger("title")}
+          onBlur={(e) => handleUpdateQuiz(e, quiz.id)}
         />
       </FormControl>
       <FormControl>
@@ -81,7 +143,7 @@ export default function QuizUpdateForm({
           placeholder="Category"
           defaultValue={quiz.category}
           {...register("category", { required: true })}
-          onBlur={() => trigger("category")}
+          onBlur={(e) => handleUpdateQuiz(e, quiz.id)}
         />
       </FormControl>
       <FormControl>
@@ -96,7 +158,7 @@ export default function QuizUpdateForm({
               message: "Invalid time format. Use HH:MM:SS",
             },
           })}
-          onBlur={() => trigger("timer")}
+          onBlur={(e) => handleUpdateQuiz(e, quiz.id)}
         />
       </FormControl>
 
@@ -118,12 +180,13 @@ export default function QuizUpdateForm({
                   placeholder="Question"
                   defaultValue={qa.question.title}
                   {...register(`q_title${index + 1}`, { required: true })}
-                  onBlur={() => trigger(`q_title${index + 1}`)}
+                  onBlur={(e) => handleUpdateQuestion(e, qa.question, index + 1)}
                 />
                 <InputRightElement>
                   <Button
                     variant="ghost"
                     onClick={() => handleDeleteQuestion(qa.question.id)}
+                    isDisabled={questions_and_answers.length === 1}
                   >
                     <DeleteIcon
                       color="red.500"
@@ -153,6 +216,7 @@ export default function QuizUpdateForm({
                     <Button
                       variant="ghost"
                       onClick={() => answer.id && handleDeleteAnswer(answer.id)}
+                      isDisabled={qa.answers.length === 1}
                     >
                       <DeleteIcon
                         color="red.500"
@@ -167,7 +231,7 @@ export default function QuizUpdateForm({
         ))}
       </Flex>
 
-      <Button isDisabled={!isValid}>Update Quiz</Button>
+      <Button isDisabled={!isValid} onClick={handleSubmit}>Update Quiz</Button>
     </chakra.form>
   );
 }
