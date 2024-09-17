@@ -2,6 +2,7 @@ import { Answer } from "@/app/typings/answer";
 import { Question } from "@/app/typings/question";
 import { Quiz } from "@/app/typings/quiz";
 import { deleteAnswer } from "@/components/shared/utils/quiz/answer/deleteAnswer";
+import { deleteQuestion } from "@/components/shared/utils/quiz/question/deleteQuestion";
 import { CheckCircleIcon, DeleteIcon } from "@chakra-ui/icons";
 import {
   Button,
@@ -39,6 +40,17 @@ export default function QuizUpdateForm({
   const toast = useToast();
 
   console.log(quiz);
+
+  const handleDeleteQuestion = async (id: string) => {
+    const success = await deleteQuestion(id);
+    toast({
+      title: success ? "Question deleted" : "Error deleting question",
+      status: success ? "info" : "error",
+      duration: 3000,
+      isClosable: true,
+    });
+  }
+
 
   const handleDeleteAnswer = async (id: number) => {
     console.log(id);
@@ -108,14 +120,27 @@ export default function QuizUpdateForm({
                   {...register(`q_title${index + 1}`, { required: true })}
                   onBlur={() => trigger(`q_title${index + 1}`)}
                 />
+                <InputRightElement>
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleDeleteQuestion(qa.question.id)}
+                  >
+                    <DeleteIcon
+                      color="red.500"
+                      boxSize="5"
+                    />
+                  </Button>
+                </InputRightElement>
               </InputGroup>
             </FormControl>
             {qa.answers.map((answer, i) => (
               <FormControl key={i}>
                 <InputGroup>
-                  {answer.correct_answer && <InputLeftElement>
-                    <CheckCircleIcon color="green.400" />
-                  </InputLeftElement>}
+                  {answer.correct_answer && (
+                    <InputLeftElement>
+                      <CheckCircleIcon color="green.400" />
+                    </InputLeftElement>
+                  )}
                   <Input
                     placeholder="Answer"
                     defaultValue={answer.answer}
@@ -125,8 +150,14 @@ export default function QuizUpdateForm({
                     onBlur={() => trigger(`answer${index + 1}${i + 1}`)}
                   />
                   <InputRightElement>
-                    <Button variant="ghost" onClick={() => answer.id && handleDeleteAnswer(answer.id)}>
-                      <DeleteIcon color="red.500" boxSize="5"/>
+                    <Button
+                      variant="ghost"
+                      onClick={() => answer.id && handleDeleteAnswer(answer.id)}
+                    >
+                      <DeleteIcon
+                        color="red.500"
+                        boxSize="5"
+                      />
                     </Button>
                   </InputRightElement>
                 </InputGroup>
