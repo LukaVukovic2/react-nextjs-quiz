@@ -36,7 +36,7 @@ export default function QuizUpdateForm({
   onClose
 }: QuizUpdateFormProps) {
 
-  const { register, trigger, formState: { isValid }} = useForm();
+  const { register, trigger, formState: { isValid }, getValues} = useForm();
   const [dirtyQuizFields, setDirtyQuizFields] = useState<Quiz>();
   const [dirtyQuestions, setDirtyQuestions] = useState<Question[]>([]);
   const [dirtyAnswers, setDirtyAnswers] = useState<Answer[]>([]);
@@ -70,6 +70,14 @@ export default function QuizUpdateForm({
 
   const handleDeleteAnswer = async (id: number) => {
     const success = await deleteAnswer(id);
+    if (success) {
+      setAnswersArr((prev) => {
+        return prev.filter((answer) => answer.id !== id);
+      });
+      setDirtyAnswers((prev) => {
+        return prev.filter((answer) => answer.id !== id);
+      });
+    }
     toast({
       title: success ? "Answer deleted" : "Error deleting answer",
       status: success ? "info" : "error",
@@ -123,9 +131,13 @@ export default function QuizUpdateForm({
 
   const handleUpdateAnswer = async (e: ChangeEvent<HTMLInputElement>, a: Answer) => {
     const { value, type } = e.target;
-  
+    
+    console.log('Checked value')
+    console.log(getValues(`answer${a.id}`))
     const validateInput = await trigger(`answer${a.question_id}${a.id}`);
     if (!validateInput) return;
+
+    const previousCorrectAnswer = answersArr.find((ans) => ans.correct_answer && ans.question_id === a.question_id);
   
     const updatedAnswers = answersArr.map((answer) => {
       if (answer.id === a.id && type === 'text') {
@@ -148,7 +160,7 @@ export default function QuizUpdateForm({
         if (type === 'radio' && answer.question_id === a.question_id) {
           if (answerIndex !== -1) {
             dirtyAns[answerIndex] = { ...answer, correct_answer: answer.id === a.id };
-          } else {
+          } else if (answer.id === a.id || previousCorrectAnswer?.id === answer.id) {
             dirtyAns.push({ ...answer, correct_answer: answer.id === a.id });
           }
         }
@@ -257,16 +269,16 @@ export default function QuizUpdateForm({
                 </InputRightElement>
               </InputGroup>
             </FormControl>
-            {qa.answers.map((answer) => (
-              <FormControl key={answer.id}>
+            {qa.answers.map((answer) => {
+              const isCorrect = answersArr.find((ans) => ans.id === answer.id)?.correct_answer
+              return <FormControl key={answer.id}>
                 <InputGroup>
                   <InputLeftElement>
-                    {answer.correct_answer ? 
+                    {isCorrect ? 
                       <CheckCircleIcon color="green.400" /> : 
                       <input
                         type="radio"
-                        name={qa.question.id}
-                        checked={answer.correct_answer}
+                        {...register(`answer${answer.id}`)}
                         onChange={(e) => handleUpdateAnswer(e, answer)}
                         />
                     }
@@ -294,7 +306,7 @@ export default function QuizUpdateForm({
                   </InputRightElement>
                 </InputGroup>
               </FormControl>
-            ))}
+})}
           </div>
         ))}
       </Flex>

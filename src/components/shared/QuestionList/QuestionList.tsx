@@ -11,7 +11,7 @@ export default function QuestionList({ questions }: { questions: Question[] }) {
             {index + 1 + ". " + question.title}
             {question.answers &&
               question.answers.map((answer) => (
-                <Text key={answer.id}>
+                <Text key={answer.answer}>
                   {answer.answer + " "}
                   {answer.correct_answer && <CheckCircleIcon color="green.400" />}
                 </Text>
