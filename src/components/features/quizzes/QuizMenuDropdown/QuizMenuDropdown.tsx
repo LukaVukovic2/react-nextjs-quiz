@@ -1,10 +1,11 @@
 'use client';
 import { Quiz } from "@/app/typings/quiz";
 import { deleteQuiz } from "@/components/shared/utils/quiz/deleteQuiz";
-import { Menu, MenuButton, MenuList, MenuItem, useDisclosure, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay } from "@chakra-ui/react";
+import { Menu, MenuButton, MenuList, MenuItem, useDisclosure, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, AlertDialog, AlertDialogBody, AlertDialogCloseButton, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, useToast } from "@chakra-ui/react";
 import QuizUpdateForm from "../QuizUpdateForm/QuizUpdateForm";
 import { Question } from "@/app/typings/question";
 import { Answer } from "@/app/typings/answer";
+import React from "react";
 
 interface QuizMenuDropdownProps {
   quiz: Quiz;
@@ -16,10 +17,19 @@ interface QuizMenuDropdownProps {
 
 export default function QuizMenuDropdown({quiz, questions_and_answers} : QuizMenuDropdownProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
+  const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure();
+  const cancelRef = React.useRef<HTMLButtonElement>(null);
 
   const handleQuizDelete = async (id: string) => {
     const success = await deleteQuiz(id);
-    console.log(success);
+    onCloseDelete();
+    toast({
+      title: success ? "Quiz deleted" : "Failed to delete quiz",
+      status: success ? "success" : "error",
+      duration: 3000,
+      isClosable: true,
+    });
   }
 
   return (
@@ -38,7 +48,33 @@ export default function QuizMenuDropdown({quiz, questions_and_answers} : QuizMen
       </MenuButton>
       <MenuList>
         <MenuItem onClick={onOpen}>Edit</MenuItem>
-        <MenuItem onClick={() => handleQuizDelete(quiz.id)}>Delete</MenuItem>
+        <MenuItem onClick={onOpenDelete}>Delete</MenuItem>
+        
+        <AlertDialog
+          leastDestructiveRef={cancelRef}
+          motionPreset='slideInBottom'
+          onClose={onCloseDelete}
+          isOpen={isOpenDelete}
+          isCentered
+        >
+          <AlertDialogOverlay />
+
+          <AlertDialogContent>
+            <AlertDialogHeader>Delete quiz?</AlertDialogHeader>
+            <AlertDialogCloseButton />
+            <AlertDialogBody>
+              Are you sure you want to delete this quiz?
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onCloseDelete}>
+                No
+              </Button>
+              <Button colorScheme='red' ml={3} onClick={() => handleQuizDelete(quiz.id)}>
+                Yes
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />

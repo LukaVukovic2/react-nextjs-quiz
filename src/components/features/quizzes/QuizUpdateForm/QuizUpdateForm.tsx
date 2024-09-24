@@ -200,7 +200,7 @@ export default function QuizUpdateForm({
   };
 
   return (
-    <chakra.form style={{ overflow: "scroll", height: "70vh" }}>
+    <chakra.form style={{ overflowY: "scroll", height: "70vh" }}>
       <FormControl>
         <FormLabel>Quiz title</FormLabel>
         <Input
