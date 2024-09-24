@@ -213,8 +213,8 @@ export default function QuizForm() {
                 <Text>Current Question</Text>
                 <Text mb={2}>Title: {getValues("questionTitle")}</Text>
                 <Text>Answers:</Text>
-                {answers.map((answer, index) => (
-                  <Box key={index}>
+                {answers.map((answer) => (
+                  <Box key={answer.id}>
                     <p>
                       {answer.answer}{" "}
                       {answer.correct_answer && (

@@ -46,7 +46,7 @@ export default function QuizMenuDropdown({quiz, questions_and_answers} : QuizMen
           <ModalHeader>Update Quiz</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <QuizUpdateForm quiz={quiz} questions_and_answers={questions_and_answers} />
+            <QuizUpdateForm quiz={quiz} questions_and_answers={questions_and_answers} onClose={onClose} />
           </ModalBody>
         </ModalContent>
       </Modal>

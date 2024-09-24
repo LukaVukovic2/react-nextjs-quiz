@@ -14,7 +14,7 @@ export default function StepperProgress({activeStep, setStepIfValid}: IStepperPr
       >
         {steps.map((step, index) => (
           <Step
-            key={index}
+            key={step.title}
             onClick={() => setStepIfValid(index)}
           >
             <StepIndicator>

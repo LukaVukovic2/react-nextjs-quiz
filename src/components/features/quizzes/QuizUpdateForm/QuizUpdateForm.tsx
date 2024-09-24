@@ -18,7 +18,7 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { FocusEvent, useState } from "react";
+import { ChangeEvent, FocusEvent, useState } from "react";
 import { useForm } from "react-hook-form";
 
 interface QuizUpdateFormProps {
@@ -27,28 +27,39 @@ interface QuizUpdateFormProps {
     question: Question;
     answers: Answer[];
   }>;
+  onClose: () => void;
 }
 
 export default function QuizUpdateForm({
   quiz,
   questions_and_answers,
+  onClose
 }: QuizUpdateFormProps) {
-  const {
-    register,
-    trigger,
-    formState: { isValid },
-  } = useForm();
 
+  const { register, trigger, formState: { isValid }} = useForm();
   const [dirtyQuizFields, setDirtyQuizFields] = useState<Quiz>();
   const [dirtyQuestions, setDirtyQuestions] = useState<Question[]>([]);
-  const [dirtyAnswers] = useState<Answer[]>();
+  const [dirtyAnswers, setDirtyAnswers] = useState<Answer[]>([]);
+  const [answersArr, setAnswersArr] = useState<Answer[]>(questions_and_answers.map((qa) => qa.answers).flat());
 
-  console.log(dirtyQuestions);
+  console.log("AnsArr") 
+  console.log(answersArr);
+  console.log("DirtyAns");
+  console.log(dirtyAnswers);
 
   const toast = useToast();
 
   const handleDeleteQuestion = async (id: string) => {
     const success = await deleteQuestion(id);
+    if (success) {
+      dirtyQuestions.forEach((q) => {
+        if (q.id === id) {
+          setDirtyQuestions((prev) => {
+            return prev.filter((question) => question.id !== id);
+          });
+        }
+      });
+    }
     toast({
       title: success ? "Question deleted" : "Error deleting question",
       status: success ? "info" : "error",
@@ -57,11 +68,8 @@ export default function QuizUpdateForm({
     });
   }
 
-
   const handleDeleteAnswer = async (id: number) => {
-    console.log(id);
     const success = await deleteAnswer(id);
-    console.log(success);
     toast({
       title: success ? "Answer deleted" : "Error deleting answer",
       status: success ? "info" : "error",
@@ -73,8 +81,6 @@ export default function QuizUpdateForm({
   const handleUpdateQuiz = async (e: FocusEvent<HTMLInputElement, Element>, id: string) => { 
     const { name, value } = e.target;
 
-    console.log(name, value);
-
     const validateInput = await trigger(name);
     if (!validateInput) return;
 
@@ -85,14 +91,13 @@ export default function QuizUpdateForm({
     } as Quiz));
   };
 
-  const handleUpdateQuestion = async (e: FocusEvent<HTMLInputElement, Element>, q: Question, index: number) => {
+  const handleUpdateQuestion = async (e: FocusEvent<HTMLInputElement, Element>, q: Question) => {
     const { value } = e.target;
 
-    const validateInput = await trigger('q_title' + index);
+    const validateInput = await trigger('q_title' + q.id);
     if (!validateInput) return;
 
     setDirtyQuestions((prev) => {
-      console.log(prev);
       const questionIndex = prev.findIndex((question) => question.id === q.id);
   
       if (questionIndex === -1) {
@@ -116,14 +121,70 @@ export default function QuizUpdateForm({
     });
   }
 
+  const handleUpdateAnswer = async (e: ChangeEvent<HTMLInputElement>, a: Answer) => {
+    const { value, type } = e.target;
+  
+    const validateInput = await trigger(`answer${a.question_id}${a.id}`);
+    if (!validateInput) return;
+  
+    const updatedAnswers = answersArr.map((answer) => {
+      if (answer.id === a.id && type === 'text') {
+        return { ...answer, answer: value };
+      }
+      if (answer.question_id === a.question_id && type === 'radio') {
+        return { ...answer, correct_answer: answer.id === a.id };
+      }
+      return answer;
+    });
+  
+    setAnswersArr(updatedAnswers);
+  
+    setDirtyAnswers((prev) => {
+      const dirtyAns = [...prev];
+  
+      updatedAnswers.forEach((answer) => {
+        const answerIndex = dirtyAns.findIndex((ans) => ans.id === answer.id);
+  
+        if (type === 'radio' && answer.question_id === a.question_id) {
+          if (answerIndex !== -1) {
+            dirtyAns[answerIndex] = { ...answer, correct_answer: answer.id === a.id };
+          } else {
+            dirtyAns.push({ ...answer, correct_answer: answer.id === a.id });
+          }
+        }
+  
+        if (type === 'text' && answer.id === a.id) {
+          if (answerIndex === -1) {
+            dirtyAns.push({ ...answer, answer: value });
+          } else {
+            dirtyAns[answerIndex] = { ...answer, answer: value };
+          }
+        }
+      });
+  
+      return dirtyAns;
+    });
+  };
+
   const handleSubmit = async () => {
     const formData = new FormData();
     formData.append("quiz", JSON.stringify(dirtyQuizFields));
     formData.append("questions", JSON.stringify(dirtyQuestions));
     formData.append("answers", JSON.stringify(dirtyAnswers));
 
-    const data = await updateQuiz(formData);
-    console.log(data);
+    const success = await updateQuiz(formData);
+    toast({
+      title: success ? "Quiz updated" : "Error updating quiz",
+      status: success ? "info" : "error",
+      duration: 3000,
+      isClosable: true,
+    });
+    if(success) {
+      setDirtyQuizFields(undefined);
+      setDirtyQuestions([]);
+      setDirtyAnswers([]);
+    }
+    onClose();
   };
 
   return (
@@ -168,7 +229,7 @@ export default function QuizUpdateForm({
         gap={5}
       >
         {questions_and_answers.map((qa, index) => (
-          <div key={index}>
+          <div key={qa.question.id}>
             <FormControl
               display="flex"
               alignItems="baseline"
@@ -179,8 +240,8 @@ export default function QuizUpdateForm({
                 <Input
                   placeholder="Question"
                   defaultValue={qa.question.title}
-                  {...register(`q_title${index + 1}`, { required: true })}
-                  onBlur={(e) => handleUpdateQuestion(e, qa.question, index + 1)}
+                  {...register(`q_title${qa.question.id}`, { required: true })}
+                  onBlur={(e) => handleUpdateQuestion(e, qa.question)}
                 />
                 <InputRightElement>
                   <Button
@@ -196,27 +257,34 @@ export default function QuizUpdateForm({
                 </InputRightElement>
               </InputGroup>
             </FormControl>
-            {qa.answers.map((answer, i) => (
-              <FormControl key={i}>
+            {qa.answers.map((answer) => (
+              <FormControl key={answer.id}>
                 <InputGroup>
-                  {answer.correct_answer && (
-                    <InputLeftElement>
-                      <CheckCircleIcon color="green.400" />
-                    </InputLeftElement>
-                  )}
+                  <InputLeftElement>
+                    {answer.correct_answer ? 
+                      <CheckCircleIcon color="green.400" /> : 
+                      <input
+                        type="radio"
+                        name={qa.question.id}
+                        checked={answer.correct_answer}
+                        onChange={(e) => handleUpdateAnswer(e, answer)}
+                        />
+                    }
+                  </InputLeftElement>
+                  
                   <Input
                     placeholder="Answer"
                     defaultValue={answer.answer}
-                    {...register(`answer${index + 1}${i + 1}`, {
+                    {...register(`answer${qa.question.id}${answer.id}`, {
                       required: true,
                     })}
-                    onBlur={() => trigger(`answer${index + 1}${i + 1}`)}
+                    onBlur={(e) => handleUpdateAnswer(e, answer)}
                   />
                   <InputRightElement>
                     <Button
                       variant="ghost"
                       onClick={() => answer.id && handleDeleteAnswer(answer.id)}
-                      isDisabled={qa.answers.length === 1}
+                      isDisabled={qa.answers.length <= 2 || answer.correct_answer}
                     >
                       <DeleteIcon
                         color="red.500"
