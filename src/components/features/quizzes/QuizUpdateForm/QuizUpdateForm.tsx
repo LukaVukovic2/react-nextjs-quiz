@@ -1,8 +1,6 @@
 import { Answer } from "@/app/typings/answer";
 import { Question } from "@/app/typings/question";
 import { Quiz } from "@/app/typings/quiz";
-import { deleteAnswer } from "@/components/shared/utils/quiz/answer/deleteAnswer";
-import { deleteQuestion } from "@/components/shared/utils/quiz/question/deleteQuestion";
 import { updateQuiz } from "@/components/shared/utils/quiz/updateQuiz";
 import { AddIcon, CheckCircleIcon, DeleteIcon } from "@chakra-ui/icons";
 import {
@@ -19,7 +17,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { ChangeEvent, FocusEvent, useEffect, useState } from "react";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 
 interface QuizUpdateFormProps {
@@ -29,6 +27,10 @@ interface QuizUpdateFormProps {
     answers: Answer[];
   }>;
   onClose: () => void;
+}
+
+const styles = {
+  fontSize: "0.8rem"
 }
 
 export default function QuizUpdateForm({
@@ -46,32 +48,16 @@ export default function QuizUpdateForm({
   const [deletedAnswers, setDeletedAnswers] = useState<string[]>([]);
   const [answersArr, setAnswersArr] = useState<Answer[]>([]);
 
-  const [correctAnswersMap, setCorrectAnswersMap] = useState<Map<string, string>>(new Map());
-
   useEffect(() => {
     const answers = questions_and_answers.map((qa) => qa.answers).flat();
     setAnswersArr(answers);
     setQuestionsArr(questions_and_answers.map((qa) => qa.question));
-
-    const correctAnswers = new Map<string, string>();
-    answers.forEach((answer) => {
-      if (answer.correct_answer) {
-        correctAnswers.set(answer.question_id, answer.id);
-      }
-    });
-    setCorrectAnswersMap(correctAnswers);
   }, [questions_and_answers]);
 
   console.log("Dirty answers");
   console.log(dirtyAnswers);
 
   const toast = useToast();
-
-  const validateDeleteAnswer = (questionId: string, answerId: string) => {
-    const currentCorrectAnswer = correctAnswersMap.get(questionId);
-    const noOfAnswers = answersArr.filter((ans) => ans.question_id === questionId).length;
-    return (currentCorrectAnswer === answerId) || noOfAnswers <= 2;
-  }
 
   const handleDeleteQuestion = async (id: string) => {
     setQuestionsArr((prev) => prev.filter((question) => question.id !== id));
@@ -177,6 +163,26 @@ export default function QuizUpdateForm({
     });
   };
 
+  const addNewQuestion = () => {
+    const id = uuidv4();
+    const answerId = uuidv4();
+    const newQuestion: Question = {
+      id,
+      title: "",
+      quizId: quiz.id,
+    };
+    const newAnswer: Answer = {
+      id: uuidv4(),
+      answer: "",
+      question_id: id,
+      correct_answer: true,
+    };
+    setQuestionsArr((prev) => [...prev, newQuestion]);
+    setDirtyQuestions((prev) => [...prev, newQuestion]);
+    setAnswersArr((prev) => [...prev, newAnswer, {...newAnswer, id: answerId, correct_answer: !newAnswer.correct_answer}]);
+    setDirtyAnswers((prev) => [...prev, newAnswer, {...newAnswer, id: answerId, correct_answer: !newAnswer.correct_answer}]);
+  };
+
   const addNewAnswer = (questionId: string) => {
     const newAnswer: Answer = {
       id: uuidv4(),
@@ -251,6 +257,7 @@ export default function QuizUpdateForm({
       <Flex
         flexDirection="column"
         gap={5}
+        my={3}
       >
         {questionsArr.map((q, index) => (
           <div key={q.id}>
@@ -295,6 +302,7 @@ export default function QuizUpdateForm({
                           type="radio"
                           {...register(`answer${answer.id}`)}
                           onChange={(e) => handleUpdateAnswer(e, answer)}
+                          style={{cursor: "pointer"}}
                           />
                       }
                     </InputLeftElement>
@@ -311,7 +319,7 @@ export default function QuizUpdateForm({
                       <Button
                         variant="ghost"
                         onClick={() => handleDeleteAnswer(answer.id)}
-                        isDisabled={validateDeleteAnswer(q.id, answer.id)}
+                        isDisabled={answer.correct_answer}
                       >
                         <DeleteIcon
                           color="red.500"
@@ -323,17 +331,26 @@ export default function QuizUpdateForm({
                 </FormControl>
               );
             })}
-            <Button 
+            <Flex 
               onClick={() => addNewAnswer(q.id)}   
               isDisabled={answersArr.filter((ans) => ans.question_id === q.id).some((answer) => !answer.answer)}
+              style={styles}
+              as={Button} gap={1}
             >
               <AddIcon boxSize={2} />
-            </Button>
+              Add answer
+            </Flex>
           </div>
         ))}
+        <Flex>
+          <Flex style={styles} onClick={addNewQuestion} as={Button} gap={1}>
+            <AddIcon boxSize={2} />  
+            Add question
+          </Flex>
+        </Flex>
       </Flex>
 
-      <Button isDisabled={!isValid} onClick={handleSubmit}>Update Quiz</Button>
+      <Button colorScheme="green" isDisabled={!isValid} onClick={handleSubmit}>Update Quiz</Button>
     </chakra.form>
   );
 }
