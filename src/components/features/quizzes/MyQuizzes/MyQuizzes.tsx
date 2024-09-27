@@ -16,7 +16,6 @@ interface MyQuizzesProps {
 }
 
 export default function MyQuizzes(quizzes: MyQuizzesProps) {
-
   return (
     <Flex
       flexDir="column"

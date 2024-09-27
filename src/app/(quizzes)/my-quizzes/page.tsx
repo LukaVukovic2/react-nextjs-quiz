@@ -19,10 +19,11 @@ export default async function MyQuizzesPage() {
   return (
     <>
       <h1>My Quizzes</h1>
-      {quizzes.length > 0 ? 
-        <MyQuizzes quizzes={quizzes} /> : 
+      {Array.isArray(quizzes) && quizzes.length > 0 ? (
+        <MyQuizzes quizzes={quizzes} />
+      ) : (
         <p>No quizzes found</p>
-      }
+      )}
     </>
   );
 }

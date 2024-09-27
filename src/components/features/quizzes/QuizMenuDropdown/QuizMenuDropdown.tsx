@@ -60,7 +60,7 @@ export default function QuizMenuDropdown({quiz, questions_and_answers} : QuizMen
           <AlertDialogOverlay />
 
           <AlertDialogContent>
-            <AlertDialogHeader>Delete quiz?</AlertDialogHeader>
+            <AlertDialogHeader>Delete quiz</AlertDialogHeader>
             <AlertDialogCloseButton />
             <AlertDialogBody>
               Are you sure you want to delete this quiz?

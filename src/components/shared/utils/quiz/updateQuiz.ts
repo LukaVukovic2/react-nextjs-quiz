@@ -26,7 +26,7 @@ export const updateQuiz = async (changes: FormData) => {
   const { error: errorq} = await supabase.from("question").upsert(questionJson, { onConflict: 'id' });
 
   const {error: errora} = await supabase.from("answer").upsert(answerJson, { onConflict: 'id' });
-
+  
   console.log(errord, errorq, errora);
   /* const { data, error } = await supabase.rpc("update_quiz");
   if (error) {
