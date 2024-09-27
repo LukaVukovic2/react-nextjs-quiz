@@ -19,7 +19,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { ChangeEvent, FocusEvent, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 
 interface QuizUpdateFormProps {
@@ -40,28 +40,29 @@ export default function QuizUpdateForm({
   const { register, trigger, formState: { isValid }} = useForm();
   const [dirtyQuizFields, setDirtyQuizFields] = useState<Quiz>();
   const [dirtyQuestions, setDirtyQuestions] = useState<Question[]>([]);
+  const [deletedQuestions, setDeletedQuestions] = useState<string[]>([]);
+  const [questionsArr, setQuestionsArr] = useState<Question[]>([]);
   const [dirtyAnswers, setDirtyAnswers] = useState<Answer[]>([]);
+  const [deletedAnswers, setDeletedAnswers] = useState<string[]>([]);
   const [answersArr, setAnswersArr] = useState<Answer[]>([]);
 
   const [correctAnswersMap, setCorrectAnswersMap] = useState<Map<string, string>>(new Map());
 
   useEffect(() => {
-    setAnswersArr(questions_and_answers.map((qa) => qa.answers).flat());
+    const answers = questions_and_answers.map((qa) => qa.answers).flat();
+    setAnswersArr(answers);
+    setQuestionsArr(questions_and_answers.map((qa) => qa.question));
 
     const correctAnswers = new Map<string, string>();
-    questions_and_answers.forEach((qa) => {
-      qa.answers.forEach((answer) => {
-        if (answer.correct_answer) {
-          correctAnswers.set(answer.question_id, answer.id);
-        }
-      });
+    answers.forEach((answer) => {
+      if (answer.correct_answer) {
+        correctAnswers.set(answer.question_id, answer.id);
+      }
     });
     setCorrectAnswersMap(correctAnswers);
   }, [questions_and_answers]);
 
-  console.log("AnsArr") 
-  console.log(answersArr);
-  console.log("DirtyAns");
+  console.log("Dirty answers");
   console.log(dirtyAnswers);
 
   const toast = useToast();
@@ -73,37 +74,17 @@ export default function QuizUpdateForm({
   }
 
   const handleDeleteQuestion = async (id: string) => {
-    const success = await deleteQuestion(id);
-    if (success) {
-      setDirtyQuestions((prev) => prev.filter((question) => question.id !== id));
-    }
-    toast({
-      title: success ? "Question deleted" : "Error deleting question",
-      status: success ? "info" : "error",
-      duration: 3000,
-      isClosable: true,
-    });
+    setQuestionsArr((prev) => prev.filter((question) => question.id !== id));
+    setDirtyQuestions((prev) => prev.filter((question) => question.id !== id));
+    setDeletedQuestions((prev) => [...prev, id]);
+    setAnswersArr((prev) => prev.filter((answer) => answer.question_id !== id));
+    setDirtyAnswers((prev) => prev.filter((answer) => answer.question_id !== id));
   }
 
   const handleDeleteAnswer = async (id: string) => {
-    const success = await deleteAnswer(id);
-    if (success) {
-      setAnswersArr((prev) => prev.filter((ans) => ans.id !== id));
-      setDirtyAnswers((prev) => prev.filter((ans) => ans.id !== id));
-      toast({
-        title: "Answer deleted",
-        status: "info",
-        duration: 3000,
-        isClosable: true,
-      });
-    } else {
-      toast({
-        title: "Error deleting answer",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
+    setAnswersArr((prev) => prev.filter((ans) => ans.id !== id));
+    setDirtyAnswers((prev) => prev.filter((ans) => ans.id !== id));
+    setDeletedAnswers((prev) => [...prev, id]);
   };
 
   const handleUpdateQuiz = async (e: FocusEvent<HTMLInputElement, Element>, id: string) => { 
@@ -135,7 +116,7 @@ export default function QuizUpdateForm({
             id: q.id,
             title: value,
             quizId: q.quizId,
-          } as Question,
+          }
         ];
       } else {
         const updatedQuestions = [...prev];
@@ -143,7 +124,7 @@ export default function QuizUpdateForm({
           id: q.id,
           title: value,
           quizId: q.quizId,
-        } as Question;
+        };
         return updatedQuestions;
       }
     });
@@ -212,6 +193,8 @@ export default function QuizUpdateForm({
     formData.append("quiz", JSON.stringify(dirtyQuizFields));
     formData.append("questions", JSON.stringify(dirtyQuestions));
     formData.append("answers", JSON.stringify(dirtyAnswers));
+    formData.append("deletedQuestions", JSON.stringify(deletedQuestions));
+    formData.append("deletedAnswers", JSON.stringify(deletedAnswers));
 
     const success = await updateQuiz(formData);
     toast({
@@ -269,8 +252,8 @@ export default function QuizUpdateForm({
         flexDirection="column"
         gap={5}
       >
-        {questions_and_answers.map((qa, index) => (
-          <div key={qa.question.id}>
+        {questionsArr.map((q, index) => (
+          <div key={q.id}>
             <FormControl
               display="flex"
               alignItems="baseline"
@@ -280,15 +263,15 @@ export default function QuizUpdateForm({
               <InputGroup>
                 <Input
                   placeholder="Question"
-                  defaultValue={qa.question.title}
-                  {...register(`q_title${qa.question.id}`, { required: true })}
-                  onBlur={(e) => handleUpdateQuestion(e, qa.question)}
+                  defaultValue={q.title}
+                  {...register(`q_title${q.id}`, { required: true })}
+                  onBlur={(e) => handleUpdateQuestion(e, q)}
                 />
                 <InputRightElement>
                   <Button
                     variant="ghost"
-                    onClick={() => handleDeleteQuestion(qa.question.id)}
-                    isDisabled={questions_and_answers.length === 1}
+                    onClick={() => handleDeleteQuestion(q.id)}
+                    isDisabled={questionsArr.length === 1}
                   >
                     <DeleteIcon
                       color="red.500"
@@ -300,7 +283,7 @@ export default function QuizUpdateForm({
             </FormControl>
             {
             answersArr.map((answer) => {
-              if (answer.question_id !== qa.question.id) return null;
+              if (answer.question_id !== q.id) return null;
               
               return (
                 <FormControl key={answer.id}>
@@ -319,7 +302,7 @@ export default function QuizUpdateForm({
                     <Input
                       placeholder="Answer"
                       defaultValue={answer.answer}
-                      {...register(`answer${qa.question.id}${answer.id}`, {
+                      {...register(`answer${q.id}${answer.id}`, {
                         required: true,
                       })}
                       onBlur={(e) => handleUpdateAnswer(e, answer)}
@@ -328,7 +311,7 @@ export default function QuizUpdateForm({
                       <Button
                         variant="ghost"
                         onClick={() => handleDeleteAnswer(answer.id)}
-                        isDisabled={validateDeleteAnswer(qa.question.id, answer.id)}
+                        isDisabled={validateDeleteAnswer(q.id, answer.id)}
                       >
                         <DeleteIcon
                           color="red.500"
@@ -341,8 +324,8 @@ export default function QuizUpdateForm({
               );
             })}
             <Button 
-              onClick={() => addNewAnswer(qa.question.id)}   
-              isDisabled={answersArr.filter((ans) => ans.question_id === qa.question.id).some((answer) => !answer.answer)}
+              onClick={() => addNewAnswer(q.id)}   
+              isDisabled={answersArr.filter((ans) => ans.question_id === q.id).some((answer) => !answer.answer)}
             >
               <AddIcon boxSize={2} />
             </Button>
