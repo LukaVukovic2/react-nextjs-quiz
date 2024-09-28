@@ -1,8 +1,8 @@
 "use server";
 import { Question } from "@/app/typings/question";
 import { revalidatePath } from "next/cache";
-import { getUser } from "../utils/getUser";
-import { createClient } from "../utils/createClient";
+import { createClient } from "@/components/shared/utils/createClient";
+import { getUser } from "@/components/shared/utils/getUser";
 
 interface FormData {
   quiz: {
@@ -15,7 +15,7 @@ interface FormData {
   questions: { questions: Question[] };
 }
 
-export const supabaseInsert = async (d: FormData) => {
+export const createQuiz = async (d: FormData) => {
   const supabase = createClient();
   const {data: {user}} = await getUser();
 

@@ -18,7 +18,7 @@ import {
 import { AddIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { supabaseInsert } from "@/components/shared/Supabase/insert";
+import { createQuiz } from "@/components/features/quizzes/QuizForm/QuizForm.utils";
 import { v4 as uuidv4 } from "uuid";
 import { Question } from "@/app/typings/question";
 import { Answer } from "@/app/typings/answer";
@@ -102,7 +102,7 @@ export default function QuizForm() {
       setActiveStep(index);
   };
 
-  const createQuiz = async () => {
+  const handleCreateQuiz = async () => {
     const formData = {
       quiz: {
         id: quizId,
@@ -115,7 +115,7 @@ export default function QuizForm() {
         questions,
       },
     };
-    const success = await supabaseInsert(formData);
+    const success = await createQuiz(formData);
     toast({
       title: success ? "Quiz created" : "Error creating quiz",
       status: success ? "success" : "error",
@@ -266,7 +266,7 @@ export default function QuizForm() {
               Next
             </Button>
           ) : (
-            <Button onClick={createQuiz}>Create Quiz</Button>
+            <Button onClick={handleCreateQuiz}>Create Quiz</Button>
           )}
         </Flex>
       </chakra.form>
