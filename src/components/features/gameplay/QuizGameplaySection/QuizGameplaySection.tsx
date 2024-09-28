@@ -8,14 +8,16 @@ import {
   Flex,
   Avatar,
   RadioGroup,
-  Radio,
   Button,
+  useRadioGroup,
+  Box,
 } from "@chakra-ui/react";
 import QuizResultSection from "../QuizResultSection/QuizResultSection";
 import { chakra } from "@chakra-ui/react";
 import styles from "./QuizGameplaySection.module.css";
 import { useState } from "react";
 import { updateQuizPlays } from "./QuizGameplaySection.utils";
+import RadioCard from "@/components/core/RadioCard/RadioCard";
 
 interface IQuizGameplayProps {
   quiz: Quiz;
@@ -99,37 +101,47 @@ export default function QuizGameplaySection({
         <p>{quiz.timer}</p>
 
         <chakra.form>
-          {questions?.map((question, index) => (
-            <div key={question.id}>
-              <h2>
-                {index + 1 + ". "}
-                {question.title}
-              </h2>
-              <hr />
-              <RadioGroup
-                className={styles.radioGroup}
-                width="100%"
-                bg="whitesmoke"
-                isDisabled={isFinished}
-              >
-                {groupedAnswers &&
-                  groupedAnswers[question.id]?.map((answer: Answer) => (
-                    <Radio
-                      onChange={() =>
-                        handleSelectAnswer(question.id, answer.id)
-                      }
-                      key={answer.id}
-                      width="100%"
-                      p="5px"
-                      value={answer.answer}
-                    >
-                      {answer.answer}
-                    </Radio>
-                  ))}
-              </RadioGroup>
-              <br />
-            </div>
-          ))}
+          {questions?.map((question, index) => {
+            const { getRootProps, getRadioProps } = useRadioGroup({
+              name: question.id,
+              onChange: (answerId: string) => {
+                handleSelectAnswer(question.id, answerId);
+              },
+            });
+            const group = getRootProps();
+
+            return (
+              <div key={question.id}>
+                <h2>
+                  {index + 1 + ". "}
+                  {question.title}
+                </h2>
+                <hr />
+                <Box {...group}>
+                  {groupedAnswers &&
+                    groupedAnswers[question.id]?.map((answer: Answer) => {
+                      const radio = getRadioProps({
+                        value: `${answer.id}`,
+                      });
+                      const selectedAnsId = selectedAnswers.get(question.id);
+                      return (
+                        <RadioCard
+                          key={answer.id}
+                          {...radio}
+                          isFinished={isFinished}
+                          answer={answer}
+                          selectedAnsId={selectedAnsId}
+                          isCorrect={answer.correct_answer && (selectedAnsId === answer.id)}
+                        >
+                          {answer.answer}
+                        </RadioCard>
+                      );
+                    })}
+                </Box>
+                <br />
+              </div>
+            );
+          })}
           <Button
             onClick={() => handleFinishQuiz()}
             isDisabled={isFinished}
