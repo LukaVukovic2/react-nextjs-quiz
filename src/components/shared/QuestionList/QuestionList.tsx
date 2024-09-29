@@ -10,8 +10,8 @@ export default function QuestionList({ questions }: { questions: Question[] }) {
           <ListItem key={question.id} mb={2}>
             {index + 1 + ". " + question.title}
             {question.answers &&
-              question.answers.map((answer, index) => (
-                <Text key={index}>
+              question.answers.map((answer) => (
+                <Text key={answer.answer}>
                   {answer.answer + " "}
                   {answer.correct_answer && <CheckCircleIcon color="green.400" />}
                 </Text>

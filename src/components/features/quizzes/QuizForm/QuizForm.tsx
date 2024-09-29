@@ -25,6 +25,7 @@ import { Answer } from "@/app/typings/answer";
 import StepperProgress from "@/components/shared/StepperProgress/StepperProgress";
 import { steps } from "@/components/shared/utils/steps";
 import QuestionList from "@/components/shared/QuestionList/QuestionList";
+import { navigateHome } from "@/components/shared/utils/redirection/navigateHome";
 
 export default function QuizForm() {
   const toast = useToast();
@@ -63,6 +64,7 @@ export default function QuizForm() {
 
   const addAnswer = () => {
     const answer = {
+      id: uuidv4(),
       answer: getValues().answer,
       correct_answer: getValues().correctAnswer,
       question_id,
@@ -120,6 +122,9 @@ export default function QuizForm() {
       duration: 5000,
       isClosable: true,
     });
+    if(success){
+      navigateHome();
+    }
   };
 
   return (
@@ -213,8 +218,8 @@ export default function QuizForm() {
                 <Text>Current Question</Text>
                 <Text mb={2}>Title: {getValues("questionTitle")}</Text>
                 <Text>Answers:</Text>
-                {answers.map((answer, index) => (
-                  <Box key={index}>
+                {answers.map((answer) => (
+                  <Box key={answer.answer}>
                     <p>
                       {answer.answer}{" "}
                       {answer.correct_answer && (
