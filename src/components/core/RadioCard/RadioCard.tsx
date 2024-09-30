@@ -1,11 +1,11 @@
-import { CheckCircleIcon, MinusIcon } from "@chakra-ui/icons";
 import { Box, useRadio } from "@chakra-ui/react";
 
-export default function RadioCard(props: any) {
+export const RadioCard = (props: any) => {
   const { getInputProps, getRadioProps } = useRadio(props);
-
   const input = getInputProps();
   const checkbox = getRadioProps();
+
+  const isCorrect = props.answer?.correct_answer && props.selectedAnsId === props.answer.id;
 
   return (
     <Box as="label">
@@ -16,9 +16,17 @@ export default function RadioCard(props: any) {
         borderWidth="1px"
         borderRadius="md"
         boxShadow="md"
-        bg={(props.isFinished && (props.answer?.correct_answer || props.isCorrect)) && "green.200"}
+        bg={
+          props.isFinished && props.answer?.correct_answer
+            ? "green.200"
+            : undefined
+        }
         _checked={{
-          bg: props.isFinished ? (props.isCorrect ? "green.200" : "red.400") : "teal.600",
+          bg: props.isFinished
+            ? isCorrect
+              ? "green.200"
+              : "red.400"
+            : "teal.600"
         }}
         _focus={{
           boxShadow: "outline",
@@ -27,9 +35,7 @@ export default function RadioCard(props: any) {
         py={3}
       >
         {props.children}
-        {(props.isFinished && props.isCorrect) && <CheckCircleIcon ml={2} />}
-        {(props.isFinished && !props.isCorrect && (props.answer.id === props.selectedAnsId)) && <MinusIcon ml={2} />}
       </Box>
     </Box>
   );
-}
+};
