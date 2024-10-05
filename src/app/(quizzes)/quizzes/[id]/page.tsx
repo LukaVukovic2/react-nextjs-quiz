@@ -1,12 +1,5 @@
 import QuizGameplaySection from "@/components/features/gameplay/QuizGameplaySection/QuizGameplaySection";
-import { createClient } from "@/components/shared/utils/createClient";
-import { Avatar, Flex } from "@chakra-ui/react";
-
-interface Answer {
-  id: string;
-  question_id: string;
-  answer: string;
-}
+import createClient from "@/components/shared/utils/createClient";
 
 export default async function QuizPage({params}: {params: { id: string };}) {
   const { id } = params;

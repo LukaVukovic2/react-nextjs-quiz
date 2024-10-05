@@ -1,17 +1,12 @@
 "use server";
 import { Question } from "@/app/typings/question";
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/components/shared/utils/createClient";
+import createClient from "@/components/shared/utils/createClient";
 import { getUser } from "@/components/shared/utils/getUser";
+import { Quiz } from "@/app/typings/quiz";
 
 interface FormData {
-  quiz: {
-    id: string;
-    user_id: string;
-    title: string;
-    category: string;
-    timer: number;
-  };
+  quiz: Quiz;
   questions: { questions: Question[] };
 }
 

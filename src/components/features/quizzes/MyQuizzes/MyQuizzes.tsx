@@ -41,7 +41,7 @@ export default function MyQuizzes(quizzes: MyQuizzesProps) {
             <div>
               <h2>{quiz.quiz.title}</h2>
               <p>{quiz.quiz.category}</p>
-              <p>{quiz.quiz.timer}</p>
+              <p>{quiz.quiz.time}</p>
             </div>
             <QuizMenuDropdown quiz={quiz.quiz} questions_and_answers={quizzes.quizzes[index].questions_and_answers} />
           </ListItem>

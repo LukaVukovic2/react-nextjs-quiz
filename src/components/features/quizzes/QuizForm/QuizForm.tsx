@@ -109,7 +109,7 @@ export default function QuizForm() {
         user_id: "",
         title: getValues().title,
         category: getValues().category,
-        timer: getValues().timer,
+        time: getValues().time,
       },
       questions: {
         questions,
@@ -149,10 +149,10 @@ export default function QuizForm() {
             </FormControl>
             <FormControl>
               <Input
-                placeholder="Timer (in seconds)"
-                {...register("timer", { required: true })}
+                placeholder="Time (in seconds)"
+                {...register("time", { required: true })}
                 type="number"
-                onBlur={() => trigger("timer")}
+                onBlur={() => trigger("time")}
               />
             </FormControl>
             <FormControl>

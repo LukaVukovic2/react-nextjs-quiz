@@ -7,18 +7,17 @@ import {
   Flex,
   Avatar,
   Button,
-  useRadioGroup,
-  Box,
   Heading,
 } from "@chakra-ui/react";
 import QuizResultSection from "../QuizResultSection/QuizResultSection";
 import { chakra } from "@chakra-ui/react";
 import { useState } from "react";
 import { updateQuizPlays } from "./QuizGameplaySection.utils";
-import { RadioCard } from "@/components/core/RadioCard/RadioCard";
 import { CheckCircleIcon, RepeatIcon } from "@chakra-ui/icons";
 import { Controller, useForm } from "react-hook-form";
 import { FaMinusCircle } from "react-icons/fa";
+import QuizTimer from "../QuizTimer/QuizTimer";
+import QuizRadioGroup from "./components/QuizRadioGroup";
 
 interface IQuizGameplayProps {
   quiz: Quiz;
@@ -45,7 +44,9 @@ export default function QuizGameplaySection({
     Map<string, string | null>
   >(initializeSelectedAnswers(questions));
   const [score, setScore] = useState<number>();
+  const [hasStarted, setHasStarted] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
+  const [resetKey, setResetKey] = useState(0);
   const { control, reset, setValue } = useForm();
 
   const groupedAnswers = answers?.reduce((acc, answer) => {
@@ -53,6 +54,18 @@ export default function QuizGameplaySection({
     acc[answer.question_id].push(answer);
     return acc;
   }, {} as { [key: string]: Answer[] });
+
+  const formatToSeconds = () => {
+    const [hours, minutes, seconds] = quiz.time.split(":");
+    const time = new Date();
+    time.setSeconds(
+      time.getSeconds() +
+        parseInt(hours) * 3600 +
+        parseInt(minutes) * 60 +
+        parseInt(seconds)
+    );
+    return time;
+  };
 
   const handleSelectAnswer = (questionId: string, answerId: string) => {
     setSelectedAnswers((prev) => new Map(prev.set(questionId, answerId)));
@@ -78,6 +91,8 @@ export default function QuizGameplaySection({
     setSelectedAnswers(initializeSelectedAnswers(questions));
     setScore(undefined);
     setIsFinished(false);
+    setHasStarted(true);
+    setResetKey((prev) => prev + 1);
     reset();
   };
 
@@ -95,93 +110,85 @@ export default function QuizGameplaySection({
       </Flex>
       <h2>{quiz.title}</h2>
       <p>{quiz.category}</p>
-      <chakra.form>
-        {isFinished && (
-          <Button
-            type="reset"
-            onClick={resetQuiz}
-          >
-            <RepeatIcon />
-          </Button>
-        )}
-        {questions?.map((question, index) => {
-          const { getRadioProps } = useRadioGroup({
-            name: question.id,
-            onChange: (answerId: string) => {
-              handleSelectAnswer(question.id, answerId);
-            },
-          });
-
-          return (
-            <div key={question.id}>
-              <Heading
-                as="h2"
-                size="sm"
-                p={1}
-              >
-                <Flex
-                  gap={3}
-                  alignItems="stretch"
+      <QuizTimer
+        key={resetKey}
+        quizTime={formatToSeconds()}
+        hasStarted={hasStarted}
+        isFinished={isFinished}
+        handleFinishQuiz={handleFinishQuiz}
+      />
+      {!hasStarted ? (
+        <Button onClick={() => setHasStarted(true)}>Start quiz</Button>
+      ) : (
+        <chakra.form>
+          {isFinished && (
+            <Button
+              type="reset"
+              onClick={resetQuiz}
+            >
+              <RepeatIcon />
+            </Button>
+          )}
+          {questions.map((question, index) => {
+            return (
+              <div key={question.id}>
+                <Heading
+                  as="h2"
+                  size="sm"
+                  p={1}
                 >
-                  {index + 1 + ". "}
-                  {question.title}
-                  {isFinished &&
-                    (selectedAnswers.get(question.id) ===
-                    answers.find(
-                      (answer) =>
-                        answer.correct_answer &&
-                        answer.question_id === question.id
-                    )?.id ? (
-                      <CheckCircleIcon
-                        color="green.500"
-                        boxSize={5}
-                      />
-                    ) : (
-                      <FaMinusCircle
-                        className="fa fa-lg"
-                        color="red"
-                      />
-                    ))}
-                </Flex>
-              </Heading>
-              <hr />
-              <Controller
-                control={control}
-                name={question.id}
-                render={(field) => (
-                  <Box>
-                    {groupedAnswers &&
-                      groupedAnswers[question.id]?.map((answer: Answer) => {
-                        const radio = getRadioProps({ value: `${answer.id}` });
-                        const selectedAnsId = selectedAnswers.get(question.id);
-                        radio.isChecked = selectedAnsId === answer.id;
-                        return (
-                          <RadioCard
-                            key={answer.id}
-                            {...radio}
-                            {...field}
-                            answer={answer}
-                            isFinished={isFinished}
-                            selectedAnsId={selectedAnsId}
-                          >
-                            {answer.answer}
-                          </RadioCard>
-                        );
-                      })}
-                  </Box>
-                )}
-              />
-              <br />
-            </div>
-          );
-        })}
-        <Button
-          onClick={() => handleFinishQuiz()}
-          isDisabled={isFinished}
-        >
-          Finish quiz
-        </Button>
-      </chakra.form>
+                  <Flex
+                    gap={3}
+                    alignItems="stretch"
+                  >
+                    {index + 1 + ". "}
+                    {question.title}
+                    {isFinished &&
+                      (selectedAnswers.get(question.id) ===
+                      answers.find(
+                        (answer) =>
+                          answer.correct_answer &&
+                          answer.question_id === question.id
+                      )?.id ? (
+                        <CheckCircleIcon
+                          color="green.500"
+                          boxSize={5}
+                        />
+                      ) : (
+                        <FaMinusCircle
+                          className="fa fa-lg"
+                          color="red"
+                        />
+                      ))}
+                  </Flex>
+                </Heading>
+                <hr />
+                <Controller
+                  control={control}
+                  name={question.id}
+                  render={(field) => (
+                    <QuizRadioGroup
+                      question={question}
+                      field={field}
+                      isFinished={isFinished}
+                      selectedAnswers={selectedAnswers}
+                      groupedAnswers={groupedAnswers}
+                      handleSelectAnswer={handleSelectAnswer}
+                    />
+                  )}
+                />
+                <br />
+              </div>
+            );
+          })}
+          <Button
+            onClick={() => handleFinishQuiz()}
+            isDisabled={isFinished}
+          >
+            Finish quiz
+          </Button>
+        </chakra.form>
+      )}
       {score !== undefined && (
         <QuizResultSection
           score={score}

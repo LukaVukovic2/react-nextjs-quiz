@@ -1,5 +1,5 @@
 'use server'
-import { createClient } from "./createClient";
+import createClient from "./createClient";
 
 export const getUser = async () => {
   const supabase = createClient();

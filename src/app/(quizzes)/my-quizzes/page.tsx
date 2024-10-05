@@ -1,6 +1,6 @@
 "use server";
 import MyQuizzes from "@/components/features/quizzes/MyQuizzes/MyQuizzes";
-import { createClient } from "@/components/shared/utils/createClient";
+import createClient from "@/components/shared/utils/createClient";
 
 const supabase = createClient();
 

@@ -1,5 +1,5 @@
 import MyProfile from "@/components/features/profile/MyProfile";
-import { createClient } from "@/components/shared/utils/createClient";
+import createClient from "@/components/shared/utils/createClient";
 
 export default async function MyProfilePage() {
   const supabase = createClient();

@@ -1,5 +1,5 @@
 "use server";
-import { createClient } from "@/components/shared/utils/createClient";
+import createClient from "@/components/shared/utils/createClient";
 
 const supabase = createClient();
 

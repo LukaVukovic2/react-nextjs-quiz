@@ -238,11 +238,11 @@ export default function QuizUpdateForm({
         />
       </FormControl>
       <FormControl>
-        <FormLabel>Quiz timer</FormLabel>
+        <FormLabel>Quiz playtime</FormLabel>
         <Input
-          placeholder="Timer (HH:MM:SS)"
-          defaultValue={quiz.timer}
-          {...register("timer", {
+          placeholder="Quiz playtime (HH:MM:SS)"
+          defaultValue={quiz.time}
+          {...register("time", {
             required: true,
             pattern: {
               value: /^([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/,

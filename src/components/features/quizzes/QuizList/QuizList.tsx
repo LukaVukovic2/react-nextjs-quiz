@@ -1,7 +1,7 @@
 import styles from "./QuizList.module.css";
 import { Card, CardBody, Text } from "@chakra-ui/react";
 import Link from "next/link";
-import { createClient } from "@/components/shared/utils/createClient";
+import createClient from "@/components/shared/utils/createClient";
 
 export default async function QuizList() {
   const supabase = createClient();

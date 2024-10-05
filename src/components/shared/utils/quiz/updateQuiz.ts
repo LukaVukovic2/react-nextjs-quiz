@@ -1,6 +1,6 @@
 'use server';
 import { revalidatePath } from "next/cache";
-import { createClient } from "../createClient";
+import createClient from "../createClient";
 
 const supabase = createClient();
 
