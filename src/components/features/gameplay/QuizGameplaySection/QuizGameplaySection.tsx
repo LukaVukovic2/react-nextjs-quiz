@@ -12,7 +12,7 @@ import {
 import QuizResultSection from "../QuizResultSection/QuizResultSection";
 import { chakra } from "@chakra-ui/react";
 import { useState } from "react";
-import { updateQuizPlays } from "./QuizGameplaySection.utils";
+import { updateQuizInfo } from "./QuizGameplaySection.utils";
 import { CheckCircleIcon, RepeatIcon } from "@chakra-ui/icons";
 import { Controller, useForm } from "react-hook-form";
 import { FaMinusCircle } from "react-icons/fa";
@@ -84,7 +84,7 @@ export default function QuizGameplaySection({
     );
     setScore(totalScore);
     setIsFinished(true);
-    updateQuizPlays(quiz.id, quiz.plays);
+    updateQuizInfo(quiz.id, quiz.plays, quiz.average_score, totalScore);
   };
 
   const resetQuiz = () => {
@@ -193,6 +193,7 @@ export default function QuizGameplaySection({
         <QuizResultSection
           score={score}
           questionCount={questions.length}
+          averageScore={quiz.average_score || 0}
         />
       )}
     </Flex>

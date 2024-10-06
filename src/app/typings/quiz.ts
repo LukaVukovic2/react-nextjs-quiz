@@ -9,4 +9,5 @@ export interface Quiz {
   rating?: number;
   plays?: number;
   number_of_ratings?: number;
+  average_score?: number;
 }
