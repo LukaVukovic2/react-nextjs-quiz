@@ -6,7 +6,7 @@ import QuizGameplaySection from "@/components/features/gameplay/QuizGameplaySect
 import QuizReviewList from "@/components/features/reviews/QuizReviewList/QuizReviewList";
 import QuizReviewForm from "@/components/features/reviews/QuizReviewForm/QuizReviewForm";
 
-export default async function QuizTabs({ quiz }: { quiz: Quiz }) {
+export default async function QuizTabs({ quiz, page }: { quiz: Quiz, page: string }) {
   const supabase = createClient();
 
   const { data: questions } = await supabase
@@ -26,7 +26,7 @@ export default async function QuizTabs({ quiz }: { quiz: Quiz }) {
     .select("*")
     .eq("id", quiz?.user_id)
     .single();
-    
+
   return (
     <Tabs
       isFitted
@@ -55,7 +55,7 @@ export default async function QuizTabs({ quiz }: { quiz: Quiz }) {
         </TabPanel>
         <TabPanel>
           <QuizReviewForm />
-          <QuizReviewList id={quiz.id} />
+          <QuizReviewList id={quiz.id} page={page} />
         </TabPanel>
       </TabPanels>
     </Tabs>
