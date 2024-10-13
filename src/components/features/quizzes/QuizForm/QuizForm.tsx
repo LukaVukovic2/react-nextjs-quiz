@@ -35,7 +35,7 @@ export default function QuizForm() {
   });
 
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [quizId] = useState(uuidv4());
+  const [quiz_id] = useState(uuidv4());
   const [questionTitle, setQuestionTitle] = useState('');
   const [question_id, setQuestionId] = useState(uuidv4());
   const [answers, setAnswers] = useState<Answer[]>([]);
@@ -84,7 +84,7 @@ export default function QuizForm() {
       {
         id,
         title: getValues().questionTitle,
-        quizId,
+        quiz_id,
         answers,
       },
     ]);
@@ -105,7 +105,7 @@ export default function QuizForm() {
   const handleCreateQuiz = async () => {
     const formData = {
       quiz: {
-        id: quizId,
+        id: quiz_id,
         user_id: "",
         title: getValues().title,
         category: getValues().category,

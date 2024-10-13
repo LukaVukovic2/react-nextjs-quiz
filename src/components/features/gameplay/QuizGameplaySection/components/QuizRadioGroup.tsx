@@ -43,7 +43,7 @@ export default function QuizRadioGroup({
       {groupedAnswers &&
         groupedAnswers[question.id]?.map((answer: Answer) => {
           const radio = getRadioProps({ value: `${answer.id}` });
-          const selectedAnsId = selectedAnswers.get(question.id);
+          const selectedAnsId = selectedAnswers.get(question.id) ?? '';
           radio.isChecked = selectedAnsId === answer.id;
           return (
             <RadioCard
@@ -52,7 +52,7 @@ export default function QuizRadioGroup({
               {...field}
               answer={answer}
               isFinished={isFinished}
-              selectedAnsId={selectedAnsId}
+              selectedAnsId={selectedAnsId as string}
             >
               {answer.answer}
             </RadioCard>

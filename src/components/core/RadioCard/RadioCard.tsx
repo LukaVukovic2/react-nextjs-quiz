@@ -1,6 +1,13 @@
-import { Box, useRadio } from "@chakra-ui/react";
+import { Answer } from "@/app/typings/answer";
+import { Box, InputProps, useRadio } from "@chakra-ui/react";
 
-export const RadioCard = (props: any) => {
+interface IRadioCardProps extends Omit<InputProps, 'value'> {
+  answer: Answer;
+  isFinished: boolean;
+  selectedAnsId: string;
+}
+
+export const RadioCard = (props: IRadioCardProps) => {
   const { getInputProps, getRadioProps } = useRadio(props);
   const input = getInputProps();
   const checkbox = getRadioProps();

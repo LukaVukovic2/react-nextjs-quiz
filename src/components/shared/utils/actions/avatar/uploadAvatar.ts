@@ -1,6 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import createClient from "../createClient";
+import createClient from "../../createClient";
 import { v4 as uuidv4 } from "uuid";
 
 const supabase = createClient();

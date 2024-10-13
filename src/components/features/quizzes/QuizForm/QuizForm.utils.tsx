@@ -2,7 +2,7 @@
 import { Question } from "@/app/typings/question";
 import { revalidatePath } from "next/cache";
 import createClient from "@/components/shared/utils/createClient";
-import { getUser } from "@/components/shared/utils/getUser";
+import { getUser } from "@/components/shared/utils/actions/getUser";
 import { Quiz } from "@/app/typings/quiz";
 
 interface FormData {

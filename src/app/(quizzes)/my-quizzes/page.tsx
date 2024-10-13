@@ -2,9 +2,9 @@
 import MyQuizzes from "@/components/features/quizzes/MyQuizzes/MyQuizzes";
 import createClient from "@/components/shared/utils/createClient";
 
-const supabase = createClient();
 
 export default async function MyQuizzesPage() {
+  const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

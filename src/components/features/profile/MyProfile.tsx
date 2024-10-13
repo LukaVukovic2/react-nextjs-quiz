@@ -1,8 +1,8 @@
 "use client";
-import { deleteAvatar } from "@/components/shared/utils/avatar/deleteAvatar";
-import { fetchAvatar } from "@/components/shared/utils/avatar/fetchAvatar";
-import { uploadAvatar } from "@/components/shared/utils/avatar/uploadAvatar";
-import { updateUsername } from "@/components/shared/utils/updateUsername";
+import { deleteAvatar } from "@/components/shared/utils/actions/avatar/deleteAvatar";
+import { fetchAvatar } from "@/components/shared/utils/actions/avatar/fetchAvatar";
+import { uploadAvatar } from "@/components/shared/utils/actions/avatar/uploadAvatar";
+import { updateUsername } from "@/components/shared/utils/actions/updateUsername";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { Button, Card, CardBody, Flex, Input, Spinner } from "@chakra-ui/react";
 import Image from "next/image";
@@ -24,7 +24,7 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
       await fetchAvatar(id);
     }
     getAvatar();
-  }, []);
+  }, [id]);
 
   const handleAvatarUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -75,7 +75,9 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
               <Image
                 style={{ borderRadius: "50%", width: "100px", height: "100px" }}
                 src={
-                  profile.avatar ? profile.avatar : "https://fakeimg.pl/100x100/"
+                  profile.avatar
+                    ? profile.avatar
+                    : "https://fakeimg.pl/100x100/"
                 }
                 alt="profile avatar"
                 width={100}
@@ -84,9 +86,15 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
               />
             </>
           )}
-          <Flex gap={2} align="baseline">
+          <Flex
+            gap={2}
+            align="baseline"
+          >
             {profile.avatar && (
-              <Button onClick={() => deleteAvatar(profile.avatar)} colorScheme="red">
+              <Button
+                onClick={() => deleteAvatar(profile.avatar)}
+                colorScheme="red"
+              >
                 <DeleteIcon></DeleteIcon>
               </Button>
             )}
@@ -96,9 +104,7 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
               border={0}
             />
           </Flex>
-
         </CardBody>
-
       </Card>
     </Flex>
   );

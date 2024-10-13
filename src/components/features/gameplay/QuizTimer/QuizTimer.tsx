@@ -32,7 +32,7 @@ export default function QuizTimer({
     } else {
       pause();
     }
-  }, [hasStarted, isFinished]);
+  }, [hasStarted, isFinished, start, pause]);
 
   return (
     <div>

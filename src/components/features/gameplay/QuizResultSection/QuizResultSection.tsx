@@ -1,10 +1,8 @@
-
 interface IQuizResultSectionProps {
   score: number;
   questionCount: number;
   averageScore: number;
 }
-
 
 export default function QuizResultSection({score, questionCount, averageScore}: IQuizResultSectionProps) {
   const resultPercentage = ((score / questionCount) * 100).toFixed(0);

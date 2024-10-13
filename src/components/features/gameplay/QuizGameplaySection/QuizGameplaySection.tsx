@@ -84,7 +84,7 @@ export default function QuizGameplaySection({
     );
     setScore(totalScore);
     setIsFinished(true);
-    updateQuizInfo(quiz.id, quiz.plays, quiz.average_score, totalScore);
+    updateQuizInfo(quiz.id, quiz.plays, quiz.average_score, (totalScore / questions.length));
   };
 
   const resetQuiz = () => {

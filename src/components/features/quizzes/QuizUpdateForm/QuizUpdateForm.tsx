@@ -1,7 +1,7 @@
 import { Answer } from "@/app/typings/answer";
 import { Question } from "@/app/typings/question";
 import { Quiz } from "@/app/typings/quiz";
-import { updateQuiz } from "@/components/shared/utils/quiz/updateQuiz";
+import { updateQuiz } from "@/components/shared/utils/actions/quiz/updateQuiz";
 import { AddIcon, CheckCircleIcon, DeleteIcon } from "@chakra-ui/icons";
 import {
   Button,
@@ -30,16 +30,19 @@ interface QuizUpdateFormProps {
 }
 
 const styles = {
-  fontSize: "0.8rem"
-}
+  fontSize: "0.8rem",
+};
 
 export default function QuizUpdateForm({
   quiz,
   questions_and_answers,
-  onClose
+  onClose,
 }: QuizUpdateFormProps) {
-
-  const { register, trigger, formState: { isValid }} = useForm();
+  const {
+    register,
+    trigger,
+    formState: { isValid },
+  } = useForm();
   const [dirtyQuizFields, setDirtyQuizFields] = useState<Quiz>();
   const [dirtyQuestions, setDirtyQuestions] = useState<Question[]>([]);
   const [deletedQuestions, setDeletedQuestions] = useState<string[]>([]);
@@ -64,8 +67,10 @@ export default function QuizUpdateForm({
     setDirtyQuestions((prev) => prev.filter((question) => question.id !== id));
     setDeletedQuestions((prev) => [...prev, id]);
     setAnswersArr((prev) => prev.filter((answer) => answer.question_id !== id));
-    setDirtyAnswers((prev) => prev.filter((answer) => answer.question_id !== id));
-  }
+    setDirtyAnswers((prev) =>
+      prev.filter((answer) => answer.question_id !== id)
+    );
+  };
 
   const handleDeleteAnswer = async (id: string) => {
     setAnswersArr((prev) => prev.filter((ans) => ans.id !== id));
@@ -73,84 +78,104 @@ export default function QuizUpdateForm({
     setDeletedAnswers((prev) => [...prev, id]);
   };
 
-  const handleUpdateQuiz = async (e: FocusEvent<HTMLInputElement, Element>, id: string) => { 
+  const handleUpdateQuiz = async (
+    e: FocusEvent<HTMLInputElement, Element>,
+    id: string
+  ) => {
     const { name, value } = e.target;
 
     const validateInput = await trigger(name);
     if (!validateInput) return;
 
-    setDirtyQuizFields((prev) => ({
-      ...prev,
-      id,
-      [name]: value,
-    } as Quiz));
+    setDirtyQuizFields(
+      (prev) =>
+        ({
+          ...prev,
+          id,
+          [name]: value,
+        } as Quiz)
+    );
   };
 
-  const handleUpdateQuestion = async (e: FocusEvent<HTMLInputElement, Element>, q: Question) => {
+  const handleUpdateQuestion = async (
+    e: FocusEvent<HTMLInputElement, Element>,
+    q: Question
+  ) => {
     const { value } = e.target;
 
-    const validateInput = await trigger('q_title' + q.id);
+    const validateInput = await trigger("q_title" + q.id);
     if (!validateInput) return;
 
     setDirtyQuestions((prev) => {
       const questionIndex = prev.findIndex((question) => question.id === q.id);
-  
+
       if (questionIndex === -1) {
         return [
           ...prev,
           {
             id: q.id,
             title: value,
-            quizId: q.quizId,
-          }
+            quiz_id: q.quiz_id,
+          },
         ];
       } else {
         const updatedQuestions = [...prev];
         updatedQuestions[questionIndex] = {
           id: q.id,
           title: value,
-          quizId: q.quizId,
+          quiz_id: q.quiz_id,
         };
         return updatedQuestions;
       }
     });
-  }
+  };
 
-  const handleUpdateAnswer = async (e: ChangeEvent<HTMLInputElement>, a: Answer) => {
+  const handleUpdateAnswer = async (
+    e: ChangeEvent<HTMLInputElement>,
+    a: Answer
+  ) => {
     const { value, type } = e.target;
-    
+
     const validateInput = await trigger(`answer${a.question_id}${a.id}`);
     if (!validateInput && type === "text") return;
 
-    const previousCorrectAnswer = answersArr.find((ans) => ans.correct_answer && ans.question_id === a.question_id);
-  
+    const previousCorrectAnswer = answersArr.find(
+      (ans) => ans.correct_answer && ans.question_id === a.question_id
+    );
+
     const updatedAnswers = answersArr.map((answer) => {
-      if (answer.id === a.id && type === 'text') {
+      if (answer.id === a.id && type === "text") {
         return { ...answer, answer: value };
       }
-      if (answer.question_id === a.question_id && type === 'radio') {
+      if (answer.question_id === a.question_id && type === "radio") {
         return { ...answer, correct_answer: answer.id === a.id };
       }
       return answer;
     });
-  
+
     setAnswersArr([...updatedAnswers]);
-  
+
     setDirtyAnswers((prev) => {
       const dirtyAns = [...prev];
-  
+
       updatedAnswers.forEach((answer) => {
         const answerIndex = dirtyAns.findIndex((ans) => ans.id === answer.id);
-  
-        if (type === 'radio' && answer.question_id === a.question_id) {
+
+        if (type === "radio" && answer.question_id === a.question_id) {
           if (answerIndex !== -1) {
-            dirtyAns[answerIndex] = { ...answer, correct_answer: answer.id === a.id };
-          } else if (answer.id === a.id || previousCorrectAnswer?.id === answer.id) {
+            dirtyAns[answerIndex] = {
+              ...answer,
+              correct_answer: answer.id === a.id,
+            };
+          } else if (
+            answer.id === a.id ||
+            previousCorrectAnswer?.id === answer.id
+          ) {
             dirtyAns.push({ ...answer, correct_answer: answer.id === a.id });
           }
         }
-  
-        if (type === 'text' && answer.id === a.id) {
+
+        if (type === "text" && answer.id === a.id) {
           if (answerIndex === -1) {
             dirtyAns.push({ ...answer, answer: value });
           } else {
@@ -158,7 +183,7 @@ export default function QuizUpdateForm({
           }
         }
       });
-  
+
       return dirtyAns;
     });
   };
@@ -169,7 +194,7 @@ export default function QuizUpdateForm({
     const newQuestion: Question = {
       id,
       title: "",
-      quizId: quiz.id,
+      quiz_id: quiz.id,
     };
     const newAnswer: Answer = {
       id: uuidv4(),
@@ -179,8 +204,16 @@ export default function QuizUpdateForm({
     };
     setQuestionsArr((prev) => [...prev, newQuestion]);
     setDirtyQuestions((prev) => [...prev, newQuestion]);
-    setAnswersArr((prev) => [...prev, newAnswer, {...newAnswer, id: answerId, correct_answer: !newAnswer.correct_answer}]);
-    setDirtyAnswers((prev) => [...prev, newAnswer, {...newAnswer, id: answerId, correct_answer: !newAnswer.correct_answer}]);
+    setAnswersArr((prev) => [
+      ...prev,
+      newAnswer,
+      { ...newAnswer, id: answerId, correct_answer: !newAnswer.correct_answer },
+    ]);
+    setDirtyAnswers((prev) => [
+      ...prev,
+      newAnswer,
+      { ...newAnswer, id: answerId, correct_answer: !newAnswer.correct_answer },
+    ]);
   };
 
   const addNewAnswer = (questionId: string) => {
@@ -209,7 +242,7 @@ export default function QuizUpdateForm({
       duration: 3000,
       isClosable: true,
     });
-    if(success) {
+    if (success) {
       setDirtyQuizFields(undefined);
       setDirtyQuestions([]);
       setDirtyAnswers([]);
@@ -288,25 +321,25 @@ export default function QuizUpdateForm({
                 </InputRightElement>
               </InputGroup>
             </FormControl>
-            {
-            answersArr.map((answer) => {
+            {answersArr.map((answer) => {
               if (answer.question_id !== q.id) return null;
-              
+
               return (
                 <FormControl key={answer.id}>
                   <InputGroup>
                     <InputLeftElement>
-                      {answer.correct_answer ? 
-                        <CheckCircleIcon color="green.400" /> : 
+                      {answer.correct_answer ? (
+                        <CheckCircleIcon color="green.400" />
+                      ) : (
                         <input
                           type="radio"
                           {...register(`answer${answer.id}`)}
                           onChange={(e) => handleUpdateAnswer(e, answer)}
-                          style={{cursor: "pointer"}}
-                          />
-                      }
+                          style={{ cursor: "pointer" }}
+                        />
+                      )}
                     </InputLeftElement>
-                    
+
                     <Input
                       placeholder="Answer"
                       defaultValue={answer.answer}
@@ -331,11 +364,14 @@ export default function QuizUpdateForm({
                 </FormControl>
               );
             })}
-            <Flex 
-              onClick={() => addNewAnswer(q.id)}   
-              isDisabled={answersArr.filter((ans) => ans.question_id === q.id).some((answer) => !answer.answer)}
+            <Flex
+              onClick={() => addNewAnswer(q.id)}
+              isDisabled={answersArr
+                .filter((ans) => ans.question_id === q.id)
+                .some((answer) => !answer.answer)}
               style={styles}
-              as={Button} gap={1}
+              as={Button}
+              gap={1}
             >
               <AddIcon boxSize={2} />
               Add answer
@@ -343,14 +379,25 @@ export default function QuizUpdateForm({
           </div>
         ))}
         <Flex>
-          <Flex style={styles} onClick={addNewQuestion} as={Button} gap={1}>
-            <AddIcon boxSize={2} />  
+          <Flex
+            style={styles}
+            onClick={addNewQuestion}
+            as={Button}
+            gap={1}
+          >
+            <AddIcon boxSize={2} />
             Add question
           </Flex>
         </Flex>
       </Flex>
 
-      <Button colorScheme="green" isDisabled={!isValid} onClick={handleSubmit}>Update Quiz</Button>
+      <Button
+        colorScheme="green"
+        isDisabled={!isValid}
+        onClick={handleSubmit}
+      >
+        Update Quiz
+      </Button>
     </chakra.form>
   );
 }
