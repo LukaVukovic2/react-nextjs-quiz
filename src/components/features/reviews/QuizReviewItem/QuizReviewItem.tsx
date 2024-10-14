@@ -1,5 +1,6 @@
 "use server";
 import { Review } from "@/app/typings/review";
+import TimeAgo from "@/components/core/TimeAgo/TimeAgo";
 import createClient from "@/components/shared/utils/createClient";
 
 export default async function QuizReviewItem({ review }: { review: Review }) {
@@ -11,14 +12,15 @@ export default async function QuizReviewItem({ review }: { review: Review }) {
     .eq("id", review.user_id)
     .single();
 
-  const date = new Date(review.created_at || "").toLocaleDateString();
+  const date = new Date(review.created_at || "");
 
   return (
     <div>
-      <div>{user?.username}</div>
+      <div>
+        <b>{user?.username}</b> <TimeAgo date={date} />
+      </div>
       <div>{review.comment}</div>
       <div>{review.rating}</div>
-      <div>{date}</div>
     </div>
   );
 }
