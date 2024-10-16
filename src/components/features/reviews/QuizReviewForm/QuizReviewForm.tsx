@@ -3,8 +3,12 @@ import { SliderInput } from "@/components/core/Slider/Slider";
 import { addReview } from "@/components/shared/utils/actions/review/addReview";
 import {
   Button,
+  Card,
+  CardBody,
+  CardHeader,
   chakra,
   FormLabel,
+  Heading,
   Textarea,
   useToast,
 } from "@chakra-ui/react";
@@ -38,29 +42,36 @@ export default function QuizReviewForm() {
   };
 
   return (
-    <chakra.form onSubmit={handleSubmit(addNewReview)}>
-      <Textarea
-        {...register("comment")}
-        placeholder="Enter your comment"
-      />
-      <FormLabel>Rating</FormLabel>
-      <Controller
-        control={control}
-        name="rating"
-        rules={{
-          required: true,
-          min: { value: 1, message: "Rating must be between 1 and 5" },
-          max: { value: 5, message: "Rating must be between 1 and 5" },
-        }}
-        render={({ field }) => <SliderInput {...field} />}
-      />
-      <Button
-        isLoading={isSubmitting}
-        isDisabled={!isValid || isSubmitting}
-        type="submit"
-      >
-        Submit
-      </Button>
-    </chakra.form>
+    <Card mb={5}>
+      <CardHeader>
+        <Heading size="md" py={2}>Add a review</Heading>
+      </CardHeader>
+      <CardBody>
+        <chakra.form onSubmit={handleSubmit(addNewReview)}>
+          <Textarea
+            {...register("comment")}
+            placeholder="Enter your comment"
+          />
+          <FormLabel>Rating</FormLabel>
+          <Controller
+            control={control}
+            name="rating"
+            rules={{
+              required: true,
+              min: { value: 1, message: "Rating must be between 1 and 5" },
+              max: { value: 5, message: "Rating must be between 1 and 5" },
+            }}
+            render={({ field }) => <SliderInput {...field} />}
+          />
+          <Button
+            isLoading={isSubmitting}
+            isDisabled={!isValid || isSubmitting}
+            type="submit"
+          >
+            Submit
+          </Button>
+        </chakra.form>
+      </CardBody>
+    </Card>
   );
 }

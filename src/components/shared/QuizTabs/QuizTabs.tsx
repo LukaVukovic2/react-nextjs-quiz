@@ -5,6 +5,7 @@ import createClient from "../utils/createClient";
 import QuizGameplaySection from "@/components/features/gameplay/QuizGameplaySection/QuizGameplaySection";
 import QuizReviewList from "@/components/features/reviews/QuizReviewList/QuizReviewList";
 import QuizReviewForm from "@/components/features/reviews/QuizReviewForm/QuizReviewForm";
+import QuizReviewSection from "@/components/features/reviews/QuizReviewSection/QuizReviewSection";
 
 export default async function QuizTabs({ quiz, page }: { quiz: Quiz, page: string }) {
   const supabase = createClient();
@@ -54,8 +55,7 @@ export default async function QuizTabs({ quiz, page }: { quiz: Quiz, page: strin
           <div>Leaderboard</div>
         </TabPanel>
         <TabPanel>
-          <QuizReviewForm />
-          <QuizReviewList id={quiz.id} page={page} />
+          <QuizReviewSection id={quiz.id} page={page} />
         </TabPanel>
       </TabPanels>
     </Tabs>

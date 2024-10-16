@@ -4,7 +4,7 @@ import { fetchAvatar } from "@/components/shared/utils/actions/avatar/fetchAvata
 import { uploadAvatar } from "@/components/shared/utils/actions/avatar/uploadAvatar";
 import { updateUsername } from "@/components/shared/utils/actions/updateUsername";
 import { DeleteIcon } from "@chakra-ui/icons";
-import { Button, Card, CardBody, Flex, Input, Spinner } from "@chakra-ui/react";
+import { Button, Card, CardBody, Flex, FormLabel, Heading, Input, Spinner } from "@chakra-ui/react";
 import Image from "next/image";
 import { ChangeEvent, useEffect, useState } from "react";
 
@@ -54,9 +54,9 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
     >
       <Card>
         <CardBody border="1px solid grey">
-          <h1>My Profile</h1>
+          <Heading as="h1" size="lg">My Profile</Heading>
           <div>
-            <label>Username:</label>
+            <FormLabel>Username:</FormLabel>
             <Input
               type="text"
               defaultValue={profile?.username}
@@ -95,7 +95,7 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
                 onClick={() => deleteAvatar(profile.avatar)}
                 colorScheme="red"
               >
-                <DeleteIcon></DeleteIcon>
+                <DeleteIcon />
               </Button>
             )}
             <Input

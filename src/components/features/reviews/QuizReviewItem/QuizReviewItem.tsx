@@ -1,7 +1,9 @@
 "use server";
 import { Review } from "@/app/typings/review";
+import Star from "@/components/core/Star/Star";
 import TimeAgo from "@/components/core/TimeAgo/TimeAgo";
 import createClient from "@/components/shared/utils/createClient";
+import { Avatar, Flex } from "@chakra-ui/react";
 
 export default async function QuizReviewItem({ review }: { review: Review }) {
   const supabase = createClient();
@@ -15,12 +17,27 @@ export default async function QuizReviewItem({ review }: { review: Review }) {
   const date = new Date(review.created_at || "");
 
   return (
-    <div>
-      <div>
-        <b>{user?.username}</b> <TimeAgo date={date} />
-      </div>
-      <div>{review.comment}</div>
-      <div>{review.rating}</div>
-    </div>
+    <>
+      <Flex gap={5}>
+        <Flex direction="column" alignItems="center">
+          <Avatar src={user?.avatar ? user.avatar : "https://fakeimg.pl/48x48/"} />
+          <Flex alignItems="center" gap={1}>
+            <Star />
+            {review.rating}
+          </Flex>
+        </Flex>
+
+        <Flex direction="column" gap={1} flex={1}>
+          <Flex gap={2}>
+            <b>{user?.username || "Unknown user"}</b> 
+            <TimeAgo date={date} />
+          </Flex>
+          <Flex>
+          </Flex>
+          <div>{review.comment || "-"}</div>
+        </Flex>
+      </Flex>
+      <hr />
+    </>
   );
 }

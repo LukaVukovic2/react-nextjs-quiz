@@ -1,23 +1,19 @@
 "use client";
-import { Answer } from "@/app/typings/answer";
-import { Question } from "@/app/typings/question";
-import { Quiz } from "@/app/typings/quiz";
-import { User } from "@/app/typings/user";
-import {
-  Flex,
-  Avatar,
-  Button,
-  Heading,
-} from "@chakra-ui/react";
 import QuizResultSection from "../QuizResultSection/QuizResultSection";
-import { chakra } from "@chakra-ui/react";
-import { useState } from "react";
-import { updateQuizInfo } from "./QuizGameplaySection.utils";
-import { CheckCircleIcon, RepeatIcon } from "@chakra-ui/icons";
-import { Controller, useForm } from "react-hook-form";
-import { FaMinusCircle } from "react-icons/fa";
 import QuizTimer from "../QuizTimer/QuizTimer";
 import QuizRadioGroup from "./components/QuizRadioGroup";
+import { updateQuizInfo } from "./QuizGameplaySection.utils";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { FaMinusCircle } from "react-icons/fa";
+import { Flex, Avatar, Button, Heading, Text } from "@chakra-ui/react";
+import { chakra } from "@chakra-ui/react";
+import { CheckCircleIcon, RepeatIcon } from "@chakra-ui/icons";
+import { Quiz } from "@/app/typings/quiz";
+import { User } from "@/app/typings/user";
+import { Answer } from "@/app/typings/answer";
+import { Question } from "@/app/typings/question";
+import QuizGameplayHeader from "../QuizGameplayHeader/QuizGameplayHeader";
 
 interface IQuizGameplayProps {
   quiz: Quiz;
@@ -60,9 +56,9 @@ export default function QuizGameplaySection({
     const time = new Date();
     time.setSeconds(
       time.getSeconds() +
-        parseInt(hours) * 3600 +
-        parseInt(minutes) * 60 +
-        parseInt(seconds)
+        +hours * 3600 +
+        +minutes * 60 +
+        +seconds
     );
     return time;
   };
@@ -84,7 +80,12 @@ export default function QuizGameplaySection({
     );
     setScore(totalScore);
     setIsFinished(true);
-    updateQuizInfo(quiz.id, quiz.plays, quiz.average_score, (totalScore / questions.length));
+    updateQuizInfo(
+      quiz.id,
+      quiz.plays,
+      quiz.average_score,
+      totalScore / questions.length
+    );
   };
 
   const resetQuiz = () => {
@@ -100,25 +101,21 @@ export default function QuizGameplaySection({
     <Flex
       flexDir="column"
       gap={1}
+      maxWidth="600px"
     >
-      <Flex
-        align="center"
-        gap={2}
-      >
-        {user?.avatar && <Avatar src={user.avatar} />}
-        <h1>{user?.username}</h1>
-      </Flex>
-      <h2>{quiz.title}</h2>
-      <p>{quiz.category}</p>
-      <QuizTimer
-        key={resetKey}
-        quizTime={formatToSeconds()}
-        hasStarted={hasStarted}
-        isFinished={isFinished}
-        handleFinishQuiz={handleFinishQuiz}
-      />
+      <QuizGameplayHeader quiz={quiz} user={user}>
+        <QuizTimer
+          key={resetKey}
+          quizTime={formatToSeconds()}
+          hasStarted={hasStarted}
+          isFinished={isFinished}
+          handleFinishQuiz={handleFinishQuiz}
+        />
+      </QuizGameplayHeader>
       {!hasStarted ? (
-        <Button onClick={() => setHasStarted(true)}>Start quiz</Button>
+        <div>
+          <Button onClick={() => setHasStarted(true)}>Start quiz</Button>
+        </div>
       ) : (
         <chakra.form>
           {isFinished && (

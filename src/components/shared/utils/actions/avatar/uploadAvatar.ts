@@ -45,7 +45,7 @@ export const uploadAvatar = async (formData: FormData) => {
     if (updateError) {
       throw updateError;
     }
-    revalidatePath("/");
+    revalidatePath("/my-profile");
     return data;
   } catch (error) {
     console.error("Error uploading avatar:", error);

@@ -2,7 +2,7 @@
 import createClient from "@/components/shared/utils/createClient";
 import QuizReviewItem from "../QuizReviewItem/QuizReviewItem";
 import NextLink from "next/link";
-import { Button } from "@chakra-ui/react";
+import { Button, Flex } from "@chakra-ui/react";
 
 export default async function QuizReviewList({
   id,
@@ -22,7 +22,7 @@ export default async function QuizReviewList({
     .from("review")
     .select("*")
     .eq("quiz_id", id);
-  
+
   const reviewsByPage = reviews?.slice(from - 1, to);
 
   return (
@@ -35,20 +35,19 @@ export default async function QuizReviewList({
               review={review}
             />
           ))}
-          {
-            currentPage > 1 && (
-              <NextLink href={`/quizzes/${id}?page=${currentPage - 1}`}>
-                <Button>Previous</Button>
-              </NextLink>
-            )
-          }
-          {
-            reviews.length > to && (
-              <NextLink href={`/quizzes/${id}?page=${currentPage + 1}`}>
-                <Button>Next</Button>
-              </NextLink>
-            )
-          }
+          <Flex
+            justifyContent="space-between"
+            mt={2}
+          >
+            <NextLink href={`/quizzes/${id}?page=${currentPage - 1}`}>
+              <Button visibility={currentPage > 1 ? "visible" : "hidden"}>
+                Previous
+              </Button>
+            </NextLink>
+            <NextLink href={`/quizzes/${id}?page=${currentPage + 1}`}>
+              <Button visibility={reviews.length > to ? "visible" : "hidden"}>Next</Button>
+            </NextLink>
+          </Flex>
         </>
       ) : (
         <div>No reviews found</div>
