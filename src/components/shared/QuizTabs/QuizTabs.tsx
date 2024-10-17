@@ -1,11 +1,9 @@
 "use server";
+import QuizGameplaySection from "@/components/features/gameplay/QuizGameplaySection/QuizGameplaySection";
+import QuizReviewSection from "@/components/features/reviews/QuizReviewSection/QuizReviewSection";
+import createClient from "../utils/createClient";
 import { Quiz } from "@/app/typings/quiz";
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@chakra-ui/react";
-import createClient from "../utils/createClient";
-import QuizGameplaySection from "@/components/features/gameplay/QuizGameplaySection/QuizGameplaySection";
-import QuizReviewList from "@/components/features/reviews/QuizReviewList/QuizReviewList";
-import QuizReviewForm from "@/components/features/reviews/QuizReviewForm/QuizReviewForm";
-import QuizReviewSection from "@/components/features/reviews/QuizReviewSection/QuizReviewSection";
 
 export default async function QuizTabs({ quiz, page }: { quiz: Quiz, page: string }) {
   const supabase = createClient();

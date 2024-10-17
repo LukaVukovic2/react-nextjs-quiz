@@ -1,12 +1,20 @@
 "use client";
-import { deleteAvatar } from "@/components/shared/utils/actions/avatar/deleteAvatar";
-import { fetchAvatar } from "@/components/shared/utils/actions/avatar/fetchAvatar";
-import { uploadAvatar } from "@/components/shared/utils/actions/avatar/uploadAvatar";
-import { updateUsername } from "@/components/shared/utils/actions/updateUsername";
+import { deleteAvatar } from "@/components/shared/utils/actions/user/deleteAvatar";
+import { uploadAvatar } from "@/components/shared/utils/actions/user/uploadAvatar";
+import { updateUsername } from "@/components/shared/utils/actions/user/updateUsername";
 import { DeleteIcon } from "@chakra-ui/icons";
-import { Button, Card, CardBody, Flex, FormLabel, Heading, Input, Spinner } from "@chakra-ui/react";
+import {
+  Button,
+  Card,
+  CardBody,
+  Flex,
+  FormLabel,
+  Heading,
+  Input,
+  Spinner,
+} from "@chakra-ui/react";
 import Image from "next/image";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 
 interface IMyProfileProps {
   id: string;
@@ -18,13 +26,6 @@ interface IMyProfileProps {
 
 export default function MyProfile({ id, profile }: IMyProfileProps) {
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    async function getAvatar() {
-      await fetchAvatar(id);
-    }
-    getAvatar();
-  }, [id]);
 
   const handleAvatarUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -54,7 +55,12 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
     >
       <Card>
         <CardBody border="1px solid grey">
-          <Heading as="h1" size="lg">My Profile</Heading>
+          <Heading
+            as="h1"
+            size="lg"
+          >
+            My Profile
+          </Heading>
           <div>
             <FormLabel>Username:</FormLabel>
             <Input
@@ -71,20 +77,16 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
               size="xl"
             />
           ) : (
-            <>
-              <Image
-                style={{ borderRadius: "50%", width: "100px", height: "100px" }}
-                src={
-                  profile.avatar
-                    ? profile.avatar
-                    : "https://fakeimg.pl/100x100/"
-                }
-                alt="profile avatar"
-                width={100}
-                height={100}
-                priority={true}
-              />
-            </>
+            <Image
+              style={{ borderRadius: "50%", width: "100px", height: "100px" }}
+              src={
+                profile.avatar ? profile.avatar : "https://fakeimg.pl/100x100/"
+              }
+              alt="profile avatar"
+              width={100}
+              height={100}
+              priority={true}
+            />
           )}
           <Flex
             gap={2}

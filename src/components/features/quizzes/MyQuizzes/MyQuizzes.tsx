@@ -1,7 +1,6 @@
-"use client";
-import { Quiz } from "@/app/typings/quiz";
-import { Flex, List, ListItem } from "@chakra-ui/react";
 import QuizMenuDropdown from "../QuizMenuDropdown/QuizMenuDropdown";
+import { Flex, Heading, List, ListItem, Text } from "@chakra-ui/react";
+import { Quiz } from "@/app/typings/quiz";
 import { Question } from "@/app/typings/question";
 import { Answer } from "@/app/typings/answer";
 
@@ -39,9 +38,9 @@ export default function MyQuizzes(quizzes: MyQuizzesProps) {
             }}
           >
             <div>
-              <h2>{quiz.quiz.title}</h2>
-              <p>{quiz.quiz.category}</p>
-              <p>{quiz.quiz.time}</p>
+              <Heading as="h2" size="md">{quiz.quiz.title}</Heading>
+              <Text>{quiz.quiz.category}</Text>
+              <Text>{quiz.quiz.time}</Text>
             </div>
             <QuizMenuDropdown quiz={quiz.quiz} questions_and_answers={quizzes.quizzes[index].questions_and_answers} />
           </ListItem>

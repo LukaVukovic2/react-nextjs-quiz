@@ -1,19 +1,19 @@
 "use client";
+import QuizGameplayHeader from "../QuizGameplayHeader/QuizGameplayHeader";
 import QuizResultSection from "../QuizResultSection/QuizResultSection";
 import QuizTimer from "../QuizTimer/QuizTimer";
 import QuizRadioGroup from "./components/QuizRadioGroup";
-import { updateQuizInfo } from "./QuizGameplaySection.utils";
+import {  updateQuizInfo } from "../../../shared/utils/actions/quiz/updateQuizInfo";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FaMinusCircle } from "react-icons/fa";
-import { Flex, Avatar, Button, Heading, Text } from "@chakra-ui/react";
+import { Flex, Button, Heading } from "@chakra-ui/react";
 import { chakra } from "@chakra-ui/react";
 import { CheckCircleIcon, RepeatIcon } from "@chakra-ui/icons";
 import { Quiz } from "@/app/typings/quiz";
 import { User } from "@/app/typings/user";
 import { Answer } from "@/app/typings/answer";
 import { Question } from "@/app/typings/question";
-import QuizGameplayHeader from "../QuizGameplayHeader/QuizGameplayHeader";
 
 interface IQuizGameplayProps {
   quiz: Quiz;
@@ -22,20 +22,13 @@ interface IQuizGameplayProps {
   answers: Answer[];
 }
 
-const initializeSelectedAnswers = (
-  questions: Question[]
-): Map<string, string | null> => {
+const initializeSelectedAnswers = (questions: Question[]): Map<string, string | null> => {
   const map = new Map<string, string | null>();
   questions.forEach((question) => map.set(question.id, null));
   return map;
 };
 
-export default function QuizGameplaySection({
-  quiz,
-  user,
-  questions,
-  answers,
-}: IQuizGameplayProps) {
+export default function QuizGameplaySection({quiz, user, questions, answers}: IQuizGameplayProps) {
   const [selectedAnswers, setSelectedAnswers] = useState<
     Map<string, string | null>
   >(initializeSelectedAnswers(questions));
@@ -75,7 +68,7 @@ export default function QuizGameplaySection({
           (answer) => answer.question_id === questionId && answer.correct_answer
         );
         return correctAnswer?.id === answerId ? score + 1 : score;
-      },
+      }, 
       0
     );
     setScore(totalScore);

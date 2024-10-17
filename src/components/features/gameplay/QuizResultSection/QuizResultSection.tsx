@@ -1,3 +1,5 @@
+import { Text } from "@chakra-ui/react";
+
 interface IQuizResultSectionProps {
   score: number;
   questionCount: number;
@@ -9,9 +11,9 @@ export default function QuizResultSection({score, questionCount, averageScore}: 
 
   return (
     <>
-      <p>Quiz results</p>
-      <p>Your score: {resultPercentage}%</p>
-      <p>Average score: {(averageScore * 100).toFixed(0)}%</p>
+      <Text>Quiz results</Text>
+      <Text>Your score: {resultPercentage}%</Text>
+      <Text>Average score: {(averageScore * 100).toFixed(0)}%</Text>
     </>
   );
 }

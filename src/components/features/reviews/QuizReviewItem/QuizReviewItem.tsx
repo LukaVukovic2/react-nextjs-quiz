@@ -1,9 +1,9 @@
 "use server";
-import { Review } from "@/app/typings/review";
 import Star from "@/components/core/Star/Star";
 import TimeAgo from "@/components/core/TimeAgo/TimeAgo";
 import createClient from "@/components/shared/utils/createClient";
-import { Avatar, Flex } from "@chakra-ui/react";
+import { Avatar, Flex, Heading } from "@chakra-ui/react";
+import { Review } from "@/app/typings/review";
 
 export default async function QuizReviewItem({ review }: { review: Review }) {
   const supabase = createClient();
@@ -28,8 +28,8 @@ export default async function QuizReviewItem({ review }: { review: Review }) {
         </Flex>
 
         <Flex direction="column" gap={1} flex={1}>
-          <Flex gap={2}>
-            <b>{user?.username || "Unknown user"}</b> 
+          <Flex gap={2} alignItems="center">
+            <Heading as="h3" size="sm">{user?.username || "Unknown user"}</Heading> 
             <TimeAgo date={date} />
           </Flex>
           <Flex>

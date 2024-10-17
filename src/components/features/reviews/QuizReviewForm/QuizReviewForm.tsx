@@ -1,6 +1,4 @@
 "use client";
-import { SliderInput } from "@/components/core/Slider/Slider";
-import { addReview } from "@/components/shared/utils/actions/review/addReview";
 import {
   Button,
   Card,
@@ -12,6 +10,8 @@ import {
   Textarea,
   useToast,
 } from "@chakra-ui/react";
+import { SliderInput } from "@/components/core/Slider/Slider";
+import { addReview } from "@/components/shared/utils/actions/review/addReview";
 import { useParams } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 

@@ -1,6 +1,6 @@
+import { RadioCard } from "@/components/core/RadioCard/RadioCard";
 import { Answer } from "@/app/typings/answer";
 import { Question } from "@/app/typings/question";
-import { RadioCard } from "@/components/core/RadioCard/RadioCard";
 import { Box, useRadioGroup } from "@chakra-ui/react";
 import {
   ControllerFieldState,

@@ -4,13 +4,7 @@ import QuizReviewItem from "../QuizReviewItem/QuizReviewItem";
 import NextLink from "next/link";
 import { Button, Flex } from "@chakra-ui/react";
 
-export default async function QuizReviewList({
-  id,
-  page,
-}: {
-  id: string;
-  page?: string;
-}) {
+export default async function QuizReviewList({id, page}: {id: string; page?: string;}) {
   const supabase = createClient();
   const offset: number = 5;
 

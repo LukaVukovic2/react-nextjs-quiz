@@ -1,5 +1,6 @@
 import QuizTabs from "@/components/shared/QuizTabs/QuizTabs";
 import createClient from "@/components/shared/utils/createClient";
+import { notFound } from "next/navigation";
 
 export default async function QuizPage({
   params,
@@ -18,9 +19,9 @@ export default async function QuizPage({
     .eq("id", id)
     .single();
 
-  return quiz ? (
-    <QuizTabs quiz={quiz} page={page} />
-  ) : (
-    <div>Quiz not found</div>
-  );
+  if(!quiz) {
+    notFound();
+  }
+  
+  return <QuizTabs quiz={quiz} page={page} />;
 }

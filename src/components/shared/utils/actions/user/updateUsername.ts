@@ -1,5 +1,6 @@
 "use server";
-import createClient from "../createClient";
+import { revalidatePath } from "next/cache";
+import createClient from "../../createClient";
 
 const supabase = createClient();
 
@@ -13,5 +14,6 @@ export const updateUsername = async (d: FormData) => {
   if (error) {
     throw error;
   }
+  revalidatePath("/my-profile");
   return data;
 };

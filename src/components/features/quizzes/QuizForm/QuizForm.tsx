@@ -16,16 +16,15 @@ import {
   StackDivider
 } from "@chakra-ui/react";
 import { AddIcon, CheckCircleIcon } from "@chakra-ui/icons";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { createQuiz } from "@/components/features/quizzes/QuizForm/QuizForm.utils";
-import { v4 as uuidv4 } from "uuid";
-import { Question } from "@/app/typings/question";
-import { Answer } from "@/app/typings/answer";
-import StepperProgress from "@/components/shared/StepperProgress/StepperProgress";
 import { steps } from "@/components/shared/utils/steps";
 import QuestionList from "@/components/shared/QuestionList/QuestionList";
-import { navigateHome } from "@/components/shared/utils/redirection/navigateHome";
+import StepperProgress from "@/components/shared/StepperProgress/StepperProgress";
+import { createQuiz } from "@/components/shared/utils/actions/quiz/createQuiz";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Question } from "@/app/typings/question";
+import { Answer } from "@/app/typings/answer";
+import { v4 as uuidv4 } from "uuid";
 
 export default function QuizForm() {
   const toast = useToast();
@@ -122,9 +121,6 @@ export default function QuizForm() {
       duration: 5000,
       isClosable: true,
     });
-    if(success){
-      navigateHome();
-    }
   };
 
   return (
@@ -220,12 +216,12 @@ export default function QuizForm() {
                 <Text>Answers:</Text>
                 {answers.map((answer) => (
                   <Box key={answer.answer}>
-                    <p>
-                      {answer.answer}{" "}
+                    <Text>
+                      {answer.answer + " "}
                       {answer.correct_answer && (
                         <CheckCircleIcon color="green.400" />
                       )}
-                    </p>
+                    </Text>
                   </Box>
                 ))}
                 <Button

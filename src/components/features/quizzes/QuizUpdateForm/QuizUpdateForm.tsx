@@ -1,8 +1,3 @@
-import { Answer } from "@/app/typings/answer";
-import { Question } from "@/app/typings/question";
-import { Quiz } from "@/app/typings/quiz";
-import { updateQuiz } from "@/components/shared/utils/actions/quiz/updateQuiz";
-import { AddIcon, CheckCircleIcon, DeleteIcon } from "@chakra-ui/icons";
 import {
   Button,
   chakra,
@@ -16,9 +11,14 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
+import { AddIcon, CheckCircleIcon, DeleteIcon } from "@chakra-ui/icons";
+import { updateQuiz } from "@/components/shared/utils/actions/quiz/updateQuiz";
 import { ChangeEvent, FocusEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
+import { Answer } from "@/app/typings/answer";
+import { Question } from "@/app/typings/question";
+import { Quiz } from "@/app/typings/quiz";
 
 interface QuizUpdateFormProps {
   quiz: Quiz;
@@ -33,11 +33,7 @@ const styles = {
   fontSize: "0.8rem",
 };
 
-export default function QuizUpdateForm({
-  quiz,
-  questions_and_answers,
-  onClose,
-}: QuizUpdateFormProps) {
+export default function QuizUpdateForm({ quiz, questions_and_answers, onClose }: QuizUpdateFormProps) {
   const {
     register,
     trigger,
@@ -50,17 +46,14 @@ export default function QuizUpdateForm({
   const [dirtyAnswers, setDirtyAnswers] = useState<Answer[]>([]);
   const [deletedAnswers, setDeletedAnswers] = useState<string[]>([]);
   const [answersArr, setAnswersArr] = useState<Answer[]>([]);
+  
+  const toast = useToast();
 
   useEffect(() => {
     const answers = questions_and_answers.map((qa) => qa.answers).flat();
     setAnswersArr(answers);
     setQuestionsArr(questions_and_answers.map((qa) => qa.question));
   }, [questions_and_answers]);
-
-  console.log("Dirty answers");
-  console.log(dirtyAnswers);
-
-  const toast = useToast();
 
   const handleDeleteQuestion = async (id: string) => {
     setQuestionsArr((prev) => prev.filter((question) => question.id !== id));
@@ -78,29 +71,22 @@ export default function QuizUpdateForm({
     setDeletedAnswers((prev) => [...prev, id]);
   };
 
-  const handleUpdateQuiz = async (
-    e: FocusEvent<HTMLInputElement, Element>,
-    id: string
-  ) => {
+  const handleUpdateQuiz = async (e: FocusEvent<HTMLInputElement, Element>, id: string) => {
     const { name, value } = e.target;
 
     const validateInput = await trigger(name);
     if (!validateInput) return;
 
-    setDirtyQuizFields(
-      (prev) =>
-        ({
-          ...prev,
-          id,
-          [name]: value,
-        } as Quiz)
+    setDirtyQuizFields((prev) =>
+      ({
+        ...prev,
+        id,
+        [name]: value,
+      } as Quiz)
     );
   };
 
-  const handleUpdateQuestion = async (
-    e: FocusEvent<HTMLInputElement, Element>,
-    q: Question
-  ) => {
+  const handleUpdateQuestion = async (e: FocusEvent<HTMLInputElement, Element>, q: Question) => {
     const { value } = e.target;
 
     const validateInput = await trigger("q_title" + q.id);
@@ -108,23 +94,16 @@ export default function QuizUpdateForm({
 
     setDirtyQuestions((prev) => {
       const questionIndex = prev.findIndex((question) => question.id === q.id);
+      const newQuestion: Question = { id: q.id, title: value, quiz_id: q.quiz_id };
 
       if (questionIndex === -1) {
         return [
           ...prev,
-          {
-            id: q.id,
-            title: value,
-            quiz_id: q.quiz_id,
-          },
+          newQuestion
         ];
       } else {
         const updatedQuestions = [...prev];
-        updatedQuestions[questionIndex] = {
-          id: q.id,
-          title: value,
-          quiz_id: q.quiz_id,
-        };
+        updatedQuestions[questionIndex] = newQuestion;
         return updatedQuestions;
       }
     });
@@ -196,23 +175,28 @@ export default function QuizUpdateForm({
       title: "",
       quiz_id: quiz.id,
     };
-    const newAnswer: Answer = {
+    const defaultCorrectAns: Answer = {
       id: uuidv4(),
       answer: "",
       question_id: id,
       correct_answer: true,
     };
+    const defaultFalseAns: Answer = {
+      ...defaultCorrectAns,
+      id: answerId,
+      correct_answer: !defaultCorrectAns.correct_answer
+    };
     setQuestionsArr((prev) => [...prev, newQuestion]);
     setDirtyQuestions((prev) => [...prev, newQuestion]);
     setAnswersArr((prev) => [
       ...prev,
-      newAnswer,
-      { ...newAnswer, id: answerId, correct_answer: !newAnswer.correct_answer },
+      defaultCorrectAns,
+      defaultFalseAns
     ]);
     setDirtyAnswers((prev) => [
       ...prev,
-      newAnswer,
-      { ...newAnswer, id: answerId, correct_answer: !newAnswer.correct_answer },
+      defaultCorrectAns,
+      defaultFalseAns
     ]);
   };
 

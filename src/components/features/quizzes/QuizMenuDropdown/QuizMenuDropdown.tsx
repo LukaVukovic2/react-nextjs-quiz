@@ -1,6 +1,4 @@
 "use client";
-import { Quiz } from "@/app/typings/quiz";
-import { deleteQuiz } from "@/components/shared/utils/actions/quiz/deleteQuiz";
 import {
   Menu,
   MenuButton,
@@ -24,9 +22,11 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import QuizUpdateForm from "../QuizUpdateForm/QuizUpdateForm";
+import { deleteQuiz } from "@/components/shared/utils/actions/quiz/deleteQuiz"; 
+import { useRef } from "react";
 import { Question } from "@/app/typings/question";
 import { Answer } from "@/app/typings/answer";
-import React from "react";
+import { Quiz } from "@/app/typings/quiz";
 
 interface QuizMenuDropdownProps {
   quiz: Quiz;
@@ -36,10 +36,7 @@ interface QuizMenuDropdownProps {
   }>;
 }
 
-export default function QuizMenuDropdown({
-  quiz,
-  questions_and_answers,
-}: QuizMenuDropdownProps) {
+export default function QuizMenuDropdown({ quiz, questions_and_answers }: QuizMenuDropdownProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const {
@@ -47,7 +44,8 @@ export default function QuizMenuDropdown({
     onOpen: onOpenDelete,
     onClose: onCloseDelete,
   } = useDisclosure();
-  const cancelRef = React.useRef<HTMLButtonElement>(null);
+  
+  const cancelRef = useRef<HTMLButtonElement>(null);
 
   const handleQuizDelete = async (id: string) => {
     const success = await deleteQuiz(id);
