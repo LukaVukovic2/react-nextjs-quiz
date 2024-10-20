@@ -4,14 +4,12 @@ import { notFound } from "next/navigation";
 
 export default async function QuizListPage() {
   const supabase = createClient();
-  const { data: quizzes } = await supabase
+  const { data: quizzes, error } = await supabase
     .from("quiz")
     .select("*")
     .order("title", { ascending: true });
-
-  if(!quizzes) {
-    notFound();
-  }
+  
+  if(error || !quizzes) notFound();
 
   return <QuizList quizzes={quizzes} />;
 }

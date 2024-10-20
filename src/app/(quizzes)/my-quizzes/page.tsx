@@ -13,11 +13,11 @@ export default async function MyQuizzesPage() {
     return null;
   }
   
-  const { data: quizzes } = await supabase.rpc("get_quizzes_by_idf", {
+  const { data: quizzes, error } = await supabase.rpc("get_quizzes_by_id", {
     iduser: user.id,
   });
 
-  if(!quizzes || !(Array.isArray(quizzes) && quizzes.length > 0)) {
+  if(!quizzes || !(Array.isArray(quizzes) && quizzes.length > 0) || error) {
     notFound();
   }
 

@@ -1,7 +1,5 @@
+import ErrorNotFound from "@/components/shared/ErrorNotFound/ErrorNotFound";
+
 export default function NotFound() {
-  return (
-    <div>
-      <h1>Not Found</h1>
-    </div>
-  )
+  return <ErrorNotFound error="Quiz not found" isFound={true} />;
 }

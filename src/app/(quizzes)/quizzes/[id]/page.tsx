@@ -13,15 +13,13 @@ export default async function QuizPage({
   const page = searchParams?.page as string;
 
   const supabase = createClient();
-  const { data: quiz } = await supabase
+  const { data: quiz, error } = await supabase
     .from("quiz")
     .select("*")
     .eq("id", id)
     .single();
 
-  if(!quiz) {
-    notFound();
-  }
-  
+  if(error || !quiz) notFound();
+
   return <QuizTabs quiz={quiz} page={page} />;
 }

@@ -1,8 +1,7 @@
 "use client";
-export default function Error(){
-  return (
-    <div>
-      <h1>Error</h1>
-    </div>
-  )
+import ErrorDefault from "@/components/shared/ErrorDefault/ErrorDefault";
+
+export default function Error({reset}: {reset: () => void;}) {
+  return <ErrorDefault reset={reset}/>
+  
 }
