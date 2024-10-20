@@ -1,10 +1,11 @@
 "use server";
 import MyQuizzes from "@/components/features/quizzes/MyQuizzes/MyQuizzes";
-import { createClient } from "@/components/shared/utils/createClient";
-
-const supabase = createClient();
+import createClient from "@/components/shared/utils/createClient";
+import { Heading } from "@chakra-ui/react";
+import { notFound } from "next/navigation";
 
 export default async function MyQuizzesPage() {
+  const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -12,18 +13,18 @@ export default async function MyQuizzesPage() {
     return null;
   }
   
-  const { data: quizzes } = await supabase.rpc("get_quizzes_by_id", {
+  const { data: quizzes, error } = await supabase.rpc("get_quizzes_by_id", {
     iduser: user.id,
   });
 
+  if(!quizzes || !(Array.isArray(quizzes) && quizzes.length > 0) || error) {
+    notFound();
+  }
+
   return (
     <>
-      <h1>My Quizzes</h1>
-      {Array.isArray(quizzes) && quizzes.length > 0 ? (
-        <MyQuizzes quizzes={quizzes} />
-      ) : (
-        <p>No quizzes found</p>
-      )}
+      <Heading as="h1" size="md">My Quizzes</Heading>
+      <MyQuizzes quizzes={quizzes} />
     </>
   );
 }

@@ -3,10 +3,11 @@ export interface Quiz {
   category: string;
   user_id: string;
   title: string;
-  timer: string;
+  time: string;
   created_at?: Date;
   updated_at?: Date;
-  rating?: number;
+  average_rating?: number;
   plays?: number;
   number_of_ratings?: number;
+  average_score?: number;
 }

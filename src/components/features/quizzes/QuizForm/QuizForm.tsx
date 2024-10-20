@@ -16,16 +16,15 @@ import {
   StackDivider
 } from "@chakra-ui/react";
 import { AddIcon, CheckCircleIcon } from "@chakra-ui/icons";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { supabaseInsert } from "@/components/shared/Supabase/insert";
-import { v4 as uuidv4 } from "uuid";
-import { Question } from "@/app/typings/question";
-import { Answer } from "@/app/typings/answer";
-import StepperProgress from "@/components/shared/StepperProgress/StepperProgress";
 import { steps } from "@/components/shared/utils/steps";
 import QuestionList from "@/components/shared/QuestionList/QuestionList";
-import { navigateHome } from "@/components/shared/utils/redirection/navigateHome";
+import StepperProgress from "@/components/shared/StepperProgress/StepperProgress";
+import { createQuiz } from "@/components/shared/utils/actions/quiz/createQuiz";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Question } from "@/app/typings/question";
+import { Answer } from "@/app/typings/answer";
+import { v4 as uuidv4 } from "uuid";
 
 export default function QuizForm() {
   const toast = useToast();
@@ -35,7 +34,7 @@ export default function QuizForm() {
   });
 
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [quizId] = useState(uuidv4());
+  const [quiz_id] = useState(uuidv4());
   const [questionTitle, setQuestionTitle] = useState('');
   const [question_id, setQuestionId] = useState(uuidv4());
   const [answers, setAnswers] = useState<Answer[]>([]);
@@ -84,7 +83,7 @@ export default function QuizForm() {
       {
         id,
         title: getValues().questionTitle,
-        quizId,
+        quiz_id,
         answers,
       },
     ]);
@@ -102,29 +101,26 @@ export default function QuizForm() {
       setActiveStep(index);
   };
 
-  const createQuiz = async () => {
+  const handleCreateQuiz = async () => {
     const formData = {
       quiz: {
-        id: quizId,
+        id: quiz_id,
         user_id: "",
         title: getValues().title,
         category: getValues().category,
-        timer: getValues().timer,
+        time: getValues().time,
       },
       questions: {
         questions,
       },
     };
-    const success = await supabaseInsert(formData);
+    const success = await createQuiz(formData);
     toast({
       title: success ? "Quiz created" : "Error creating quiz",
       status: success ? "success" : "error",
       duration: 5000,
       isClosable: true,
     });
-    if(success){
-      navigateHome();
-    }
   };
 
   return (
@@ -149,10 +145,10 @@ export default function QuizForm() {
             </FormControl>
             <FormControl>
               <Input
-                placeholder="Timer (in seconds)"
-                {...register("timer", { required: true })}
+                placeholder="Time (in seconds)"
+                {...register("time", { required: true })}
                 type="number"
-                onBlur={() => trigger("timer")}
+                onBlur={() => trigger("time")}
               />
             </FormControl>
             <FormControl>
@@ -220,12 +216,12 @@ export default function QuizForm() {
                 <Text>Answers:</Text>
                 {answers.map((answer) => (
                   <Box key={answer.answer}>
-                    <p>
-                      {answer.answer}{" "}
+                    <Text>
+                      {answer.answer + " "}
                       {answer.correct_answer && (
                         <CheckCircleIcon color="green.400" />
                       )}
-                    </p>
+                    </Text>
                   </Box>
                 ))}
                 <Button
@@ -266,7 +262,7 @@ export default function QuizForm() {
               Next
             </Button>
           ) : (
-            <Button onClick={createQuiz}>Create Quiz</Button>
+            <Button onClick={handleCreateQuiz}>Create Quiz</Button>
           )}
         </Flex>
       </chakra.form>

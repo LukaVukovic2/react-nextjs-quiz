@@ -1,11 +1,11 @@
-'use server';
+"use server";
 import { revalidatePath } from "next/cache";
-import { createClient } from "../createClient";
+import createClient from "../../createClient";
 
 const supabase = createClient();
 
 export const deleteAvatar = async (avatar: string) => {
-  const id = avatar.replace('' + process.env.AVATAR_BASE_URL ,'');
+  const id = avatar.replace("" + process.env.AVATAR_BASE_URL, "");
   console.log(id);
   const { error: removeError } = await supabase.storage
     .from("avatars")
