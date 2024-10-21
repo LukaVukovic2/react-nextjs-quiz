@@ -4,8 +4,9 @@ import QuizReviewSection from "@/components/features/reviews/QuizReviewSection/Q
 import createClient from "../utils/createClient";
 import { Quiz } from "@/app/typings/quiz";
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@chakra-ui/react";
+import { Suspense } from "react";
 
-export default async function QuizTabs({ quiz, page }: { quiz: Quiz, page: string }) {
+export default async function QuizTabs({ quiz }: { quiz: Quiz }) {
   const supabase = createClient();
 
   const { data: questions } = await supabase
@@ -46,14 +47,16 @@ export default async function QuizTabs({ quiz, page }: { quiz: Quiz, page: strin
               answers={answers}
             />
           ) : (
-            <div>Data not found</div>
+            "Data not found"
           )}
         </TabPanel>
         <TabPanel>
-          <div>Leaderboard</div>
+          Leaderboard
         </TabPanel>
         <TabPanel>
-          <QuizReviewSection id={quiz.id} page={page} />
+          <Suspense fallback="Loading reviews...">
+            <QuizReviewSection id={quiz.id} />
+          </Suspense>
         </TabPanel>
       </TabPanels>
     </Tabs>

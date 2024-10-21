@@ -1,27 +1,31 @@
 import styles from "./QuizList.module.css";
-import { Heading, Text } from "@chakra-ui/react";
+import { Text } from "@chakra-ui/react";
 import QuizItem from "../QuizItem/QuizItem";
-import { Quiz } from "@/app/typings/quiz";
+import createClient from "@/components/shared/utils/createClient";
+import { notFound } from "next/navigation";
 
-export default async function QuizList({quizzes}: {quizzes: Quiz[]}) {
+export default async function QuizList() {
+  const supabase = createClient();
+
+  const { data: quizzes, error } = await supabase
+    .from("quiz")
+    .select("*")
+    .order("title", { ascending: true });
+
+  if (error || !quizzes) notFound();
+
   return (
-    <>
-      <Heading
-        as="h1"
-        size="lg"
-        className={styles.title}
-      >
-        Quiz List
-      </Heading>
-      <div className={styles.quizListContainer}>
-        {quizzes && quizzes?.length > 0 ? (
-          quizzes.map((quiz) => (
-            <QuizItem key={quiz.id} quiz={quiz} />
-          ))
-        ) : (
-          <Text>No quizzes found</Text>
-        )}
-      </div>
-    </>
+    <div className={styles.quizListContainer}>
+      {quizzes && quizzes?.length > 0 ? (
+        quizzes.map((quiz) => (
+          <QuizItem
+            key={quiz.id}
+            quiz={quiz}
+          />
+        ))
+      ) : (
+        <Text>No quizzes found</Text>
+      )}
+    </div>
   );
 }

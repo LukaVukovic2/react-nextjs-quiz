@@ -7,7 +7,7 @@ import {  updateQuizInfo } from "../../../shared/utils/actions/quiz/updateQuizIn
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FaMinusCircle } from "react-icons/fa";
-import { Flex, Button, Heading } from "@chakra-ui/react";
+import { Flex, Button, Heading, Box } from "@chakra-ui/react";
 import { chakra } from "@chakra-ui/react";
 import { CheckCircleIcon, RepeatIcon } from "@chakra-ui/icons";
 import { Quiz } from "@/app/typings/quiz";
@@ -121,7 +121,7 @@ export default function QuizGameplaySection({quiz, user, questions, answers}: IQ
           )}
           {questions.map((question, index) => {
             return (
-              <div key={question.id}>
+              <Box key={question.id}>
                 <Heading
                   as="h2"
                   size="sm"
@@ -168,7 +168,7 @@ export default function QuizGameplaySection({quiz, user, questions, answers}: IQ
                   )}
                 />
                 <br />
-              </div>
+              </Box>
             );
           })}
           <Button
