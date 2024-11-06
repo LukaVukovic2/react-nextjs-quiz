@@ -1,5 +1,5 @@
 import Star from "@/components/core/Star/Star";
-import { Avatar, Flex, Heading } from "@chakra-ui/react";
+import { Avatar, Flex, Heading, Text } from "@chakra-ui/react";
 import { Review } from "@/app/typings/review";
 import TimeAgo from "@/components/core/TimeAgo/TimeAgo";
 import { User } from "@/app/typings/user";
@@ -14,7 +14,7 @@ export default function QuizReviewItem({ review, reviewer }: { review: Review, r
           <Avatar src={reviewer?.avatar ? reviewer.avatar : "https://fakeimg.pl/48x48/"} />
           <Flex alignItems="center" gap={1}>
             <Star />
-            {review.rating}
+            <Text>{review.rating}</Text>
           </Flex>
         </Flex>
 

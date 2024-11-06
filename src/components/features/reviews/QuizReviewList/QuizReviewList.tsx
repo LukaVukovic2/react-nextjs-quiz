@@ -20,13 +20,13 @@ export default function QuizReviewList({id, reviews, reviewers}: {id: string; re
     <>
       {reviewsByPage.map((review) => {
         const reviewer = reviewers.find((reviewer) => reviewer.id === review.user_id);
-        return <QuizReviewItem
+        return reviewer && <QuizReviewItem
           key={review.id}
           review={review}
-          reviewer={reviewer!}
+          reviewer={reviewer}
         />
       })}
-      <Pagination id={id} currentPage={currentPage} totalPages={reviews.length / offset}/>
+      <Pagination id={id} currentPage={currentPage} totalPages={Math.ceil(reviews.length / offset)}/>
     </>
   ) : (
     <div>No reviews found</div>

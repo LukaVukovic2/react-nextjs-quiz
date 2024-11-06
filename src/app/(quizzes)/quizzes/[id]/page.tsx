@@ -17,8 +17,6 @@ export default async function QuizPage({params}: {params: { id: string };}) {
   if(error || !quiz) notFound();
 
   return(
-    <Suspense fallback={<LoadingSpinner text="Fetching quiz data..."/>}>
       <QuizTabs quiz={quiz} />
-    </Suspense>
   ) ;
 }

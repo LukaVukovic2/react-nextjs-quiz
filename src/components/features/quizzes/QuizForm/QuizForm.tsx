@@ -25,8 +25,10 @@ import { useForm } from "react-hook-form";
 import { Question } from "@/app/typings/question";
 import { Answer } from "@/app/typings/answer";
 import { v4 as uuidv4 } from "uuid";
+import { useRouter } from "next/navigation";
 
 export default function QuizForm() {
+  const { push } = useRouter();
   const toast = useToast();
   const { activeStep, setActiveStep } = useSteps({
     index: 0,
@@ -115,12 +117,14 @@ export default function QuizForm() {
       },
     };
     const success = await createQuiz(formData);
+    
     toast({
       title: success ? "Quiz created" : "Error creating quiz",
       status: success ? "success" : "error",
       duration: 5000,
       isClosable: true,
     });
+    push("/quizzes");
   };
 
   return (

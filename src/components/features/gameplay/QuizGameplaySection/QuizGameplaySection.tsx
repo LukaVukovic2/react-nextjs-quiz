@@ -3,7 +3,7 @@ import QuizGameplayHeader from "../QuizGameplayHeader/QuizGameplayHeader";
 import QuizResultSection from "../QuizResultSection/QuizResultSection";
 import QuizTimer from "../QuizTimer/QuizTimer";
 import QuizRadioGroup from "./components/QuizRadioGroup";
-import {  updateQuizInfo } from "../../../shared/utils/actions/quiz/updateQuizInfo";
+import { updateQuizInfo } from "../../../shared/utils/actions/quiz/updateQuizInfo";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FaMinusCircle } from "react-icons/fa";

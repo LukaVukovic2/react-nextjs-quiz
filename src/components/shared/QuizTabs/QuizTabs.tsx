@@ -1,4 +1,3 @@
-"use server";
 import QuizGameplaySection from "@/components/features/gameplay/QuizGameplaySection/QuizGameplaySection";
 import QuizReviewSection from "@/components/features/reviews/QuizReviewSection/QuizReviewSection";
 import createClient from "../utils/createClient";
@@ -51,11 +50,11 @@ export default async function QuizTabs({ quiz }: { quiz: Quiz }) {
           )}
         </TabPanel>
         <TabPanel>
-          Leaderboard
+          <div>Leaderboard</div>
         </TabPanel>
         <TabPanel>
-          <Suspense fallback="Loading reviews...">
-            <QuizReviewSection id={quiz.id} />
+          <Suspense fallback={<div>Loading reviews...</div>}>
+          <QuizReviewSection id={quiz.id} />
           </Suspense>
         </TabPanel>
       </TabPanels>
