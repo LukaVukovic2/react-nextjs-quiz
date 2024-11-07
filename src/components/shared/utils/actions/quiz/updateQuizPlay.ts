@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 
 const supabase = createClient();
 
-export const updateQuizInfo = async (
+export const updateQuizPlay = async (
   quiz_id: string,
   currentPlays: number = 0,
   average_score: number = 0,
@@ -14,10 +14,11 @@ export const updateQuizInfo = async (
   const updatedAverageScore =
     (average_score * currentPlays + totalScore) / updatedPlays;
 
-  await supabase
-    .from("quiz")
-    .update({ plays: updatedPlays, average_score: updatedAverageScore })
-    .eq("id", quiz_id);
+  const { error } = await supabase.rpc("update_quiz_plays", { updatedplays: updatedPlays, updatedavgscore: updatedAverageScore, quizid: quiz_id });
+  if (error) {
+    console.error(error);
+    return false;
+  }
 
   revalidatePath(`/quizzes/${quiz_id}`);
 };

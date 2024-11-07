@@ -3,7 +3,7 @@ import QuizGameplayHeader from "../QuizGameplayHeader/QuizGameplayHeader";
 import QuizResultSection from "../QuizResultSection/QuizResultSection";
 import QuizTimer from "../QuizTimer/QuizTimer";
 import QuizRadioGroup from "./components/QuizRadioGroup";
-import { updateQuizInfo } from "../../../shared/utils/actions/quiz/updateQuizInfo";
+import { updateQuizPlay } from "../../../shared/utils/actions/quiz/updateQuizPlay";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FaMinusCircle } from "react-icons/fa";
@@ -73,7 +73,7 @@ export default function QuizGameplaySection({quiz, user, questions, answers}: IQ
     );
     setScore(totalScore);
     setIsFinished(true);
-    updateQuizInfo(
+    updateQuizPlay(
       quiz.id,
       quiz.plays,
       quiz.average_score,
