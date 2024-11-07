@@ -10,8 +10,9 @@ interface FormData {
   questions: { questions: Question[] };
 }
 
+const supabase = createClient();
+
 export const createQuiz = async (d: FormData) => {
-  const supabase = createClient();
   const {
     data: { user },
   } = await getUser();
