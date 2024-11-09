@@ -1,8 +1,4 @@
 "use client";
-import { deleteAvatar } from "@/components/shared/utils/actions/user/deleteAvatar";
-import { uploadAvatar } from "@/components/shared/utils/actions/user/uploadAvatar";
-import { updateUsername } from "@/components/shared/utils/actions/user/updateUsername";
-import { DeleteIcon } from "@chakra-ui/icons";
 import {
   Button,
   Card,
@@ -11,10 +7,11 @@ import {
   FormLabel,
   Heading,
   Input,
-  Spinner,
+  useToast,
 } from "@chakra-ui/react";
 import Image from "next/image";
-import { ChangeEvent, useState } from "react";
+import { updateUserData } from "@/components/shared/utils/actions/user/updateUserData";
+import { useRef } from "react";
 
 interface IMyProfileProps {
   id: string;
@@ -25,89 +22,81 @@ interface IMyProfileProps {
 }
 
 export default function MyProfile({ id, profile }: IMyProfileProps) {
-  const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
+  const formRef = useRef<HTMLFormElement>(null);
 
-  const handleAvatarUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
-    setIsLoading(true);
-    const file = e.target.files[0];
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("id", id);
-    await uploadAvatar(formData);
-    setIsLoading(false);
-  };
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const formData = new FormData(formRef.current || undefined);
+    const success = await updateUserData(formData);
 
-  const handleUsernameUpdate = async (e: ChangeEvent<HTMLInputElement>) => {
-    const formData = new FormData();
-    formData.append("username", e.target.value);
-    formData.append("id", id);
-
-    await updateUsername(formData);
+    if (success) {
+      toast({
+        title: "Profile updated",
+        status: "success",
+        duration: 3000,
+      });
+      formRef.current?.reset();
+    } else {
+      toast({
+        title: "Failed to update profile",
+        status: "error",
+        duration: 3000,
+      });
+    }
   };
 
   return (
-    <Flex
-      flexDir="column"
-      gap={2}
-      align="center"
-      mt={8}
-    >
-      <Card>
-        <CardBody border="1px solid grey">
-          <Heading
-            as="h1"
-            size="lg"
-          >
-            My Profile
-          </Heading>
-          <div>
-            <FormLabel>Username:</FormLabel>
-            <Input
-              type="text"
-              defaultValue={profile?.username}
-              onBlur={(e) => handleUsernameUpdate(e)}
-            />
-          </div>
+    <form ref={formRef} onSubmit={handleSubmit}>
+      <Flex
+        flexDir="column"
+        gap={2}
+        align="center"
+        mt={8}
+      >
+        <Card>
+          <CardBody border="1px solid grey">
+            <Heading
+              as="h1"
+              size="lg"
+            >
+              My Profile
+            </Heading>
+            <div>
+              <FormLabel>Username:</FormLabel>
+              <Input
+                type="text"
+                name="username"
+                defaultValue={profile?.username}
+              />
+            </div>
 
-          {isLoading ? (
-            <Spinner
-              thickness="4px"
-              speed="0.65s"
-              size="xl"
-            />
-          ) : (
-            <Image
-              style={{ borderRadius: "50%", width: "100px", height: "100px" }}
-              src={
-                profile.avatar ? profile.avatar : "https://fakeimg.pl/100x100/"
-              }
-              alt="profile avatar"
-              width={100}
-              height={100}
-              priority={true}
-            />
-          )}
-          <Flex
-            gap={2}
-            align="baseline"
-          >
-            {profile.avatar && (
-              <Button
-                onClick={() => deleteAvatar(profile.avatar)}
-                colorScheme="red"
-              >
-                <DeleteIcon />
-              </Button>
-            )}
-            <Input
-              type="file"
-              onChange={(e) => handleAvatarUpload(e)}
-              border={0}
-            />
-          </Flex>
-        </CardBody>
-      </Card>
-    </Flex>
+              <Image
+                style={{ borderRadius: "50%", width: "100px", height: "100px" }}
+                src={
+                   profile.avatar || "https://fakeimg.pl/100x100/"
+                }
+                alt="profile avatar"
+                width={100}
+                height={100}
+                priority={true}
+              />
+            
+            <Flex
+              gap={2}
+              align="baseline"
+            >
+              <Input
+                type="file"
+                name="avatar"
+                border={0}
+              />
+            </Flex>
+            <input type="hidden" name="id" value={id} />
+            <Button type="submit">Save Changes</Button>
+          </CardBody>
+        </Card>
+      </Flex>
+    </form>
   );
 }
