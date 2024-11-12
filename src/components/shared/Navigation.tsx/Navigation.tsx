@@ -1,4 +1,5 @@
-import { navItems } from "../navigation-items";
+import Link from "next/link";
+import { navItems } from "../utils/navigation-items";
 import styles from "./Navigation.module.css";
 
 export default function Navigation() {
@@ -7,13 +8,13 @@ export default function Navigation() {
       <div className={styles.navList}>
         <div className={styles.navActions}>
           {navItems.map((item) => (
-            <a
+            <Link
               key={item.href}
               className={styles.navLink}
               href={item.href}
             >
               {item.text}
-            </a>
+            </Link>
           ))}
         </div>
         <div>

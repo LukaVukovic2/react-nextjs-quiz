@@ -32,7 +32,6 @@ export const createQuiz = async (d: FormData) => {
     revalidatePath("/", "layout");
     return true;
   } catch (error) {
-    await supabase.from("quiz").delete().match({ id: quiz.id });
     console.error("Error occurred:", error);
     return false;
   }

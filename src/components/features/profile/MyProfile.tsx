@@ -71,16 +71,16 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
               />
             </div>
 
-              <Image
-                style={{ borderRadius: "50%", width: "100px", height: "100px" }}
-                src={
-                   profile.avatar || "https://fakeimg.pl/100x100/"
-                }
-                alt="profile avatar"
-                width={100}
-                height={100}
-                priority={true}
-              />
+            <Image
+              style={{ borderRadius: "50%", width: "100px", height: "100px" }}
+              src={
+                profile.avatar || "https://fakeimg.pl/100x100/"
+              }
+              alt="profile avatar"
+              width={100}
+              height={100}
+              priority={true}
+            />
             
             <Flex
               gap={2}

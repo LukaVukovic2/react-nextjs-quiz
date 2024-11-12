@@ -4,8 +4,16 @@ import { Review } from "@/app/typings/review";
 import TimeAgo from "@/components/core/TimeAgo/TimeAgo";
 import { User } from "@/app/typings/user";
 
-export default function QuizReviewItem({ review, reviewer }: { review: Review, reviewer: User }) {
-  const date = new Date(review.created_at || "");
+interface IQuizReviewItemProps {
+  review: {
+    reviewDetails: Review;
+    reviewer: User;
+  }
+}
+
+export default function QuizReviewItem({review}: IQuizReviewItemProps) {
+  const { reviewer, reviewDetails } = review;
+  const date = new Date(reviewDetails.created_at || "");
 
   return (
     <>
@@ -14,7 +22,7 @@ export default function QuizReviewItem({ review, reviewer }: { review: Review, r
           <Avatar src={reviewer?.avatar ? reviewer.avatar : "https://fakeimg.pl/48x48/"} />
           <Flex alignItems="center" gap={1}>
             <Star />
-            <Text>{review.rating}</Text>
+            <Text>{reviewDetails.rating}</Text>
           </Flex>
         </Flex>
 
@@ -25,7 +33,7 @@ export default function QuizReviewItem({ review, reviewer }: { review: Review, r
           </Flex>
           <Flex>
           </Flex>
-          <div>{review.comment || "-"}</div>
+          <div>{reviewDetails.comment || "-"}</div>
         </Flex>
       </Flex>
       <hr />

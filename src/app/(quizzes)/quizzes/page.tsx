@@ -1,7 +1,5 @@
-import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
 import QuizList from "@/components/features/quizzes/QuizList/QuizList";
 import { Heading } from "@chakra-ui/react";
-import { Suspense } from "react";
 
 export default async function QuizListPage() {
   return (
@@ -12,9 +10,7 @@ export default async function QuizListPage() {
       >
         Quiz List
       </Heading>
-      <Suspense fallback={<LoadingSpinner text="Loading quizzes..." />}>
-        <QuizList />
-      </Suspense>
+      <QuizList />
     </>
   );
 }

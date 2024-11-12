@@ -131,8 +131,7 @@ export default function QuizGameplaySection({quiz, user, questions, answers}: IQ
                     gap={3}
                     alignItems="stretch"
                   >
-                    {index + 1 + ". "}
-                    {question.title}
+                    {index + 1 + ". " + question.title}
                     {isFinished &&
                       (selectedAnswers.get(question.id) ===
                       answers.find(

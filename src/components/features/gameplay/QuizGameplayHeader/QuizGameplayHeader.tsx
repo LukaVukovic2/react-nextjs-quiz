@@ -9,8 +9,7 @@ export default function QuizGameplayHeader({children, quiz, user}: {children: Re
         align="center"
         gap={2}
       >
-
-        <Avatar src={user.avatar} />
+        <Avatar src={user?.avatar} />
         <Text>{user?.username}</Text>
       </Flex>
       <Heading

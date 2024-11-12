@@ -14,7 +14,7 @@ interface MyQuizzesProps {
   }>;
 }
 
-export default function MyQuizzes(quizzes: MyQuizzesProps) {
+export default function MyQuizzes({quizzes}: MyQuizzesProps) {
   return (
     <Flex
       flexDir="column"
@@ -25,9 +25,9 @@ export default function MyQuizzes(quizzes: MyQuizzesProps) {
           width: "500px",
         }}
       >
-        {quizzes.quizzes.length > 0 && quizzes.quizzes.map((quiz: {quiz: Quiz}, index) => (
+        {quizzes.length > 0 && quizzes.map(({quiz}: {quiz: Quiz}, index) => (
           <ListItem
-            key={quiz.quiz.id}
+            key={quiz.id}
             display="flex"
             justifyContent="space-between"
             alignItems="center"
@@ -38,11 +38,11 @@ export default function MyQuizzes(quizzes: MyQuizzesProps) {
             }}
           >
             <div>
-              <Heading as="h2" size="md">{quiz.quiz.title}</Heading>
-              <Text>{quiz.quiz.category}</Text>
-              <Text>{quiz.quiz.time}</Text>
+              <Heading as="h2" size="md">{quiz.title}</Heading>
+              <Text>{quiz.category}</Text>
+              <Text>{quiz.time}</Text>
             </div>
-            <QuizMenuDropdown quiz={quiz.quiz} questions_and_answers={quizzes.quizzes[index].questions_and_answers} />
+            <QuizMenuDropdown quiz={quiz} questions_and_answers={quizzes[index].questions_and_answers} />
           </ListItem>
         ))}
       </List>

@@ -53,7 +53,8 @@ export default function QuizForm() {
     correct: false,
     incorrect: false,
   });
-  const isFormValid = activeStep == 0 ? isValid : questions.length > 0;
+  const minQuizQuestionCount = process.env.MIN_QUIZ_QUESTION_COUNT ? +process.env.MIN_QUIZ_QUESTION_COUNT : 0;
+  const isFormValid = activeStep == 0 ? isValid : questions.length > minQuizQuestionCount;
   const validateQuestion = (answer: Answer) => {
     if (answer.correct_answer) {
       setCurrentQuestion((prev) => ({ ...prev, correct: true }));

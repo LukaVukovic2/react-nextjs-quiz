@@ -59,7 +59,7 @@ const deletePreviousAvatar = async (id: string) => {
   }
 
   if (files && files.length > 0) {
-    const filePaths = files.map((file) => `${id}/${file.name}`);
+    const filePaths = files.map((file: { name: string }) => `${id}/${file.name}`);
     const { error: removeError } = await supabase.storage
       .from("avatars")
       .remove(filePaths);

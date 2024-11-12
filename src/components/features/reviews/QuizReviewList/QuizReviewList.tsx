@@ -5,7 +5,15 @@ import Pagination from "@/components/shared/Pagination/Pagination";
 import { useSearchParams } from "next/navigation";
 import { User } from "@/app/typings/user";
 
-export default function QuizReviewList({id, reviews, reviewers}: {id: string; reviews: Review[]; reviewers: User[]}) {
+interface IQuizReviewListProps {
+  id: string;
+  reviews: {
+    reviewDetails: Review;
+    reviewer: User;
+  }[];
+}
+
+export default function QuizReviewList({id, reviews}: IQuizReviewListProps) {
   const searchParams = useSearchParams();
   const offset = 5;
 
@@ -18,14 +26,12 @@ export default function QuizReviewList({id, reviews, reviewers}: {id: string; re
 
   return reviews && reviewsByPage && reviewsByPage.length ? (
     <>
-      {reviewsByPage.map((review) => {
-        const reviewer = reviewers.find((reviewer) => reviewer.id === review.user_id);
-        return reviewer && <QuizReviewItem
-          key={review.id}
+      {reviewsByPage.map((review) => (
+        <QuizReviewItem
+          key={review.reviewDetails.id}
           review={review}
-          reviewer={reviewer}
         />
-      })}
+      ))}
       <Pagination id={id} currentPage={currentPage} totalPages={Math.ceil(reviews.length / offset)}/>
     </>
   ) : (
