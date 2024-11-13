@@ -1,7 +1,17 @@
-export default function Leaderboard() {
+import { Result } from "@/app/typings/result";
+
+export default function Leaderboard({topResults}: {topResults: Result[]}) {
   return (
-    <div>
-      <h1>Leaderboard tototo</h1>
-    </div>
+    <ol>
+      {
+        topResults.map((result) => (
+          <li key={result.id}>
+            <p>{result.username}</p>
+            <p>{result.score}</p>
+            <p>{result.time}</p>
+          </li>
+        ))
+      }
+    </ol>
   )
 }

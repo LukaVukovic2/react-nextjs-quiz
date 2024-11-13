@@ -1,15 +1,9 @@
+"use client";
 import styles from "./QuizList.module.css";
 import QuizItem from "../QuizItem/QuizItem";
-import createClient from "@/components/shared/utils/createClient";
-import { notFound } from "next/navigation";
 import { Quiz } from "@/app/typings/quiz";
 
-export default async function QuizList() {
-  const supabase = createClient();
-  const { data: quizzes, error } = await supabase.rpc("get_quizzes");
-
-  if (error || !quizzes) notFound();
-
+export default function QuizList({quizzes}: {quizzes: Quiz[]}) {
   return (
     <div className={styles.quizListContainer}>
       {quizzes && quizzes?.length > 0 ? (
