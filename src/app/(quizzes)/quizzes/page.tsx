@@ -1,15 +1,11 @@
 import QuizList from "@/components/features/quizzes/QuizList/QuizList";
-import { Heading } from "@chakra-ui/react";
 
 export default async function QuizListPage() {
   return (
     <>
-      <Heading
-        as="h1"
-        size="lg"
-      >
+      <h1>
         Quiz List
-      </Heading>
+      </h1>
       <QuizList />
     </>
   );

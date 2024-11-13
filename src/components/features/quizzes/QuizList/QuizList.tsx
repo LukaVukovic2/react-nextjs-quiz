@@ -1,5 +1,4 @@
 import styles from "./QuizList.module.css";
-import { Text } from "@chakra-ui/react";
 import QuizItem from "../QuizItem/QuizItem";
 import createClient from "@/components/shared/utils/createClient";
 import { notFound } from "next/navigation";
@@ -21,7 +20,7 @@ export default async function QuizList() {
           />
         ))
       ) : (
-        <Text>No quizzes found</Text>
+        <p>No quizzes found</p>
       )}
     </div>
   );

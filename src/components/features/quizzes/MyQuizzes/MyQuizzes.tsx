@@ -1,3 +1,4 @@
+"use client";
 import QuizMenuDropdown from "../QuizMenuDropdown/QuizMenuDropdown";
 import { Flex, Heading, List, ListItem, Text } from "@chakra-ui/react";
 import { Quiz } from "@/app/typings/quiz";

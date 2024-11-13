@@ -25,7 +25,7 @@ export default function QuizTabsClient({ quiz, questions, user, answers, childre
   }, []);
 
   if (!loaded) {
-    return <LoadingSpinner text="Initializing quiz, please wait..." />;
+    return <LoadingSpinner text="Loading quiz data..." />;
   }
   return (
     <Tabs

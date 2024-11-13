@@ -1,7 +1,6 @@
 import MyQuizzes from "@/components/features/quizzes/MyQuizzes/MyQuizzes";
 import { getUser } from "@/components/shared/utils/actions/user/getUser";
 import createClient from "@/components/shared/utils/createClient";
-import { Heading } from "@chakra-ui/react";
 import { notFound } from "next/navigation";
 
 export default async function MyQuizzesPage() {
@@ -18,7 +17,7 @@ export default async function MyQuizzesPage() {
   }
   return (
     <>
-      <Heading as="h1" size="md">My Quizzes</Heading>
+      <h1>My Quizzes</h1>
       <MyQuizzes quizzes={quizzes} />
     </>
   );
