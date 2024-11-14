@@ -25,8 +25,10 @@ import { useForm } from "react-hook-form";
 import { Question } from "@/app/typings/question";
 import { Answer } from "@/app/typings/answer";
 import { v4 as uuidv4 } from "uuid";
+import { useRouter } from "next/navigation";
 
 export default function QuizForm() {
+  const { push } = useRouter();
   const toast = useToast();
   const { activeStep, setActiveStep } = useSteps({
     index: 0,
@@ -51,7 +53,8 @@ export default function QuizForm() {
     correct: false,
     incorrect: false,
   });
-  const isFormValid = activeStep == 0 ? isValid : questions.length > 0;
+  const minQuizQuestionCount = process.env.MIN_QUIZ_QUESTION_COUNT ? +process.env.MIN_QUIZ_QUESTION_COUNT : 0;
+  const isFormValid = activeStep == 0 ? isValid : questions.length > minQuizQuestionCount;
   const validateQuestion = (answer: Answer) => {
     if (answer.correct_answer) {
       setCurrentQuestion((prev) => ({ ...prev, correct: true }));
@@ -115,12 +118,14 @@ export default function QuizForm() {
       },
     };
     const success = await createQuiz(formData);
+    
     toast({
       title: success ? "Quiz created" : "Error creating quiz",
       status: success ? "success" : "error",
       duration: 5000,
       isClosable: true,
     });
+    push("/quizzes");
   };
 
   return (

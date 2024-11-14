@@ -23,7 +23,7 @@ export default function QuizReviewForm() {
     formState: { isValid, isSubmitting },
     reset,
     getValues
-  } = useForm();
+  } = useForm({ defaultValues: { rating: "3", comment: "" } });
   const toast = useToast();
   const id = useParams().id as string;
 

@@ -1,51 +1,40 @@
-"use server";
-import createClient from "@/components/shared/utils/createClient";
+"use client";
+import { Review } from "@/app/typings/review";
 import QuizReviewItem from "../QuizReviewItem/QuizReviewItem";
-import NextLink from "next/link";
-import { Button, Flex } from "@chakra-ui/react";
+import Pagination from "@/components/shared/Pagination/Pagination";
+import { useSearchParams } from "next/navigation";
+import { User } from "@/app/typings/user";
 
-export default async function QuizReviewList({id, page}: {id: string; page?: string;}) {
-  const supabase = createClient();
-  const offset: number = 5;
+interface IQuizReviewListProps {
+  id: string;
+  reviews: {
+    reviewDetails: Review;
+    reviewer: User;
+  }[];
+}
 
+export default function QuizReviewList({id, reviews}: IQuizReviewListProps) {
+  const searchParams = useSearchParams();
+  const offset = 5;
+
+  const page = searchParams.get("page");
   const currentPage = page ? +page : 1;
+
   const from = (currentPage - 1) * offset + 1;
   const to = from + offset - 1;
-
-  const { data: reviews } = await supabase
-    .from("review")
-    .select("*")
-    .eq("quiz_id", id);
-
   const reviewsByPage = reviews?.slice(from - 1, to);
 
-  return (
-    <div>
-      {reviews && reviewsByPage && reviewsByPage.length ? (
-        <>
-          {reviewsByPage.map((review) => (
-            <QuizReviewItem
-              key={review.id}
-              review={review}
-            />
-          ))}
-          <Flex
-            justifyContent="space-between"
-            mt={2}
-          >
-            <NextLink href={`/quizzes/${id}?page=${currentPage - 1}`}>
-              <Button visibility={currentPage > 1 ? "visible" : "hidden"}>
-                Previous
-              </Button>
-            </NextLink>
-            <NextLink href={`/quizzes/${id}?page=${currentPage + 1}`}>
-              <Button visibility={reviews.length > to ? "visible" : "hidden"}>Next</Button>
-            </NextLink>
-          </Flex>
-        </>
-      ) : (
-        <div>No reviews found</div>
-      )}
-    </div>
+  return reviews && reviewsByPage && reviewsByPage.length ? (
+    <>
+      {reviewsByPage.map((review) => (
+        <QuizReviewItem
+          key={review.reviewDetails.id}
+          review={review}
+        />
+      ))}
+      <Pagination id={id} currentPage={currentPage} totalPages={Math.ceil(reviews.length / offset)}/>
+    </>
+  ) : (
+    <div>No reviews found</div>
   );
 }

@@ -33,6 +33,7 @@ const styles = {
   fontSize: "0.8rem",
 };
 
+
 export default function QuizUpdateForm({ quiz, questions_and_answers, onClose }: QuizUpdateFormProps) {
   const {
     register,
@@ -46,6 +47,14 @@ export default function QuizUpdateForm({ quiz, questions_and_answers, onClose }:
   const [dirtyAnswers, setDirtyAnswers] = useState<Answer[]>([]);
   const [deletedAnswers, setDeletedAnswers] = useState<string[]>([]);
   const [answersArr, setAnswersArr] = useState<Answer[]>([]);
+
+  const formDataEntries = {
+    quiz: dirtyQuizFields,
+    questions: dirtyQuestions,
+    answers: dirtyAnswers,
+    deletedQuestions: deletedQuestions,
+    deletedAnswers: deletedAnswers,
+  };
   
   const toast = useToast();
 
@@ -213,11 +222,10 @@ export default function QuizUpdateForm({ quiz, questions_and_answers, onClose }:
 
   const handleSubmit = async () => {
     const formData = new FormData();
-    formData.append("quiz", JSON.stringify(dirtyQuizFields));
-    formData.append("questions", JSON.stringify(dirtyQuestions));
-    formData.append("answers", JSON.stringify(dirtyAnswers));
-    formData.append("deletedQuestions", JSON.stringify(deletedQuestions));
-    formData.append("deletedAnswers", JSON.stringify(deletedAnswers));
+    
+    Object.entries(formDataEntries).forEach(([key, value]) => {
+      formData.append(key, JSON.stringify(value));
+    });
 
     const success = await updateQuiz(formData);
     toast({

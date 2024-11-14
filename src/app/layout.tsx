@@ -16,7 +16,7 @@ export default function RootLayout({
       <head>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
       </head>
-      <body style={{minHeight: "100vh"}}>
+      <body style={{minHeight: "100vh", display: "flex", flexWrap: "wrap", flexDirection: "column"}}>
         <Providers>
           {children}
         </Providers>

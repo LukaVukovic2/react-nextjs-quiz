@@ -3,11 +3,11 @@ import QuizGameplayHeader from "../QuizGameplayHeader/QuizGameplayHeader";
 import QuizResultSection from "../QuizResultSection/QuizResultSection";
 import QuizTimer from "../QuizTimer/QuizTimer";
 import QuizRadioGroup from "./components/QuizRadioGroup";
-import {  updateQuizInfo } from "../../../shared/utils/actions/quiz/updateQuizInfo";
+import { updateQuizPlay } from "../../../shared/utils/actions/quiz/updateQuizPlay";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FaMinusCircle } from "react-icons/fa";
-import { Flex, Button, Heading } from "@chakra-ui/react";
+import { Flex, Button, Heading, Box } from "@chakra-ui/react";
 import { chakra } from "@chakra-ui/react";
 import { CheckCircleIcon, RepeatIcon } from "@chakra-ui/icons";
 import { Quiz } from "@/app/typings/quiz";
@@ -73,7 +73,7 @@ export default function QuizGameplaySection({quiz, user, questions, answers}: IQ
     );
     setScore(totalScore);
     setIsFinished(true);
-    updateQuizInfo(
+    updateQuizPlay(
       quiz.id,
       quiz.plays,
       quiz.average_score,
@@ -121,7 +121,7 @@ export default function QuizGameplaySection({quiz, user, questions, answers}: IQ
           )}
           {questions.map((question, index) => {
             return (
-              <div key={question.id}>
+              <Box key={question.id}>
                 <Heading
                   as="h2"
                   size="sm"
@@ -131,8 +131,7 @@ export default function QuizGameplaySection({quiz, user, questions, answers}: IQ
                     gap={3}
                     alignItems="stretch"
                   >
-                    {index + 1 + ". "}
-                    {question.title}
+                    {index + 1 + ". " + question.title}
                     {isFinished &&
                       (selectedAnswers.get(question.id) ===
                       answers.find(
@@ -168,7 +167,7 @@ export default function QuizGameplaySection({quiz, user, questions, answers}: IQ
                   )}
                 />
                 <br />
-              </div>
+              </Box>
             );
           })}
           <Button

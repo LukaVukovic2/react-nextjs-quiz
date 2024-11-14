@@ -1,25 +1,36 @@
+"use client";
 import styles from "./QuizList.module.css";
-import { Heading, Text } from "@chakra-ui/react";
 import QuizItem from "../QuizItem/QuizItem";
 import { Quiz } from "@/app/typings/quiz";
+import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
+import { useState, useEffect } from "react";
+import { Heading } from "@chakra-ui/react";
 
-export default async function QuizList({quizzes}: {quizzes: Quiz[]}) {
+export default function QuizList({quizzes}: {quizzes: Quiz[]}) {
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    setLoaded(true);
+  }, []);
+
+  if (!loaded) {
+    return <LoadingSpinner text="Loading quizzes..." />;
+  }
   return (
     <>
-      <Heading
-        as="h1"
-        size="lg"
-        className={styles.title}
-      >
+      <Heading as="h1">
         Quiz List
       </Heading>
       <div className={styles.quizListContainer}>
         {quizzes && quizzes?.length > 0 ? (
-          quizzes.map((quiz) => (
-            <QuizItem key={quiz.id} quiz={quiz} />
+          quizzes.map((quiz: Quiz) => (
+            <QuizItem
+              key={quiz.id}
+              quiz={quiz}
+            />
           ))
         ) : (
-          <Text>No quizzes found</Text>
+          <p>No quizzes found</p>
         )}
       </div>
     </>

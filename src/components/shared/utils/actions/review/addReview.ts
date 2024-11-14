@@ -3,13 +3,15 @@ import { Review } from "@/app/typings/review";
 import createClient from "../../createClient";
 import { v4 as uuidv4 } from 'uuid';
 import { revalidatePath } from "next/cache";
+import { getUser } from "../user/getUser";
+
+const supabase = createClient();
 
 export const addReview = async (data: FormData, id: string) => {
-  const supabase = createClient();
   const comment = data.get("comment") as string || "";
   const rating = Number(data.get("rating")) || 1;
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await getUser();
 
   if (!user) {
     console.error("User is null");
@@ -24,7 +26,7 @@ export const addReview = async (data: FormData, id: string) => {
     quiz_id: id,
   }
 
-  const { error } = await supabase.from("review").insert(newReview);
+  const { error } = await supabase.rpc("add_review", { newreview: newReview });
   
   if (error) {
     console.error("Error adding review:", error.message);
