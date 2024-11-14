@@ -4,5 +4,5 @@ export interface Result {
   quiz_id: string;
   score: number;
   time: number;
-  username: string;
+  username?: string;
 }
