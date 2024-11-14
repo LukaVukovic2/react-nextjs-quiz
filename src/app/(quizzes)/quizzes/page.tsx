@@ -1,12 +1,12 @@
 import QuizList from "@/components/features/quizzes/QuizList/QuizList";
+import createClient from "@/components/shared/utils/createClient";
+import { notFound } from "next/navigation";
 
 export default async function QuizListPage() {
-  return (
-    <>
-      <h1>
-        Quiz List
-      </h1>
-      <QuizList />
-    </>
-  );
+  const supabase = createClient();
+  const { data: quizzes, error } = await supabase.rpc("get_quizzes");
+
+  if (error || !quizzes) notFound();
+
+  return <QuizList quizzes={quizzes} />;
 }

@@ -15,10 +15,5 @@ export default async function MyQuizzesPage() {
   if(!quizzes || !(Array.isArray(quizzes) && quizzes.length > 0) || error) {
     notFound();
   }
-  return (
-    <>
-      <h1>My Quizzes</h1>
-      <MyQuizzes quizzes={quizzes} />
-    </>
-  );
+  return <MyQuizzes quizzes={quizzes} />;
 }

@@ -4,6 +4,8 @@ import { Flex, Heading, List, ListItem, Text } from "@chakra-ui/react";
 import { Quiz } from "@/app/typings/quiz";
 import { Question } from "@/app/typings/question";
 import { Answer } from "@/app/typings/answer";
+import { useEffect, useState } from "react";
+import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
 
 interface MyQuizzesProps {
   quizzes: Array<{
@@ -16,11 +18,23 @@ interface MyQuizzesProps {
 }
 
 export default function MyQuizzes({quizzes}: MyQuizzesProps) {
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    setLoaded(true);
+  }, []);
+
+  if (!loaded) {
+    return <LoadingSpinner text="Loading your quizzes..." />;
+  }
   return (
     <Flex
       flexDir="column"
       alignItems="center"
     >
+      <Heading as="h1">
+        My Quizzes
+      </Heading>
       <List
         style={{
           width: "500px",
