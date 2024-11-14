@@ -8,12 +8,5 @@ export default async function QuizListPage() {
 
   if (error || !quizzes) notFound();
 
-  return (
-    <>
-      <h1>
-        Quiz List
-      </h1>
-      <QuizList quizzes={quizzes} />
-    </>
-  );
+  return <QuizList quizzes={quizzes} />;
 }
