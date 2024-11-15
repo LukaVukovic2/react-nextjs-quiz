@@ -15,7 +15,7 @@ import { User } from "@/app/typings/user";
 import { Answer } from "@/app/typings/answer";
 import { Question } from "@/app/typings/question";
 import { Result } from "@/app/typings/result";
-import {v4 as uuidv4} from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import { updateLeaderboard } from "@/components/shared/utils/actions/leaderboard/updateLeaderboard";
 import { ConfettiComponent as Confetti } from "@/components/core/Confetti/Confetti";
 import { formatToSeconds } from "@/components/shared/utils/formatToSeconds";
@@ -25,16 +25,27 @@ interface IQuizGameplayProps {
   user: User;
   questions: Question[];
   answers: Answer[];
+  setActiveTab: (index: number) => void;
 }
 
-const initializeSelectedAnswers = (questions: Question[]): Map<string, string | null> => {
+const initializeSelectedAnswers = (
+  questions: Question[]
+): Map<string, string | null> => {
   const map = new Map<string, string | null>();
   questions.forEach((question) => map.set(question.id, null));
   return map;
 };
 
-export default function QuizGameplaySection({quiz, user, questions, answers}: IQuizGameplayProps) {
-  const [selectedAnswers, setSelectedAnswers] = useState<Map<string, string | null>>(initializeSelectedAnswers(questions));
+export default function QuizGameplaySection({
+  quiz,
+  user,
+  questions,
+  answers,
+  setActiveTab,
+}: IQuizGameplayProps) {
+  const [selectedAnswers, setSelectedAnswers] = useState<
+    Map<string, string | null>
+  >(initializeSelectedAnswers(questions));
   const [score, setScore] = useState<number>();
   const [hasStarted, setHasStarted] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
@@ -42,11 +53,15 @@ export default function QuizGameplaySection({quiz, user, questions, answers}: IQ
   const [isTopResult, setIsTopResult] = useState(false);
   const { control, reset, setValue } = useForm();
 
-  const groupedAnswers = useMemo(() => answers?.reduce((acc, answer) => {
-    acc[answer.question_id] = acc[answer.question_id] || [];
-    acc[answer.question_id].push(answer);
-    return acc;
-  }, {} as { [key: string]: Answer[] }), [answers]);
+  const groupedAnswers = useMemo(
+    () =>
+      answers?.reduce((acc, answer) => {
+        acc[answer.question_id] = acc[answer.question_id] || [];
+        acc[answer.question_id].push(answer);
+        return acc;
+      }, {} as { [key: string]: Answer[] }),
+    [answers]
+  );
 
   const handleSelectAnswer = (questionId: string, answerId: string) => {
     setSelectedAnswers((prev) => new Map(prev.set(questionId, answerId)));
@@ -60,7 +75,7 @@ export default function QuizGameplaySection({quiz, user, questions, answers}: IQ
           (answer) => answer.question_id === questionId && answer.correct_answer
         );
         return correctAnswer?.id === answerId ? score + 1 : score;
-      }, 
+      },
       0
     );
     setScore(totalScore);
@@ -81,7 +96,7 @@ export default function QuizGameplaySection({quiz, user, questions, answers}: IQ
     setIsTopResult(success);
     const timeout = setTimeout(() => {
       setIsTopResult(false);
-    }, 5000);
+    }, 10000);
     return () => clearTimeout(timeout);
   };
 
@@ -100,9 +115,29 @@ export default function QuizGameplaySection({quiz, user, questions, answers}: IQ
       flexDir="column"
       gap={1}
       maxWidth="600px"
+      position="relative"
     >
+      {
+        isTopResult && <Button
+          position="fixed"
+          bottom="50%"
+          right="20px"
+          fontSize="12px"
+          colorScheme="green"
+          onClick={() => setActiveTab(1)}
+          wordBreak="break-word"
+          w="150px"
+          whiteSpace="normal"
+        >
+          High Score! Go to leaderboard
+          <i className="fa-solid fa-arrow-right"></i>
+        </Button>
+      }
       <Confetti isShown={isTopResult} />
-      <QuizGameplayHeader quiz={quiz} user={user}>
+      <QuizGameplayHeader
+        quiz={quiz}
+        user={user}
+      >
         <QuizTimer
           key={resetKey}
           quizTime={formatToSeconds(quiz.time)}

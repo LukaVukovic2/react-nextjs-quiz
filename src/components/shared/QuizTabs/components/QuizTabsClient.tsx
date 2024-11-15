@@ -28,6 +28,7 @@ export default function QuizTabsClient({
   children,
 }: IQuizTabsClientProps) {
   const [loaded, setLoaded] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
     setLoaded(true);
@@ -40,6 +41,8 @@ export default function QuizTabsClient({
     <Tabs
       isFitted
       variant="enclosed"
+      index={activeTab}
+      onChange={(index) => setActiveTab(index)}
     >
       <TabList mb="1em">
         <Tab>Gameplay</Tab>
@@ -54,6 +57,7 @@ export default function QuizTabsClient({
               quiz={quiz}
               questions={questions}
               answers={answers}
+              setActiveTab={setActiveTab}
             />
           ) : (
             "Data not found"

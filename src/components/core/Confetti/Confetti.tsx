@@ -5,18 +5,15 @@ import Confetti from "react-confetti";
 
 export const ConfettiComponent = ({isShown}: {isShown: boolean}) => {
   const { width, height } = useWindowSize();
-  const [pieces, setPieces] = useState(200);
+  const [pieces, setPieces] = useState(0);
 
   useEffect(() => {
-    if (!isShown) {
-      setPieces(0);
-    } else {
-      setPieces(200);
-    }
+    setPieces(isShown ? 200 : 0);
   }, [isShown]);
 
   return (
     <Confetti 
+      style={{ position: "fixed", top: 0, left: 0 }}
       width={width ?? 0}
       height={height ?? 0}
       numberOfPieces={pieces}

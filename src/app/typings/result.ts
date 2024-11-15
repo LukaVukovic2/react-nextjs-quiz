@@ -5,4 +5,5 @@ export interface Result {
   score: number;
   time: number;
   username?: string;
+  created_at?: Date;
 }
