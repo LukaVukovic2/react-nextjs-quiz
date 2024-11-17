@@ -7,8 +7,9 @@ import { User } from "@/app/typings/user";
 import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
 import QuizGameplaySection from "@/components/features/gameplay/QuizGameplaySection/QuizGameplaySection";
 import QuizLeaderboard from "@/components/features/leaderboard/QuizLeaderboard/QuizLeaderboard";
-import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@chakra-ui/react";
+import { Tabs, TabList, Tab, TabPanels, TabPanel, Flex } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import "./QuizTabsClient.css"
 
 interface IQuizTabsClientProps {
   quiz: Quiz;
@@ -49,7 +50,7 @@ export default function QuizTabsClient({
         <Tab>Leaderboard</Tab>
         <Tab>Reviews</Tab>
       </TabList>
-      <TabPanels>
+      <TabPanels flex={1}>
         <TabPanel>
           {questions && answers ? (
             <QuizGameplaySection
@@ -64,7 +65,7 @@ export default function QuizTabsClient({
           )}
         </TabPanel>
         <TabPanel>
-          {topResults ? (
+          {topResults.length > 0 ? (
             <QuizLeaderboard topResults={topResults} />
           ) : (
             "Leaderboard is empty"

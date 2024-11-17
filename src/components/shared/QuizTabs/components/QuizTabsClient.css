@@ -1,0 +1,21 @@
+body .css-1xpribl{
+  display: flex;
+}
+
+.chakra-tabs{
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  flex: 1;
+}
+
+.chakra-tabs__tab-panels{
+  flex: 1;
+  display: flex;
+}
+
+.chakra-tabs__tab-panel{
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}

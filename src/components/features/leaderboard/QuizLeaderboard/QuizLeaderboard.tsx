@@ -28,7 +28,7 @@ export default function Leaderboard({ topResults }: { topResults: Result[] }) {
   };
 
   return (
-    <>
+    <Flex flexDirection="column" width="600px" gap={2}>
       <Heading
         as="h1"
         size="lg"
@@ -36,45 +36,43 @@ export default function Leaderboard({ topResults }: { topResults: Result[] }) {
       >
         Leaderboard
       </Heading>
-      <Center>
-        <List w="50%">
-          {topResults.map((result, index) => (
-            <ListItem
-              key={result.id}
-              className={`${styles.listItem} ${user?.id == result.user_id ? styles.highlight : styles.regular}`}
-              p={2}
-            >
-              <Flex gap={3}>
-                <Text
-                  w={6}
-                  textAlign="right"
-                >
-                  {index + 1}.
+      <List>
+        {topResults.map((result, index) => (
+          <ListItem
+            key={result.id}
+            className={`${styles.listItem} ${user?.id == result.user_id ? styles.highlight : styles.regular}`}
+            p={2}
+          >
+            <Flex gap={3}>
+              <Text
+                w={6}
+                textAlign="right"
+              >
+                {index + 1}.
+              </Text>
+              <Flex
+                flex={1}
+                justifyContent="space-between"
+              >
+                <Text flex={2}>
+                  {result.username}
+                  {user?.id == result.user_id &&
+                    recentResultCheck(result.created_at ?? new Date()) && (
+                      <span className={styles.recent}>NEW</span>
+                    )}
                 </Text>
-                <Flex
+                <Text
                   flex={1}
-                  justifyContent="space-between"
+                  fontWeight="bold"
                 >
-                  <Text flex={2}>
-                    {result.username}
-                    {user?.id == result.user_id &&
-                      recentResultCheck(result.created_at ?? new Date()) && (
-                        <span className={styles.recent}>NEW</span>
-                      )}
-                  </Text>
-                  <Text
-                    flex={1}
-                    fontWeight="bold"
-                  >
-                    {result.score}
-                  </Text>
-                  <Text>{result.time}</Text>
-                </Flex>
+                  {result.score}
+                </Text>
+                <Text>{result.time}</Text>
               </Flex>
-            </ListItem>
-          ))}
-        </List>
-      </Center>
-    </>
+            </Flex>
+          </ListItem>
+        ))}
+      </List>
+    </Flex>
   );
 }

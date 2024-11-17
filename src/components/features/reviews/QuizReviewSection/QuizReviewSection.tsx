@@ -2,6 +2,7 @@
 import createClient from "@/components/shared/utils/createClient";
 import QuizReviewForm from "../QuizReviewForm/QuizReviewForm";
 import QuizReviewList from "../QuizReviewList/QuizReviewList";
+import { Flex } from "@chakra-ui/react";
 
 export default async function QuizReviewSection({ id }: { id: string }) {
   const supabase = createClient();
@@ -12,9 +13,9 @@ export default async function QuizReviewSection({ id }: { id: string }) {
   }
 
   return (
-    <div style={{ maxWidth: "600px", margin: "0 auto" }}>
+    <Flex width="600px" flexDirection="column">
       <QuizReviewForm />
       <QuizReviewList id={id} reviews={reviews}/>
-    </div>
+    </Flex>
   );
 }
