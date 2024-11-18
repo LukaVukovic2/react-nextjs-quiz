@@ -23,6 +23,7 @@ import { Keyboard, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "./QuizGameplaySection.css";
+import clsx from "clsx";
 
 interface IQuizGameplayProps {
   quiz: Quiz;
@@ -60,11 +61,23 @@ export default function QuizGameplaySection({
   const swiperRef = useRef<any>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const correctAnswers = useMemo(() => answers?.filter(answer => answer.correct_answer), [answers]);
+
   const pagination = {
     clickable: true,
     renderBullet: function (index: number, className: string) {
-      return '<span class="' + className + '">' + (index + 1) + '</span>';
-    },
+      const isSelected = selectedAnswers.get(questions[index].id) !== null;
+      const isCorrect = correctAnswers.some(answer => answer.question_id === questions[index].id && answer.id === selectedAnswers.get(questions[index].id));
+      return `<span 
+        class="${clsx({
+          [className]: true,
+          'selectedAnswer': !isFinished && isSelected,
+          'correctAnswer': isFinished && isCorrect,
+          'wrongAnswer': isFinished && !isCorrect
+        })}"
+        >${index + 1}  
+      </span>`;
+    }
   };
 
   const groupedAnswers = useMemo(
@@ -87,6 +100,7 @@ export default function QuizGameplaySection({
       }
   
       timeoutRef.current = setTimeout(() => {
+        swiperRef.current.pagination.render();
         setIsTransitioning(true);
         swiperRef.current?.slideNext();
         timeoutRef.current = null;
@@ -98,14 +112,13 @@ export default function QuizGameplaySection({
     setIsFinished(true);
     const totalScore = Array.from(selectedAnswers).reduce(
       (score, [questionId, answerId]) => {
-        const correctAnswer = answers.find(
-          (answer) => answer.question_id === questionId && answer.correct_answer
-        );
+        const correctAnswer = correctAnswers.find(answer => answer.question_id === questionId);
         return correctAnswer?.id === answerId ? score + 1 : score;
       },
       0
     );
     setScore(totalScore);
+    swiperRef.current?.pagination.render();
     updateQuizPlay(
       quiz.id,
       quiz.plays,
@@ -134,8 +147,13 @@ export default function QuizGameplaySection({
     setHasStarted(true);
     setResetKey((prev) => prev + 1);
     setIsTopResult(false);
-    if(swiperRef.current) swiperRef.current.slideTo(0);
     reset();
+    if (swiperRef.current) {
+      setTimeout(() => {
+        swiperRef.current.pagination.render();
+        swiperRef.current.slideTo(0);
+      }, 0);
+    }
   };
 
   return (
