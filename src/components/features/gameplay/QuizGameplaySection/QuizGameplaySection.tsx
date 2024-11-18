@@ -19,7 +19,7 @@ import { ConfettiComponent as Confetti } from "@/components/core/Confetti/Confet
 import { formatToSeconds } from "@/components/shared/utils/formatToSeconds";
 import { RepeatIcon } from "@chakra-ui/icons";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper/modules";
+import { Keyboard, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "./QuizGameplaySection.css";
@@ -55,8 +55,10 @@ export default function QuizGameplaySection({
   const [isFinished, setIsFinished] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const [isTopResult, setIsTopResult] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const { control, reset, setValue } = useForm();
   const swiperRef = useRef<any>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const pagination = {
     clickable: true,
@@ -76,13 +78,19 @@ export default function QuizGameplaySection({
   );
 
   const handleSelectAnswer = (questionId: string, answerId: string) => {
+    if (isTransitioning) return;
     setSelectedAnswers((prev) => new Map(prev.set(questionId, answerId)));
     setValue(questionId, answerId);
-    if(swiperRef.current) {
-      const timeout = setTimeout(() => {
-        swiperRef.current.slideNext();
+    if (swiperRef.current) {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+  
+      timeoutRef.current = setTimeout(() => {
+        setIsTransitioning(true);
+        swiperRef.current?.slideNext();
+        timeoutRef.current = null;
       }, 500);
-      return () => clearTimeout(timeout);
     }
   };
 
@@ -188,13 +196,23 @@ export default function QuizGameplaySection({
         <chakra.form width="100%">
           <Swiper
             pagination={pagination}
-            modules={[Pagination]}
+            modules={[Pagination, Keyboard]}
+            keyboard={{
+              enabled: true
+            }}
             className="mySwiper swiper"
             onSwiper={(swiper) => (swiperRef.current = swiper)}
+            onTransitionEnd={() => setIsTransitioning(false)}
           >
             {questions.map((question, index) => {
               return (
-                <SwiperSlide key={question.id}>
+                <SwiperSlide key={question.id} onFocus={() => {
+                  if (!swiperRef.current) {
+                    return;
+                  }
+                  swiperRef.current.el.scrollLeft = 0;
+                  swiperRef.current?.slideTo(index);
+                }}>
                   <Heading
                     as="h2"
                     size="sm"

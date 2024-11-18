@@ -29,6 +29,7 @@ export const RadioCard = (props: IRadioCardProps) => {
           'focused': input.isFocused,
           'regular': true
         })}
+        _focus={{border: "2px solid #9ecaed", boxShadow: "0 0 10px #9ecaed"}}
       >     
         {props.children}
       </Box>
