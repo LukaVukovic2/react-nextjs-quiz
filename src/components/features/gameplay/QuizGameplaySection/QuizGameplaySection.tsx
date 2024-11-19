@@ -91,22 +91,20 @@ export default function QuizGameplaySection({
   );
 
   const handleSelectAnswer = (questionId: string, answerId: string) => {
-    if (isTransitioning) return;
     setSelectedAnswers((prev) => new Map(prev.set(questionId, answerId)));
     setValue(questionId, answerId);
-    if (swiperRef.current) {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
+  
+    if (!isTransitioning && swiperRef.current) {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
   
       timeoutRef.current = setTimeout(() => {
         swiperRef.current.pagination.render();
-        setIsTransitioning(true);
-        swiperRef.current?.slideNext();
+        swiperRef.current.slideNext();
         timeoutRef.current = null;
       }, 500);
     }
   };
+  
 
   const handleFinishQuiz = async (totalSeconds: number) => {
     setIsFinished(true);
@@ -220,6 +218,7 @@ export default function QuizGameplaySection({
             }}
             className="mySwiper swiper"
             onSwiper={(swiper) => (swiperRef.current = swiper)}
+            onTransitionStart={() => setIsTransitioning(true)}
             onTransitionEnd={() => setIsTransitioning(false)}
           >
             {questions.map((question, index) => {

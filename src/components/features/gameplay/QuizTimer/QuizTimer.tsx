@@ -43,14 +43,14 @@ export default function QuizTimer({
     } else {
       pause();
     }
-  }, [hasStarted, isFinished, start, pause]);
+  }, [hasStarted, isFinished]);
 
   useEffect(() => {
     if (isFinished && !isTimeUp) {
       handleFinishQuiz(totalSeconds);
       setIsTimeUp(true);
     }
-  }, [isFinished, isTimeUp, totalSeconds, handleFinishQuiz]);
+  }, [isFinished, isTimeUp]);
 
   return (
     <div className={clsx({
