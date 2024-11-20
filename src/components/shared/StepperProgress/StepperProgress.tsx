@@ -1,52 +1,35 @@
-import {
-  Stepper,
-  Step,
-  StepIndicator,
-  StepStatus,
-  StepIcon,
-  StepNumber,
-  Box,
-  StepTitle,
-  StepDescription,
-  StepSeparator,
-} from "@chakra-ui/react";
 import { steps } from "../utils/steps";
+import { StepsContent, StepsItem, StepsList, StepsRoot } from "@/components/ui/steps";
 
 interface IStepperProgress {
-  activeStep: number;
+  currentStep: number;
   setStepIfValid: (index: number) => void;
 }
 
 export default function StepperProgress({
-  activeStep,
+  currentStep,
   setStepIfValid,
 }: IStepperProgress) {
   return (
-    <Stepper
+    <StepsRoot
       size="lg"
-      index={activeStep}
+      step={currentStep}
+      count={steps.length}
     >
-      {steps.map((step, index) => (
-        <Step
-          key={step.title}
-          onClick={() => setStepIfValid(index)}
-        >
-          <StepIndicator>
-            <StepStatus
-              complete={<StepIcon />}
-              incomplete={<StepNumber />}
-              active={<StepNumber />}
-            />
-          </StepIndicator>
-
-          <Box flexShrink="0">
-            <StepTitle>{step.title}</StepTitle>
-            <StepDescription>{step.description}</StepDescription>
-          </Box>
-
-          <StepSeparator />
-        </Step>
-      ))}
-    </Stepper>
+      <StepsList>
+        {steps.map((step, index) => (
+          <StepsItem key={step.title} index={index} title={step.title} onClick={() => setStepIfValid(index + 1)} />
+        ))}
+      </StepsList>
+      <StepsContent index={0}>
+        General Quiz Info
+      </StepsContent>
+      <StepsContent index={1}>
+        Add Questions
+      </StepsContent>
+      <StepsContent index={2}>
+        This is your Quiz!
+      </StepsContent>
+    </StepsRoot>
   );
 }

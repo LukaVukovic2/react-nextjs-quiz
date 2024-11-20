@@ -2,12 +2,11 @@
 import QuizGameplayHeader from "../QuizGameplayHeader/QuizGameplayHeader";
 import QuizResultSection from "../QuizResultSection/QuizResultSection";
 import QuizTimer from "../QuizTimer/QuizTimer";
-import QuizRadioGroup from "./components/QuizRadioGroup";
 import { updateQuizPlay } from "../../../shared/utils/actions/quiz/updateQuizPlay";
-import { useMemo, useRef, useState } from "react";
+import { MutableRefObject, useMemo, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Flex, Button, Heading } from "@chakra-ui/react";
-import { chakra } from "@chakra-ui/react";
+import { Flex, Heading, chakra } from "@chakra-ui/react";
+import { Button } from "@/components/ui/button";
 import { Quiz } from "@/app/typings/quiz";
 import { User } from "@/app/typings/user";
 import { Answer } from "@/app/typings/answer";
@@ -17,13 +16,15 @@ import { v4 as uuidv4 } from "uuid";
 import { updateLeaderboard } from "@/components/shared/utils/actions/leaderboard/updateLeaderboard";
 import { ConfettiComponent as Confetti } from "@/components/core/Confetti/Confetti";
 import { formatToSeconds } from "@/components/shared/utils/formatToSeconds";
-import { RepeatIcon } from "@chakra-ui/icons";
-import { Swiper, SwiperSlide } from "swiper/react";
+import clsx from "clsx";
+import { Swiper } from "swiper/react";
+import { SwiperSlide } from "swiper/react";
+import { Swiper as SwiperCore } from 'swiper';
 import { Keyboard, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "./QuizGameplaySection.css";
-import clsx from "clsx";
+import RadioGroup from "./components/RadioGroup";
 
 interface IQuizGameplayProps {
   quiz: Quiz;
@@ -58,7 +59,7 @@ export default function QuizGameplaySection({
   const [isTopResult, setIsTopResult] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const { control, reset, setValue } = useForm();
-  const swiperRef = useRef<any>(null);
+  const swiperRef = useRef<SwiperCore | null>(null) as MutableRefObject<SwiperCore | null>;
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const correctAnswers = useMemo(() => answers?.filter(answer => answer.correct_answer), [answers]);
@@ -94,10 +95,13 @@ export default function QuizGameplaySection({
     setSelectedAnswers((prev) => new Map(prev.set(questionId, answerId)));
     setValue(questionId, answerId);
   
-    if (!isTransitioning && swiperRef.current) {
+    if (!isTransitioning && swiperRef.current !== null) {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
   
       timeoutRef.current = setTimeout(() => {
+        if (!swiperRef.current || !swiperRef.current.pagination) {
+          return;
+        }
         swiperRef.current.pagination.render();
         swiperRef.current.slideNext();
         timeoutRef.current = null;
@@ -146,12 +150,12 @@ export default function QuizGameplaySection({
     setResetKey((prev) => prev + 1);
     setIsTopResult(false);
     reset();
-    if (swiperRef.current) {
-      setTimeout(() => {
+    setTimeout(() => {
+      if (swiperRef.current) {
         swiperRef.current.pagination.render();
         swiperRef.current.slideTo(0);
-      }, 0);
-    }
+      }
+    }, 0);
   };
 
   return (
@@ -224,9 +228,7 @@ export default function QuizGameplaySection({
             {questions.map((question, index) => {
               return (
                 <SwiperSlide key={question.id} onFocus={() => {
-                  if (!swiperRef.current) {
-                    return;
-                  }
+                  if (!swiperRef.current) return;
                   swiperRef.current.el.scrollLeft = 0;
                   swiperRef.current?.slideTo(index);
                 }}>
@@ -244,14 +246,15 @@ export default function QuizGameplaySection({
                   <Controller
                     control={control}
                     name={question.id}
-                    render={(field) => (
-                      <QuizRadioGroup
-                        question={question}
+                    render={({field}) => (
+                      <RadioGroup 
                         field={field}
-                        isFinished={isFinished}
-                        selectedAnswers={selectedAnswers}
-                        groupedAnswers={groupedAnswers}
+                        question={question} 
+                        isFinished={isFinished} 
+                        selectedAnswers={selectedAnswers} 
+                        groupedAnswers={groupedAnswers} 
                         handleSelectAnswer={handleSelectAnswer}
+                        resetKey={resetKey}
                       />
                     )}
                   />
@@ -263,7 +266,7 @@ export default function QuizGameplaySection({
           <Flex justifyContent="space-between">
             <Button
               onClick={() => setIsFinished(true)}
-              isDisabled={isFinished}
+              disabled={isFinished}
             >
               Finish quiz
             </Button>
@@ -272,7 +275,7 @@ export default function QuizGameplaySection({
                 type="reset"
                 onClick={resetQuiz}
               >
-                <RepeatIcon />
+                <i className="fa-solid fa-repeat"></i>
               </Button>
             )}
           </Flex>

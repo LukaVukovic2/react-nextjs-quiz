@@ -1,32 +1,17 @@
 "use client";
 import {
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  useDisclosure,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogCloseButton,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-  Button,
-  useToast,
+  useDisclosure
 } from "@chakra-ui/react";
+import { Button } from "@/components/ui/button";
+import { MenuRoot, MenuItem, MenuContent, MenuTrigger } from "@/components/ui/menu";
 import QuizUpdateForm from "../QuizUpdateForm/QuizUpdateForm";
 import { deleteQuiz } from "@/components/shared/utils/actions/quiz/deleteQuiz"; 
 import { useRef } from "react";
 import { Question } from "@/app/typings/question";
 import { Answer } from "@/app/typings/answer";
 import { Quiz } from "@/app/typings/quiz";
+import { DialogBody, DialogCloseTrigger, DialogContent, DialogFooter, DialogHeader, DialogRoot } from "@/components/ui/dialog";
+import { Toaster, toaster } from "@/components/ui/toaster";
 
 interface QuizMenuDropdownProps {
   quiz: Quiz;
@@ -38,7 +23,6 @@ interface QuizMenuDropdownProps {
 
 export default function QuizMenuDropdown({ quiz, questions_and_answers }: QuizMenuDropdownProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const toast = useToast();
   const {
     isOpen: isOpenDelete,
     onOpen: onOpenDelete,
@@ -50,17 +34,16 @@ export default function QuizMenuDropdown({ quiz, questions_and_answers }: QuizMe
   const handleQuizDelete = async (id: string) => {
     const success = await deleteQuiz(id);
     onCloseDelete();
-    toast({
+    toaster.create({
       title: success ? "Quiz deleted" : "Failed to delete quiz",
-      status: success ? "success" : "error",
-      duration: 3000,
-      isClosable: true,
+      type: success ? "success" : "error",
+      duration: 3000
     });
   };
 
   return (
-    <Menu>
-      <MenuButton
+    <MenuRoot>
+      <MenuTrigger
         px={4}
         py={2}
         transition="all 0.2s"
@@ -71,27 +54,26 @@ export default function QuizMenuDropdown({ quiz, questions_and_answers }: QuizMe
         _focus={{ boxShadow: "outline" }}
       >
         <i className="fa-solid fa-ellipsis-vertical"></i>
-      </MenuButton>
-      <MenuList>
-        <MenuItem onClick={onOpen}>Edit</MenuItem>
-        <MenuItem onClick={onOpenDelete}>Delete</MenuItem>
+      </MenuTrigger>
+      <MenuContent>
+        <MenuItem value="Edit" valueText="Edit" onClick={onOpen}>Edit</MenuItem>
+        <MenuItem value="Delete" valueText="Delete" onClick={onOpenDelete}>Delete</MenuItem>
 
-        <AlertDialog
+        <DialogRoot
           leastDestructiveRef={cancelRef}
           motionPreset="slideInBottom"
           onClose={onCloseDelete}
           isOpen={isOpenDelete}
           isCentered
         >
-          <AlertDialogOverlay />
 
-          <AlertDialogContent>
-            <AlertDialogHeader>Delete quiz</AlertDialogHeader>
-            <AlertDialogCloseButton />
-            <AlertDialogBody>
+          <DialogContent>
+            <DialogHeader>Delete quiz</DialogHeader>
+            <DialogCloseTrigger />
+            <DialogBody>
               Are you sure you want to delete this quiz?
-            </AlertDialogBody>
-            <AlertDialogFooter>
+            </DialogBody>
+            <DialogFooter>
               <Button
                 ref={cancelRef}
                 onClick={onCloseDelete}
@@ -105,28 +87,28 @@ export default function QuizMenuDropdown({ quiz, questions_and_answers }: QuizMe
               >
                 Yes
               </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+              <Toaster />
+            </DialogFooter>
+          </DialogContent>
+        </DialogRoot>
 
-        <Modal
+        <DialogRoot
           isOpen={isOpen}
           onClose={onClose}
         >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Update Quiz</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
+          <DialogContent>
+            <DialogHeader>Update Quiz</DialogHeader>
+            <DialogCloseTrigger />
+            <DialogBody>
               <QuizUpdateForm
                 quiz={quiz}
                 questions_and_answers={questions_and_answers}
                 onClose={onClose}
               />
-            </ModalBody>
-          </ModalContent>
-        </Modal>
-      </MenuList>
-    </Menu>
+            </DialogBody>
+          </DialogContent>
+        </DialogRoot>
+      </MenuContent>
+    </MenuRoot>
   );
 }

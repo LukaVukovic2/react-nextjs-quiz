@@ -1,13 +1,13 @@
 import { Question } from "@/app/typings/question";
 import { CheckCircleIcon } from "@chakra-ui/icons";
-import { List, ListItem, Text } from "@chakra-ui/react";
+import { Box, Text } from "@chakra-ui/react";
 
 export default function QuestionList({ questions }: { questions: Question[] }) {
   return (
-    <List>
+    <Box as="ul">
       {
         questions.map((question, index) => (
-          <ListItem key={question.id} mb={2}>
+          <Box as="li" key={question.id} mb={2}>
             {index + 1 + ". " + question.title}
             {question.answers &&
               question.answers.map((answer) => (
@@ -17,9 +17,9 @@ export default function QuestionList({ questions }: { questions: Question[] }) {
                 </Text>
               ))
             }
-          </ListItem>
+          </Box>
         ))
       }
-    </List>
+    </Box>
   )
 }

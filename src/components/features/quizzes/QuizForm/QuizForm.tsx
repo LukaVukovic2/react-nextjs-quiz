@@ -1,20 +1,17 @@
 "use client";
 import {
   Box,
-  Button,
-  Checkbox,
   Flex,
-  FormControl,
   Input,
-  useSteps,
   chakra,
   Text,
-  useToast,
   Card,
-  CardBody,
   Stack,
-  StackDivider
+  StackSeparator
 } from "@chakra-ui/react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { FormControl } from "@chakra-ui/form-control";
 import { AddIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import { steps } from "@/components/shared/utils/steps";
 import QuestionList from "@/components/shared/QuestionList/QuestionList";
@@ -26,14 +23,18 @@ import { Question } from "@/app/typings/question";
 import { Answer } from "@/app/typings/answer";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/navigation";
+import { Toaster, toaster } from "@/components/ui/toaster";
+import { useStep } from "usehooks-ts";
 
 export default function QuizForm() {
   const { push } = useRouter();
-  const toast = useToast();
-  const { activeStep, setActiveStep } = useSteps({
-    index: 0,
-    count: steps.length,
-  });
+
+  const [currentStep, helpers] = useStep(3);
+  const {
+    setStep,
+    goToNextStep,
+    goToPrevStep,
+  } = helpers
 
   const [questions, setQuestions] = useState<Question[]>([]);
   const [quiz_id] = useState(uuidv4());
@@ -53,8 +54,10 @@ export default function QuizForm() {
     correct: false,
     incorrect: false,
   });
-  const minQuizQuestionCount = process.env.MIN_QUIZ_QUESTION_COUNT ? +process.env.MIN_QUIZ_QUESTION_COUNT : 0;
-  const isFormValid = activeStep == 0 ? isValid : questions.length > minQuizQuestionCount;
+
+  const minQuizQuestionCount = Number(process.env.NEXT_PUBLIC_MIN_QUIZ_QUESTION_COUNT) || 0;
+  const isFormValid = currentStep === 1 ? isValid : questions.length >= minQuizQuestionCount;
+
   const validateQuestion = (answer: Answer) => {
     if (answer.correct_answer) {
       setCurrentQuestion((prev) => ({ ...prev, correct: true }));
@@ -100,8 +103,9 @@ export default function QuizForm() {
   };
 
   const setStepIfValid = (index: number) => {
-    if ((isFormValid && index - activeStep < 2) || index < activeStep)
-      setActiveStep(index);
+    if ((isFormValid && (index - currentStep < 2)) || (index < currentStep)){
+      setStep(index);
+    }
   };
 
   const handleCreateQuiz = async () => {
@@ -119,27 +123,26 @@ export default function QuizForm() {
     };
     const success = await createQuiz(formData);
     
-    toast({
+    toaster.create({
       title: success ? "Quiz created" : "Error creating quiz",
-      status: success ? "success" : "error",
-      duration: 5000,
-      isClosable: true,
+      type: success ? "success" : "error",
+      duration: 5000
     });
     push("/quizzes");
   };
 
   return (
     <chakra.div px={20} py={5}>
-      <StepperProgress activeStep={activeStep} setStepIfValid={setStepIfValid} />
+      <StepperProgress currentStep={currentStep - 1} setStepIfValid={setStepIfValid} />
 
       <chakra.form
         as={Flex}
         flexDirection="column"
         gap={10}
         my={5}
-        mx={activeStep === 0 ? "20%" : 0}
+        mx={currentStep === 1 ? "20%" : 0}
       >
-        {activeStep === 0 && (
+        {currentStep === 1 && (
           <Flex gap={5} flexDir="column">
             <FormControl>
               <Input
@@ -165,13 +168,13 @@ export default function QuizForm() {
             </FormControl>
           </Flex>
         )}
-        {activeStep === 1 && (
+        {currentStep === 2 && (
           <>
             <Flex gap={10}>
               <chakra.div flex={1}>
-                <Card>
-                  <CardBody>
-                    <Stack divider={<StackDivider />} spacing='4'>
+                <Card.Root>
+                  <Card.Body>
+                    <Stack separator={<StackSeparator />} spaceY={4}>
                       <Box>
                         <FormControl>
                           <Input
@@ -196,10 +199,10 @@ export default function QuizForm() {
                       <Box>
                         <FormControl>
                           <Checkbox
-                            isDisabled={currentQuestion.correct}
+                            disabled={currentQuestion.correct}
                             {...register("correctAnswer")}
-                            isChecked={isCorrect}
-                            onChange={(e) => setIsCorrect(e.target.checked)}
+                            checked={isCorrect}
+                            onCheckedChange={(e) => setIsCorrect(!!e.checked)}
                           >
                             Correct Answer
                           </Checkbox>
@@ -207,13 +210,13 @@ export default function QuizForm() {
                       </Box>
                     </Stack>
                     <Button
-                      isDisabled={!getValues("answer")}
+                      disabled={!getValues("answer")}
                       onClick={addAnswer}
                     >
                       New Answer
                     </Button>
-                  </CardBody>
-                </Card>
+                  </Card.Body>
+                </Card.Root>
               </chakra.div>
               <chakra.div flex={1}>
                 <Text>Current Question</Text>
@@ -230,7 +233,7 @@ export default function QuizForm() {
                   </Box>
                 ))}
                 <Button
-                  isDisabled={isQuestionValid}
+                  disabled={isQuestionValid}
                   onClick={addQuestion}
                   gap={2}
                   bg="green.400"
@@ -245,24 +248,23 @@ export default function QuizForm() {
             <QuestionList questions={questions} />
           </>
         )}
-        {activeStep === 2 && (
+        {currentStep === 3 && (
           <div>
-            <Text>This is your Quiz!</Text>
             <b>{getValues("title")}</b>
             <QuestionList questions={questions} />
           </div>
         )}
         <Flex justifyContent="space-between">
           <Button
-            onClick={() => setActiveStep(activeStep - 1)}
-            isDisabled={activeStep === 0}
+            onClick={goToPrevStep}
+            disabled={currentStep === 1}
           >
             Back
           </Button>
-          {activeStep < steps.length - 1 ? (
+          {currentStep < steps.length ? (
             <Button
-              isDisabled={!isFormValid}
-              onClick={() => setActiveStep(activeStep + 1)}
+              disabled={!isFormValid}
+              onClick={goToNextStep}
             >
               Next
             </Button>
@@ -270,6 +272,7 @@ export default function QuizForm() {
             <Button onClick={handleCreateQuiz}>Create Quiz</Button>
           )}
         </Flex>
+        <Toaster />
       </chakra.form>
     </chakra.div>
   );

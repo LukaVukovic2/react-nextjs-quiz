@@ -1,17 +1,16 @@
 "use client";
 import {
-  Button,
   Card,
-  CardBody,
   Flex,
-  FormLabel,
   Heading,
-  Input,
-  useToast,
+  Input
 } from "@chakra-ui/react";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { updateUserData } from "@/components/shared/utils/actions/user/updateUserData";
 import { useRef } from "react";
+import { Toaster, toaster } from "@/components/ui/toaster";
+import { FormLabel } from "@chakra-ui/form-control";
 
 interface IMyProfileProps {
   id: string;
@@ -22,7 +21,6 @@ interface IMyProfileProps {
 }
 
 export default function MyProfile({ id, profile }: IMyProfileProps) {
-  const toast = useToast();
   const formRef = useRef<HTMLFormElement>(null);
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -31,16 +29,16 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
     const success = await updateUserData(formData);
 
     if (success) {
-      toast({
+      toaster.create({
         title: "Profile updated",
-        status: "success",
+        type: "success",
         duration: 3000,
       });
       formRef.current?.reset();
     } else {
-      toast({
+      toaster.create({
         title: "Failed to update profile",
-        status: "error",
+        type: "error",
         duration: 3000,
       });
     }
@@ -54,8 +52,8 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
         align="center"
         mt={8}
       >
-        <Card>
-          <CardBody border="1px solid grey">
+        <Card.Root>
+          <Card.Body border="1px solid grey">
             <Heading
               as="h1"
               size="lg"
@@ -94,9 +92,10 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
             </Flex>
             <input type="hidden" name="id" value={id} />
             <Button type="submit">Save Changes</Button>
-          </CardBody>
-        </Card>
+          </Card.Body>
+        </Card.Root>
       </Flex>
+      <Toaster />
     </form>
   );
 }

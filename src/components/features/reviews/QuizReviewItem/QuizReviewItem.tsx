@@ -1,5 +1,6 @@
 import Star from "@/components/core/Star/Star";
-import { Avatar, Flex, Heading, Text } from "@chakra-ui/react";
+import { Flex, Heading, Text } from "@chakra-ui/react";
+import { Avatar } from "@/components/ui/avatar";
 import { Review } from "@/app/typings/review";
 import TimeAgo from "@/components/core/TimeAgo/TimeAgo";
 import { User } from "@/app/typings/user";

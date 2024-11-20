@@ -1,6 +1,7 @@
 import { Quiz } from "@/app/typings/quiz";
 import { User } from "@/app/typings/user";
-import { Flex, Avatar, Heading, Text } from "@chakra-ui/react";
+import { Flex, Heading, Text } from "@chakra-ui/react";
+import { Avatar } from "@/components/ui/avatar";
 
 export default function QuizGameplayHeader({children, quiz, user}: {children: React.ReactNode, quiz: Quiz, user: User}) {
   return (

@@ -1,5 +1,6 @@
 "use client";
-import { Flex, Button } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
+import { Button } from "@/components/ui/button";
 import NextLink from "next/link";
 
 export default function Pagination({ id, currentPage, totalPages }: { id: string, currentPage: number, totalPages: number }) {

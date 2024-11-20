@@ -2,15 +2,11 @@ import {
   Button,
   chakra,
   Flex,
-  FormControl,
-  FormLabel,
   Input,
-  InputGroup,
-  InputLeftElement,
-  InputRightElement,
   Text,
-  useToast,
 } from "@chakra-ui/react";
+import { InputGroup } from "@/components/ui/input-group";
+import { FormLabel, FormControl } from "@chakra-ui/form-control";
 import { AddIcon, CheckCircleIcon, DeleteIcon } from "@chakra-ui/icons";
 import { updateQuiz } from "@/components/shared/utils/actions/quiz/updateQuiz";
 import { ChangeEvent, FocusEvent, useEffect, useState } from "react";
@@ -19,6 +15,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Answer } from "@/app/typings/answer";
 import { Question } from "@/app/typings/question";
 import { Quiz } from "@/app/typings/quiz";
+import { createStandaloneToast } from "@chakra-ui/toast";
 
 interface QuizUpdateFormProps {
   quiz: Quiz;
@@ -56,7 +53,7 @@ export default function QuizUpdateForm({ quiz, questions_and_answers, onClose }:
     deletedAnswers: deletedAnswers,
   };
   
-  const toast = useToast();
+  const { toast } = createStandaloneToast();
 
   useEffect(() => {
     const answers = questions_and_answers.map((qa) => qa.answers).flat();
@@ -292,25 +289,27 @@ export default function QuizUpdateForm({ quiz, questions_and_answers, onClose }:
               mb={3}
             >
               <FormLabel>{index + 1}.</FormLabel>
-              <InputGroup>
-                <Input
-                  placeholder="Question"
-                  defaultValue={q.title}
-                  {...register(`q_title${q.id}`, { required: true })}
-                  onBlur={(e) => handleUpdateQuestion(e, q)}
-                />
-                <InputRightElement>
+              <InputGroup
+                endElement={
                   <Button
                     variant="ghost"
                     onClick={() => handleDeleteQuestion(q.id)}
-                    isDisabled={questionsArr.length === 1}
+                    disabled={questionsArr.length === 1}
                   >
                     <DeleteIcon
                       color="red.500"
                       boxSize="5"
                     />
                   </Button>
-                </InputRightElement>
+                }
+              >
+                <Input
+                  placeholder="Question"
+                  defaultValue={q.title}
+                  {...register(`q_title${q.id}`, { required: true })}
+                  onBlur={(e) => handleUpdateQuestion(e, q)}
+                />
+                
               </InputGroup>
             </FormControl>
             {answersArr.map((answer) => {
@@ -318,9 +317,9 @@ export default function QuizUpdateForm({ quiz, questions_and_answers, onClose }:
 
               return (
                 <FormControl key={answer.id}>
-                  <InputGroup>
-                    <InputLeftElement>
-                      {answer.correct_answer ? (
+                  <InputGroup 
+                    startElement={
+                      answer.correct_answer ? (
                         <CheckCircleIcon color="green.400" />
                       ) : (
                         <input
@@ -329,9 +328,21 @@ export default function QuizUpdateForm({ quiz, questions_and_answers, onClose }:
                           onChange={(e) => handleUpdateAnswer(e, answer)}
                           style={{ cursor: "pointer" }}
                         />
-                      )}
-                    </InputLeftElement>
-
+                      )
+                    }
+                    endElement={
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleDeleteAnswer(answer.id)}
+                        disabled={answer.correct_answer}
+                      >
+                        <DeleteIcon
+                          color="red.500"
+                          boxSize="5"
+                        />
+                      </Button>
+                    }
+                  >
                     <Input
                       placeholder="Answer"
                       defaultValue={answer.answer}
@@ -340,34 +351,22 @@ export default function QuizUpdateForm({ quiz, questions_and_answers, onClose }:
                       })}
                       onBlur={(e) => handleUpdateAnswer(e, answer)}
                     />
-                    <InputRightElement>
-                      <Button
-                        variant="ghost"
-                        onClick={() => handleDeleteAnswer(answer.id)}
-                        isDisabled={answer.correct_answer}
-                      >
-                        <DeleteIcon
-                          color="red.500"
-                          boxSize="5"
-                        />
-                      </Button>
-                    </InputRightElement>
                   </InputGroup>
                 </FormControl>
               );
             })}
-            <Flex
+            <Button
               onClick={() => addNewAnswer(q.id)}
-              isDisabled={answersArr
+              disabled={answersArr
                 .filter((ans) => ans.question_id === q.id)
                 .some((answer) => !answer.answer)}
               style={styles}
-              as={Button}
+              as={Flex}
               gap={1}
             >
               <AddIcon boxSize={2} />
               Add answer
-            </Flex>
+            </Button>
           </div>
         ))}
         <Flex>
@@ -385,7 +384,7 @@ export default function QuizUpdateForm({ quiz, questions_and_answers, onClose }:
 
       <Button
         colorScheme="green"
-        isDisabled={!isValid}
+        disabled={!isValid}
         onClick={handleSubmit}
       >
         Update Quiz
