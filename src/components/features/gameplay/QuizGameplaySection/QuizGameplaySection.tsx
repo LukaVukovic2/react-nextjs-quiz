@@ -171,7 +171,7 @@ export default function QuizGameplaySection({
           bottom="50%"
           right="20px"
           fontSize="12px"
-          colorScheme="green"
+          colorPalette="green"
           onClick={() => setActiveTab(1)}
           wordBreak="break-word"
           w="150px"

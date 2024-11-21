@@ -1,17 +1,15 @@
 "use client";
-import {
-  useDisclosure
-} from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
 import { MenuRoot, MenuItem, MenuContent, MenuTrigger } from "@/components/ui/menu";
 import QuizUpdateForm from "../QuizUpdateForm/QuizUpdateForm";
 import { deleteQuiz } from "@/components/shared/utils/actions/quiz/deleteQuiz"; 
-import { useRef } from "react";
+import { useState } from "react";
 import { Question } from "@/app/typings/question";
 import { Answer } from "@/app/typings/answer";
 import { Quiz } from "@/app/typings/quiz";
-import { DialogBody, DialogCloseTrigger, DialogContent, DialogFooter, DialogHeader, DialogRoot } from "@/components/ui/dialog";
-import { Toaster, toaster } from "@/components/ui/toaster";
+import { DialogBody, DialogCloseTrigger, DialogContent, DialogFooter, DialogHeader, DialogRoot, DialogTitle } from "@/components/ui/dialog";
+import { toaster } from "@/components/ui/toaster";
+import "./QuizMenuDropdown.css";
 
 interface QuizMenuDropdownProps {
   quiz: Quiz;
@@ -22,18 +20,11 @@ interface QuizMenuDropdownProps {
 }
 
 export default function QuizMenuDropdown({ quiz, questions_and_answers }: QuizMenuDropdownProps) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const {
-    isOpen: isOpenDelete,
-    onOpen: onOpenDelete,
-    onClose: onCloseDelete,
-  } = useDisclosure();
-  
-  const cancelRef = useRef<HTMLButtonElement>(null);
+  const [ openEdit, setOpenEdit ] = useState(false);
+  const [ openDelete, setOpenDelete ] = useState(false);
 
   const handleQuizDelete = async (id: string) => {
     const success = await deleteQuiz(id);
-    onCloseDelete();
     toaster.create({
       title: success ? "Quiz deleted" : "Failed to delete quiz",
       type: success ? "success" : "error",
@@ -52,58 +43,58 @@ export default function QuizMenuDropdown({ quiz, questions_and_answers }: QuizMe
         _hover={{ bg: "gray.400" }}
         _expanded={{ bg: "blue.400" }}
         _focus={{ boxShadow: "outline" }}
+        cursor="pointer"
       >
         <i className="fa-solid fa-ellipsis-vertical"></i>
       </MenuTrigger>
       <MenuContent>
-        <MenuItem value="Edit" valueText="Edit" onClick={onOpen}>Edit</MenuItem>
-        <MenuItem value="Delete" valueText="Delete" onClick={onOpenDelete}>Delete</MenuItem>
+        <MenuItem className="menu-item" value="Edit" valueText="Edit" onClick={() => setOpenEdit(true)}>Edit</MenuItem>
+        <MenuItem className="menu-item" value="Delete" valueText="Delete" onClick={() => setOpenDelete(true)}>Delete</MenuItem>
 
         <DialogRoot
-          leastDestructiveRef={cancelRef}
-          motionPreset="slideInBottom"
-          onClose={onCloseDelete}
-          isOpen={isOpenDelete}
-          isCentered
+          motionPreset="slide-in-bottom"
+          open={openDelete}
+          onOpenChange={(e) => setOpenDelete(e.open)}
         >
-
           <DialogContent>
-            <DialogHeader>Delete quiz</DialogHeader>
             <DialogCloseTrigger />
+            <DialogHeader>
+              <DialogTitle>Delete Quiz</DialogTitle>
+            </DialogHeader>
             <DialogBody>
               Are you sure you want to delete this quiz?
             </DialogBody>
             <DialogFooter>
               <Button
-                ref={cancelRef}
-                onClick={onCloseDelete}
+                onClick={() => setOpenDelete(false)}
               >
                 No
               </Button>
               <Button
-                colorScheme="red"
+                colorPalette="red"
                 ml={3}
                 onClick={() => handleQuizDelete(quiz.id)}
               >
                 Yes
               </Button>
-              <Toaster />
             </DialogFooter>
           </DialogContent>
         </DialogRoot>
 
         <DialogRoot
-          isOpen={isOpen}
-          onClose={onClose}
+          open={openEdit}
+          onOpenChange={(e) => setOpenEdit(e.open)}
         >
           <DialogContent>
-            <DialogHeader>Update Quiz</DialogHeader>
             <DialogCloseTrigger />
+            <DialogHeader>
+              <DialogTitle>Update Quiz</DialogTitle>
+            </DialogHeader>
             <DialogBody>
               <QuizUpdateForm
                 quiz={quiz}
                 questions_and_answers={questions_and_answers}
-                onClose={onClose}
+                onClose={() => setOpenEdit(false)}
               />
             </DialogBody>
           </DialogContent>

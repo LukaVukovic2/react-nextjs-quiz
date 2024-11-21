@@ -72,43 +72,6 @@ export default function Leaderboard({ topResults }: { topResults: Result[] }) {
           </Box>
         ))}
       </Box>
-      {/* <List>
-        {topResults.map((result, index) => (
-          <ListItem
-            key={result.id}
-            className={`${styles.listItem} ${user?.id == result.user_id ? styles.highlight : styles.regular}`}
-            p={2}
-          >
-            <Flex gap={3}>
-              <Text
-                w={6}
-                textAlign="right"
-              >
-                {index + 1}.
-              </Text>
-              <Flex
-                flex={1}
-                justifyContent="space-between"
-              >
-                <Text flex={2}>
-                  {result.username}
-                  {user?.id == result.user_id &&
-                    recentResultCheck(result.created_at ?? new Date()) && (
-                      <span className={styles.recent}>NEW</span>
-                    )}
-                </Text>
-                <Text
-                  flex={1}
-                  fontWeight="bold"
-                >
-                  {result.score}
-                </Text>
-                <Text>{result.time}</Text>
-              </Flex>
-            </Flex>
-          </ListItem>
-        ))}
-      </List> */}
     </Flex>
   );
 }

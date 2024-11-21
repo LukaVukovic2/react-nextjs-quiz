@@ -18,7 +18,7 @@ export default function StepperProgress({
     >
       <StepsList>
         {steps.map((step, index) => (
-          <StepsItem key={step.title} index={index} title={step.title} onClick={() => setStepIfValid(index + 1)} />
+          <StepsItem key={step.title} index={index} title={step.title} onClick={() => setStepIfValid(index + 1)}/>
         ))}
       </StepsList>
       <StepsContent index={0}>

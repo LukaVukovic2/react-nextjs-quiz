@@ -1,5 +1,6 @@
 "use client";
-import { Button, Center, Flex, Heading, Text } from "@chakra-ui/react";
+import { Center, Flex, Heading, Text } from "@chakra-ui/react";
+import { Button } from "@/components/ui/button";
 import { usePathname, useRouter } from "next/navigation";
 import { revalidateCache } from "../utils/actions/revalidateCache";
 

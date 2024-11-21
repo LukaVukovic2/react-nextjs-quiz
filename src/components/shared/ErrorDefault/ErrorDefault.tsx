@@ -1,4 +1,5 @@
-import { Button, Center, Flex, Heading } from "@chakra-ui/react";
+import { Center, Flex, Heading } from "@chakra-ui/react";
+import { Button } from "@/components/ui/button";
 
 export default function ErrorDefault({reset}: {reset: () => void}) {
   return (
@@ -11,7 +12,7 @@ export default function ErrorDefault({reset}: {reset: () => void}) {
       </Heading>
       <Button
         onClick={reset}
-        colorScheme="blue"
+        colorPalette="blue"
         variant="outline"
       >
         Try again

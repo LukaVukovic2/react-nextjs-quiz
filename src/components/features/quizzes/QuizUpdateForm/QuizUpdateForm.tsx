@@ -1,10 +1,12 @@
 import {
-  Button,
   chakra,
   Flex,
+  IconButton,
   Input,
   Text,
 } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
+import { Button } from "@/components/ui/button";
 import { InputGroup } from "@/components/ui/input-group";
 import { FormLabel, FormControl } from "@chakra-ui/form-control";
 import { AddIcon, CheckCircleIcon, DeleteIcon } from "@chakra-ui/icons";
@@ -15,7 +17,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Answer } from "@/app/typings/answer";
 import { Question } from "@/app/typings/question";
 import { Quiz } from "@/app/typings/quiz";
-import { createStandaloneToast } from "@chakra-ui/toast";
+import "./QuizUpdateForm.css";
 
 interface QuizUpdateFormProps {
   quiz: Quiz;
@@ -29,7 +31,6 @@ interface QuizUpdateFormProps {
 const styles = {
   fontSize: "0.8rem",
 };
-
 
 export default function QuizUpdateForm({ quiz, questions_and_answers, onClose }: QuizUpdateFormProps) {
   const {
@@ -52,8 +53,6 @@ export default function QuizUpdateForm({ quiz, questions_and_answers, onClose }:
     deletedQuestions: deletedQuestions,
     deletedAnswers: deletedAnswers,
   };
-  
-  const { toast } = createStandaloneToast();
 
   useEffect(() => {
     const answers = questions_and_answers.map((qa) => qa.answers).flat();
@@ -225,11 +224,10 @@ export default function QuizUpdateForm({ quiz, questions_and_answers, onClose }:
     });
 
     const success = await updateQuiz(formData);
-    toast({
+    toaster.create({
       title: success ? "Quiz updated" : "Error updating quiz",
-      status: success ? "info" : "error",
-      duration: 3000,
-      isClosable: true,
+      type: success ? "success" : "error",
+      duration: 3000
     });
     if (success) {
       setDirtyQuizFields(undefined);
@@ -240,155 +238,168 @@ export default function QuizUpdateForm({ quiz, questions_and_answers, onClose }:
   };
 
   return (
-    <chakra.form style={{ overflowY: "scroll", height: "70vh" }}>
-      <FormControl>
-        <FormLabel>Quiz title</FormLabel>
-        <Input
-          placeholder="Quiz Title"
-          defaultValue={quiz.title}
-          {...register("title", { required: true })}
-          onBlur={(e) => handleUpdateQuiz(e, quiz.id)}
-        />
-      </FormControl>
-      <FormControl>
-        <FormLabel>Quiz category</FormLabel>
-        <Input
-          placeholder="Category"
-          defaultValue={quiz.category}
-          {...register("category", { required: true })}
-          onBlur={(e) => handleUpdateQuiz(e, quiz.id)}
-        />
-      </FormControl>
-      <FormControl>
-        <FormLabel>Quiz playtime</FormLabel>
-        <Input
-          placeholder="Quiz playtime (HH:MM:SS)"
-          defaultValue={quiz.time}
-          {...register("time", {
-            required: true,
-            pattern: {
-              value: /^([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/,
-              message: "Invalid time format. Use HH:MM:SS",
-            },
-          })}
-          onBlur={(e) => handleUpdateQuiz(e, quiz.id)}
-        />
-      </FormControl>
-
-      <Text>Questions</Text>
-      <Flex
-        flexDirection="column"
-        gap={5}
-        my={3}
-      >
-        {questionsArr.map((q, index) => (
-          <div key={q.id}>
-            <FormControl
-              display="flex"
-              alignItems="baseline"
-              mb={3}
-            >
-              <FormLabel>{index + 1}.</FormLabel>
-              <InputGroup
-                endElement={
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleDeleteQuestion(q.id)}
-                    disabled={questionsArr.length === 1}
-                  >
-                    <DeleteIcon
-                      color="red.500"
-                      boxSize="5"
-                    />
-                  </Button>
-                }
-              >
-                <Input
-                  placeholder="Question"
-                  defaultValue={q.title}
-                  {...register(`q_title${q.id}`, { required: true })}
-                  onBlur={(e) => handleUpdateQuestion(e, q)}
-                />
-                
-              </InputGroup>
-            </FormControl>
-            {answersArr.map((answer) => {
-              if (answer.question_id !== q.id) return null;
-
-              return (
-                <FormControl key={answer.id}>
-                  <InputGroup 
-                    startElement={
-                      answer.correct_answer ? (
-                        <CheckCircleIcon color="green.400" />
-                      ) : (
-                        <input
-                          type="radio"
-                          {...register(`answer${answer.id}`)}
-                          onChange={(e) => handleUpdateAnswer(e, answer)}
-                          style={{ cursor: "pointer" }}
-                        />
-                      )
-                    }
-                    endElement={
-                      <Button
-                        variant="ghost"
-                        onClick={() => handleDeleteAnswer(answer.id)}
-                        disabled={answer.correct_answer}
-                      >
-                        <DeleteIcon
-                          color="red.500"
-                          boxSize="5"
-                        />
-                      </Button>
-                    }
-                  >
-                    <Input
-                      placeholder="Answer"
-                      defaultValue={answer.answer}
-                      {...register(`answer${q.id}${answer.id}`, {
-                        required: true,
-                      })}
-                      onBlur={(e) => handleUpdateAnswer(e, answer)}
-                    />
-                  </InputGroup>
-                </FormControl>
-              );
+    <>
+      <chakra.form style={{ overflowY: "scroll", height: "70vh" }}>
+        <FormControl>
+          <FormLabel>Quiz title</FormLabel>
+          <Input
+            placeholder="Quiz Title"
+            defaultValue={quiz.title}
+            {...register("title", { required: true })}
+            onBlur={(e) => handleUpdateQuiz(e, quiz.id)}
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel>Quiz category</FormLabel>
+          <Input
+            placeholder="Category"
+            defaultValue={quiz.category}
+            {...register("category", { required: true })}
+            onBlur={(e) => handleUpdateQuiz(e, quiz.id)}
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel>Quiz playtime</FormLabel>
+          <Input
+            placeholder="Quiz playtime (HH:MM:SS)"
+            defaultValue={quiz.time}
+            {...register("time", {
+              required: true,
+              pattern: {
+                value: /^([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/,
+                message: "Invalid time format. Use HH:MM:SS",
+              },
             })}
+            onBlur={(e) => handleUpdateQuiz(e, quiz.id)}
+          />
+        </FormControl>
+
+        <Text>Questions</Text>
+        <Flex
+          flexDirection="column"
+          gap={5}
+          my={3}
+        >
+          {questionsArr.map((q, index) => (
+            <div key={q.id}>
+              <FormControl
+                display="flex"
+                alignItems="baseline"
+                mb={3}
+              >
+                <InputGroup
+                  flex={1}
+                  startElement={
+                    <Text
+                      fontSize="sm"
+                      fontWeight="bold"
+                      pr={2}
+                    >
+                      {index + 1 + "."}
+                    </Text>
+                  }
+                  endElement={
+                    <IconButton
+                      variant="ghost"
+                      onClick={() => handleDeleteQuestion(q.id)}
+                      disabled={questionsArr.length === 1}
+                    >
+                      <DeleteIcon
+                        color="red"
+                      />
+                    </IconButton>
+                  }
+                >
+                  <Input
+                    placeholder="Question"
+                    defaultValue={q.title}
+                    {...register(`q_title${q.id}`, { required: true })}
+                    onBlur={(e) => handleUpdateQuestion(e, q)}
+                  />
+                  
+                </InputGroup>
+              </FormControl>
+              {answersArr.map((answer) => {
+                if (answer.question_id !== q.id) return null;
+
+                return (
+                  <FormControl key={answer.id}>
+                    <InputGroup
+                      w="100%"
+                      startElement={
+                        answer.correct_answer ? (
+                          <CheckCircleIcon color="green" fontSize="17px" />
+                        ) : (
+                          <input
+                            type="radio"
+                            {...register(`answer${answer.id}`)}
+                            onChange={(e) => handleUpdateAnswer(e, answer)}
+                            style={{ cursor: "pointer" }}
+                          />
+                        )
+                      }
+                      endElement={
+                        <IconButton
+                          variant="ghost"
+                          onClick={() => handleDeleteAnswer(answer.id)}
+                          disabled={answer.correct_answer}
+                        >
+                          <DeleteIcon
+                            color="red"
+                          />
+                        </IconButton>
+                      }
+                    >
+                      <Input
+                        placeholder="Answer"
+                        defaultValue={answer.answer}
+                        {...register(`answer${q.id}${answer.id}`, {
+                          required: true,
+                        })}
+                        onBlur={(e) => handleUpdateAnswer(e, answer)}
+                      />
+                    </InputGroup>
+                  </FormControl>
+                );
+              })}
+              <Button
+                onClick={() => addNewAnswer(q.id)}
+                disabled={answersArr
+                  .filter((ans) => ans.question_id === q.id)
+                  .some((answer) => !answer.answer)}
+                style={styles}
+                as={Flex}
+                gap={1}
+                variant="surface"
+              >
+                <AddIcon />
+                Add answer
+              </Button>
+            </div>
+          ))}
+          <Flex>
             <Button
-              onClick={() => addNewAnswer(q.id)}
-              disabled={answersArr
-                .filter((ans) => ans.question_id === q.id)
-                .some((answer) => !answer.answer)}
               style={styles}
+              onClick={addNewQuestion}
               as={Flex}
               gap={1}
+              variant="surface"
+              colorPalette="blue"
             >
-              <AddIcon boxSize={2} />
-              Add answer
+              <AddIcon />
+              Add question
             </Button>
-          </div>
-        ))}
-        <Flex>
-          <Flex
-            style={styles}
-            onClick={addNewQuestion}
-            as={Button}
-            gap={1}
-          >
-            <AddIcon boxSize={2} />
-            Add question
           </Flex>
         </Flex>
-      </Flex>
 
-      <Button
-        colorScheme="green"
-        disabled={!isValid}
-        onClick={handleSubmit}
-      >
-        Update Quiz
-      </Button>
-    </chakra.form>
+        <Button
+          colorPalette="green"
+          disabled={!isValid}
+          onClick={handleSubmit}
+        >
+          Update Quiz
+        </Button>
+      </chakra.form>
+    </>
   );
 }

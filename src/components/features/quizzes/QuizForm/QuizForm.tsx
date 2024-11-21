@@ -202,6 +202,7 @@ export default function QuizForm() {
                             disabled={currentQuestion.correct}
                             {...register("correctAnswer")}
                             checked={isCorrect}
+                            cursor="pointer"
                             onCheckedChange={(e) => setIsCorrect(!!e.checked)}
                           >
                             Correct Answer

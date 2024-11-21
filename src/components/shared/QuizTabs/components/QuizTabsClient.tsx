@@ -10,6 +10,7 @@ import QuizLeaderboard from "@/components/features/leaderboard/QuizLeaderboard/Q
 import { Tabs } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import "./QuizTabsClient.css"
+import { Toaster } from "@/components/ui/toaster";
 
 interface IQuizTabsClientProps {
   quiz: Quiz;
@@ -71,6 +72,7 @@ export default function QuizTabsClient({
         )}
       </Tabs.Content>
       <Tabs.Content value="Reviews">{children}</Tabs.Content>
+      <Toaster />
     </Tabs.Root>
   );
 }

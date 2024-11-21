@@ -6,6 +6,7 @@ import { Question } from "@/app/typings/question";
 import { Answer } from "@/app/typings/answer";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
+import { Toaster } from "@/components/ui/toaster";
 
 interface MyQuizzesProps {
   quizzes: Array<{
@@ -63,6 +64,7 @@ export default function MyQuizzes({quizzes}: MyQuizzesProps) {
           </Box>
         ))}
       </Box>
+      <Toaster />
     </Flex>
   );
 }
