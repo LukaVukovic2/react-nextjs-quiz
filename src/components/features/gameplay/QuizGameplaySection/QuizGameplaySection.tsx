@@ -4,7 +4,7 @@ import QuizResultSection from "../QuizResultSection/QuizResultSection";
 import QuizTimer from "../QuizTimer/QuizTimer";
 import QuizRadioGroup from "./components/QuizRadioGroup";
 import { updateQuizPlay } from "../../../shared/utils/actions/quiz/updateQuizPlay";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FaMinusCircle } from "react-icons/fa";
 import { Flex, Button, Heading, Box } from "@chakra-ui/react";
@@ -14,21 +14,35 @@ import { Quiz } from "@/app/typings/quiz";
 import { User } from "@/app/typings/user";
 import { Answer } from "@/app/typings/answer";
 import { Question } from "@/app/typings/question";
+import { Result } from "@/app/typings/result";
+import { v4 as uuidv4 } from "uuid";
+import { updateLeaderboard } from "@/components/shared/utils/actions/leaderboard/updateLeaderboard";
+import { ConfettiComponent as Confetti } from "@/components/core/Confetti/Confetti";
+import { formatToSeconds } from "@/components/shared/utils/formatToSeconds";
 
 interface IQuizGameplayProps {
   quiz: Quiz;
   user: User;
   questions: Question[];
   answers: Answer[];
+  setActiveTab: (index: number) => void;
 }
 
-const initializeSelectedAnswers = (questions: Question[]): Map<string, string | null> => {
+const initializeSelectedAnswers = (
+  questions: Question[]
+): Map<string, string | null> => {
   const map = new Map<string, string | null>();
   questions.forEach((question) => map.set(question.id, null));
   return map;
 };
 
-export default function QuizGameplaySection({quiz, user, questions, answers}: IQuizGameplayProps) {
+export default function QuizGameplaySection({
+  quiz,
+  user,
+  questions,
+  answers,
+  setActiveTab,
+}: IQuizGameplayProps) {
   const [selectedAnswers, setSelectedAnswers] = useState<
     Map<string, string | null>
   >(initializeSelectedAnswers(questions));
@@ -36,49 +50,54 @@ export default function QuizGameplaySection({quiz, user, questions, answers}: IQ
   const [hasStarted, setHasStarted] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [resetKey, setResetKey] = useState(0);
+  const [isTopResult, setIsTopResult] = useState(false);
   const { control, reset, setValue } = useForm();
 
-  const groupedAnswers = answers?.reduce((acc, answer) => {
-    acc[answer.question_id] = acc[answer.question_id] || [];
-    acc[answer.question_id].push(answer);
-    return acc;
-  }, {} as { [key: string]: Answer[] });
-
-  const formatToSeconds = () => {
-    const [hours, minutes, seconds] = quiz.time.split(":");
-    const time = new Date();
-    time.setSeconds(
-      time.getSeconds() +
-        +hours * 3600 +
-        +minutes * 60 +
-        +seconds
-    );
-    return time;
-  };
+  const groupedAnswers = useMemo(
+    () =>
+      answers?.reduce((acc, answer) => {
+        acc[answer.question_id] = acc[answer.question_id] || [];
+        acc[answer.question_id].push(answer);
+        return acc;
+      }, {} as { [key: string]: Answer[] }),
+    [answers]
+  );
 
   const handleSelectAnswer = (questionId: string, answerId: string) => {
     setSelectedAnswers((prev) => new Map(prev.set(questionId, answerId)));
     setValue(questionId, answerId);
   };
 
-  const handleFinishQuiz = () => {
+  const handleFinishQuiz = async (totalSeconds: number) => {
     const totalScore = Array.from(selectedAnswers).reduce(
       (score, [questionId, answerId]) => {
         const correctAnswer = answers.find(
           (answer) => answer.question_id === questionId && answer.correct_answer
         );
         return correctAnswer?.id === answerId ? score + 1 : score;
-      }, 
+      },
       0
     );
     setScore(totalScore);
-    setIsFinished(true);
     updateQuizPlay(
       quiz.id,
       quiz.plays,
       quiz.average_score,
       totalScore / questions.length
     );
+    const result: Result = {
+      id: uuidv4(),
+      quiz_id: quiz.id,
+      user_id: user.id,
+      score: totalScore,
+      time: totalSeconds || 0,
+    };
+    const success = await updateLeaderboard(result);
+    setIsTopResult(success);
+    const timeout = setTimeout(() => {
+      setIsTopResult(false);
+    }, 10000);
+    return () => clearTimeout(timeout);
   };
 
   const resetQuiz = () => {
@@ -87,6 +106,7 @@ export default function QuizGameplaySection({quiz, user, questions, answers}: IQ
     setIsFinished(false);
     setHasStarted(true);
     setResetKey((prev) => prev + 1);
+    setIsTopResult(false);
     reset();
   };
 
@@ -95,11 +115,32 @@ export default function QuizGameplaySection({quiz, user, questions, answers}: IQ
       flexDir="column"
       gap={1}
       maxWidth="600px"
+      position="relative"
     >
-      <QuizGameplayHeader quiz={quiz} user={user}>
+      {
+        isTopResult && <Button
+          position="fixed"
+          bottom="50%"
+          right="20px"
+          fontSize="12px"
+          colorScheme="green"
+          onClick={() => setActiveTab(1)}
+          wordBreak="break-word"
+          w="150px"
+          whiteSpace="normal"
+        >
+          High Score! Go to leaderboard
+          <i className="fa-solid fa-arrow-right"></i>
+        </Button>
+      }
+      <Confetti isShown={isTopResult} />
+      <QuizGameplayHeader
+        quiz={quiz}
+        user={user}
+      >
         <QuizTimer
           key={resetKey}
-          quizTime={formatToSeconds()}
+          quizTime={formatToSeconds(quiz.time)}
           hasStarted={hasStarted}
           isFinished={isFinished}
           handleFinishQuiz={handleFinishQuiz}
@@ -171,7 +212,7 @@ export default function QuizGameplaySection({quiz, user, questions, answers}: IQ
             );
           })}
           <Button
-            onClick={() => handleFinishQuiz()}
+            onClick={() => setIsFinished(true)}
             isDisabled={isFinished}
           >
             Finish quiz

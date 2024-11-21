@@ -11,8 +11,10 @@ export default async function QuizTabs({ id }: { id: string }) {
 
   if(error || !quiz) notFound();
 
+  const { data: topResults } = await supabase.rpc("get_leaderboard", {quizid: id});
+
   return (
-    <QuizTabsClient quiz={quiz} questions={questions} answers={answers} user={user}>
+    <QuizTabsClient quiz={quiz} questions={questions} answers={answers} user={user} topResults={topResults}>
       <QuizReviewSection id={id} />
     </QuizTabsClient>
   );

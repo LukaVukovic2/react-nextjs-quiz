@@ -7,5 +7,5 @@ import en from 'javascript-time-ago/locale/en.json';
 TimeAgo.addDefaultLocale(en);
 
 export default function TimeAgoComponent({date}: {date: Date}) {
-  return <ReactTimeAgo date={date} locale='en-US' suppressHydrationWarning />
+  return <ReactTimeAgo date={date} locale='en-US' />
 }
