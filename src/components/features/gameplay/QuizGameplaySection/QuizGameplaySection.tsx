@@ -5,8 +5,9 @@ import QuizTimer from "../QuizTimer/QuizTimer";
 import { updateQuizPlay } from "../../../shared/utils/actions/quiz/updateQuizPlay";
 import { MutableRefObject, useMemo, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Flex, Heading, chakra } from "@chakra-ui/react";
-import { Button } from "@/components/ui/button";
+import { Flex, chakra } from "@chakra-ui/react";
+import { Heading } from "@/styles/theme/components/heading";
+import { Button } from "@/styles/theme/components/button";
 import { Quiz } from "@/app/typings/quiz";
 import { User } from "@/app/typings/user";
 import { Answer } from "@/app/typings/answer";
@@ -167,16 +168,13 @@ export default function QuizGameplaySection({
     >
       {
         isTopResult && <Button
+          visual="success"
+          onClick={() => setActiveTab(1)}
+          className="fa-fade"
           position="fixed"
           bottom="50%"
           right="20px"
-          fontSize="12px"
-          colorPalette="green"
-          onClick={() => setActiveTab(1)}
-          wordBreak="break-word"
           w="150px"
-          whiteSpace="normal"
-          className="fa-fade"
         >
           High Score! Go to leaderboard
           <i className="fa-solid fa-arrow-right"></i>
@@ -185,7 +183,7 @@ export default function QuizGameplaySection({
       <Confetti isShown={isTopResult} />
       <Flex justifyContent="space-between" alignItems="center">
         <QuizGameplayHeader
-          quiz={quiz}
+          title={quiz.title}
           user={user}
         >
           <QuizTimer
@@ -207,7 +205,7 @@ export default function QuizGameplaySection({
       {!hasStarted ? (
         <Flex flex={1} justifyContent="center" alignItems="center" flexWrap="wrap" direction="column">
           <Flex alignItems="center" flex={1}>
-            <Button px={12} onClick={() => setHasStarted(true)} >Start quiz</Button>
+            <Button onClick={() => setHasStarted(true)} >Start quiz</Button>
           </Flex>
           <chakra.div flex={1}>
           </chakra.div>
@@ -234,11 +232,10 @@ export default function QuizGameplaySection({
                 }}>
                   <Heading
                     as="h2"
-                    size="sm"
-                    p={3}
-                    bg="#333333"
-                    color="whitesmoke"
+                    size="h6"
+                    visual="reversed"
                     textAlign="center"
+                    p="{spacing.2}"
                   >
                     {index + 1 + ". " + question.title}
                   </Heading>

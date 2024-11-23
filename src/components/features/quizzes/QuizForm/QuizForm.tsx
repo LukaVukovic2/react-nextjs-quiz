@@ -9,7 +9,7 @@ import {
   Stack,
   StackSeparator
 } from "@chakra-ui/react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/styles/theme/components/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FormControl } from "@chakra-ui/form-control";
 import { AddIcon, CheckCircleIcon } from "@chakra-ui/icons";
@@ -210,12 +210,15 @@ export default function QuizForm() {
                         </FormControl>
                       </Box>
                     </Stack>
-                    <Button
-                      disabled={!getValues("answer")}
-                      onClick={addAnswer}
-                    >
-                      New Answer
-                    </Button>
+                    <div>
+                      <Button
+                        disabled={!getValues("answer")}
+                        onClick={addAnswer}
+                        visual="outline"
+                      >
+                        New Answer
+                      </Button>
+                    </div>
                   </Card.Body>
                 </Card.Root>
               </chakra.div>
@@ -236,11 +239,8 @@ export default function QuizForm() {
                 <Button
                   disabled={isQuestionValid}
                   onClick={addQuestion}
-                  gap={2}
-                  bg="green.400"
-                  color="white"
                 >
-                  <AddIcon boxSize={4} />
+                  <AddIcon />
                   Add Question
                 </Button>
               </chakra.div>
@@ -259,6 +259,7 @@ export default function QuizForm() {
           <Button
             onClick={goToPrevStep}
             disabled={currentStep === 1}
+            visual="outline"
           >
             Back
           </Button>
@@ -266,11 +267,16 @@ export default function QuizForm() {
             <Button
               disabled={!isFormValid}
               onClick={goToNextStep}
+              visual="outline"
             >
               Next
             </Button>
           ) : (
-            <Button onClick={handleCreateQuiz}>Create Quiz</Button>
+            <Button 
+              onClick={handleCreateQuiz}
+            >
+              Create Quiz
+            </Button>
           )}
         </Flex>
         <Toaster />

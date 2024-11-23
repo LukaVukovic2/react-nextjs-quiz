@@ -1,48 +1,23 @@
 "use client";
-import { Center, Flex, Heading, Text } from "@chakra-ui/react";
-import { Button } from "@/components/ui/button";
-import { usePathname, useRouter } from "next/navigation";
-import { revalidateCache } from "../utils/actions/revalidateCache";
+import { TbError404Off } from "react-icons/tb";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export default function ErrorNotFound({
-  error,
-  isFound,
+  title,
+  description,
+  children
 }: {
-  error: string;
-  isFound?: boolean;
+  title: string;
+  description: string;
+  children?: React.ReactNode;
 }) {
-  const pathname = usePathname();
-  const router = useRouter();
-
-  const handleClick = async () => {
-    await revalidateCache(pathname);
-    router.push("/");
-  };
-
   return (
-    <Center
-      height={300}
-      as={Flex}
-      direction="column"
-      gap={5}
+    <EmptyState
+      icon={<TbError404Off />}
+      title={title}
+      description={description}
     >
-      {isFound && (
-        <Text
-          fontSize="4xl"
-          color="grey"
-        >
-          404
-        </Text>
-      )}
-      <Heading
-        as="h1"
-        size="lg"
-      >
-        {error}
-      </Heading>
-      <Button onClick={handleClick}>
-        {pathname !== "/quizzes" ? "Back to home" : "Try again"}
-      </Button>
-    </Center>
+      {children}
+    </EmptyState>
   );
 }

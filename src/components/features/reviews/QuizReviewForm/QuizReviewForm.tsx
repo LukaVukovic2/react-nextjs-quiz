@@ -2,10 +2,10 @@
 import {
   Card,
   chakra,
-  Heading,
   Textarea
 } from "@chakra-ui/react";
-import { Button } from "@/components/ui/button";
+import { Heading } from "@/styles/theme/components/heading";
+import { Button } from "@/styles/theme/components/button";
 import { Toaster, toaster } from "@/components/ui/toaster";
 import { SliderInput } from "@/components/core/Slider/Slider";
 import { addReview } from "@/components/shared/utils/actions/review/addReview";
@@ -40,7 +40,7 @@ export default function QuizReviewForm() {
   return (
     <Card.Root mb={5}>
       <Card.Header>
-        <Heading size="md" py={2}>Add a review</Heading>
+        <Heading as="h2" size="h4">Add a review</Heading>
       </Card.Header>
       <Card.Body>
         <chakra.form onSubmit={handleSubmit(addNewReview)}>
@@ -59,6 +59,7 @@ export default function QuizReviewForm() {
             render={({ field }) => <SliderInput {...field} />}
           />
           <Button
+            visual="outline"
             disabled={!isValid || isSubmitting}
             type="submit"
           >

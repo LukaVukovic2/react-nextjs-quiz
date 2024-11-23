@@ -65,11 +65,7 @@ export default function QuizTabsClient({
         )}
       </Tabs.Content>
       <Tabs.Content value="Leaderboard">
-        {topResults.length > 0 ? (
-          <QuizLeaderboard topResults={topResults} />
-        ) : (
-          "Leaderboard is empty"
-        )}
+        <QuizLeaderboard topResults={topResults} />
       </Tabs.Content>
       <Tabs.Content value="Reviews">{children}</Tabs.Content>
       <Toaster />

@@ -2,10 +2,10 @@
 import {
   Card,
   Flex,
-  Heading,
   Input
 } from "@chakra-ui/react";
-import { Button } from "@/components/ui/button";
+import { Heading } from "@/styles/theme/components/heading";
+import { Button } from "@/styles/theme/components/button";
 import Image from "next/image";
 import { updateUserData } from "@/components/shared/utils/actions/user/updateUserData";
 import { useRef } from "react";
@@ -56,7 +56,7 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
           <Card.Body border="1px solid grey">
             <Heading
               as="h1"
-              size="lg"
+              size="h2"
             >
               My Profile
             </Heading>

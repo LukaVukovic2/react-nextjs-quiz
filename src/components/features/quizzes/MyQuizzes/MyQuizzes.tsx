@@ -1,6 +1,7 @@
 "use client";
 import QuizMenuDropdown from "../QuizMenuDropdown/QuizMenuDropdown";
-import { Box, Flex, Heading, Text } from "@chakra-ui/react";
+import { Box, Flex, Text } from "@chakra-ui/react";
+import { Heading } from "@/styles/theme/components/heading";
 import { Quiz } from "@/app/typings/quiz";
 import { Question } from "@/app/typings/question";
 import { Answer } from "@/app/typings/answer";
@@ -33,7 +34,7 @@ export default function MyQuizzes({quizzes}: MyQuizzesProps) {
       flexDir="column"
       alignItems="center"
     >
-      <Heading as="h1">
+      <Heading as="h1" size="h1">
         My Quizzes
       </Heading>
       <Box
@@ -56,7 +57,7 @@ export default function MyQuizzes({quizzes}: MyQuizzesProps) {
             }}
           >
             <div>
-              <Heading as="h2" size="md">{quiz.title}</Heading>
+              <Heading as="h2" size="h5">{quiz.title}</Heading>
               <Text>{quiz.category}</Text>
               <Text>{quiz.time}</Text>
             </div>

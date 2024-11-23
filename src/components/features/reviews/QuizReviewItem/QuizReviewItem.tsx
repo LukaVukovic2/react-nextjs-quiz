@@ -1,5 +1,5 @@
 import Star from "@/components/core/Star/Star";
-import { Flex, Heading, Text } from "@chakra-ui/react";
+import { Flex, Text } from "@chakra-ui/react";
 import { Avatar } from "@/components/ui/avatar";
 import { Review } from "@/app/typings/review";
 import TimeAgo from "@/components/core/TimeAgo/TimeAgo";
@@ -29,7 +29,7 @@ export default function QuizReviewItem({review}: IQuizReviewItemProps) {
 
         <Flex direction="column" gap={1} flex={1}>
           <Flex gap={2} alignItems="center">
-            <Heading as="h3" size="sm">{reviewer?.username || "Unknown user"}</Heading> 
+            <Text fontWeight="bold">{reviewer?.username || "Unknown user"}</Text> 
             <TimeAgo date={date}/>
           </Flex>
           <Flex>

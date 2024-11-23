@@ -1,18 +1,17 @@
-import { Quiz } from "@/app/typings/quiz";
 import { User } from "@/app/typings/user";
-import { Flex, Heading, Text } from "@chakra-ui/react";
+import { Flex, Text } from "@chakra-ui/react";
+import { Heading } from "@/styles/theme/components/heading";
 import { Avatar } from "@/components/ui/avatar";
 
-export default function QuizGameplayHeader({children, quiz, user}: {children: React.ReactNode, quiz: Quiz, user: User}) {
+export default function QuizGameplayHeader({children, title, user}: {children: React.ReactNode, title: string, user: User}) {
   return (
     <Flex flexDirection="column" alignItems="start">
       <Heading
         as="h1"
-        size="md"
+        size="h5"
       >
-        {quiz.title}
+        {title}
       </Heading>
-      <Text fontSize="14px">{quiz.category}</Text>
       <Flex
         align="center"
         gap={2}

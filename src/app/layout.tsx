@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Providers } from "./providers";
-import "./style.css";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -20,7 +19,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com"/>
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous"/>
       </head>
-      <body id="body" style={{minHeight: "100vh", display: "flex", flexWrap: "wrap", flexDirection: "column"}}>
+      <body>
         <Providers>
           {children}
         </Providers>

@@ -6,7 +6,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { toaster } from "@/components/ui/toaster";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/styles/theme/components/button";
 import { InputGroup } from "@/components/ui/input-group";
 import { FormLabel, FormControl } from "@chakra-ui/form-control";
 import { AddIcon, CheckCircleIcon, DeleteIcon } from "@chakra-ui/icons";
@@ -299,15 +299,16 @@ export default function QuizUpdateForm({ quiz, questions_and_answers, onClose }:
                     </Text>
                   }
                   endElement={
-                    <IconButton
-                      variant="ghost"
+                    <Button
+                      visual="ghost"
+                      p={0}
                       onClick={() => handleDeleteQuestion(q.id)}
                       disabled={questionsArr.length === 1}
                     >
                       <DeleteIcon
                         color="red"
                       />
-                    </IconButton>
+                    </Button>
                   }
                 >
                   <Input
@@ -339,15 +340,16 @@ export default function QuizUpdateForm({ quiz, questions_and_answers, onClose }:
                         )
                       }
                       endElement={
-                        <IconButton
-                          variant="ghost"
+                        <Button
+                          visual="ghost"
+                          p={0}
                           onClick={() => handleDeleteAnswer(answer.id)}
                           disabled={answer.correct_answer}
                         >
                           <DeleteIcon
                             color="red"
                           />
-                        </IconButton>
+                        </Button>
                       }
                     >
                       <Input
@@ -368,11 +370,9 @@ export default function QuizUpdateForm({ quiz, questions_and_answers, onClose }:
                   .filter((ans) => ans.question_id === q.id)
                   .some((answer) => !answer.answer)}
                 style={styles}
-                as={Flex}
-                gap={1}
-                variant="surface"
+                visual="ghost"
               >
-                <AddIcon />
+                <AddIcon fontSize="12px" />
                 Add answer
               </Button>
             </div>
@@ -381,19 +381,16 @@ export default function QuizUpdateForm({ quiz, questions_and_answers, onClose }:
             <Button
               style={styles}
               onClick={addNewQuestion}
-              as={Flex}
-              gap={1}
-              variant="surface"
-              colorPalette="blue"
+              visual="ghost"
+              disabled={!isValid}
             >
-              <AddIcon />
+              <AddIcon fontSize="12px"/>
               Add question
             </Button>
           </Flex>
         </Flex>
 
         <Button
-          colorPalette="green"
           disabled={!isValid}
           onClick={handleSubmit}
         >

@@ -8,8 +8,8 @@ export default function LeaderboardRecord({
   index,
   user
 }: {
-  result: Result;
   index: number;
+  result: Result | null;
   user: User | null;
 }) {
   const recentResultCheck = (created_at: Date) => {
@@ -28,7 +28,7 @@ export default function LeaderboardRecord({
         <>
           <Flex
             flex={2}
-            gap={3}
+            alignItems="baseline"
           >
             {index >= 3 && (
               <Text
@@ -38,15 +38,15 @@ export default function LeaderboardRecord({
                 {index + 1 + "."}
               </Text>
             )}
-            <Flex position="relative" alignItems="center" flexWrap="wrap" gap={2}>
+            <Flex position="relative" alignItems="center" justifyContent="center" flexWrap="wrap" px={3}>
               {index === 3 && 
-                <Float placement="top-center" offsetY={-5}>
+                <Float placement="top-start" offsetY={-5} offsetX={10}>
                   <Text fontSize="xs">Username</Text>
                 </Float>
               }
               {result.username}
               {user?.id == result.user_id && recentResultCheck(result.created_at ?? new Date()) && (
-                <Tag colorPalette="orange" variant="solid">NEW!</Tag>
+                <Tag colorPalette="orange" variant="solid" ml={2}>NEW!</Tag>
               )}
             </Flex>
           </Flex>
@@ -72,7 +72,9 @@ export default function LeaderboardRecord({
           </chakra.div>
         </>
       ) : (
-        "blank"
+        <chakra.div ml={4}>
+          ---
+        </chakra.div>
       )}
     </>
   );

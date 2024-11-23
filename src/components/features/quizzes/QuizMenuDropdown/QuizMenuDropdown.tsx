@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/styles/theme/components/button";
 import { MenuRoot, MenuItem, MenuContent, MenuTrigger } from "@/components/ui/menu";
 import QuizUpdateForm from "../QuizUpdateForm/QuizUpdateForm";
 import { deleteQuiz } from "@/components/shared/utils/actions/quiz/deleteQuiz"; 
@@ -67,11 +67,13 @@ export default function QuizMenuDropdown({ quiz, questions_and_answers }: QuizMe
             <DialogFooter>
               <Button
                 onClick={() => setOpenDelete(false)}
+                visual="outline"
+                autoFocus
               >
                 No
               </Button>
               <Button
-                colorPalette="red"
+                visual="danger"
                 ml={3}
                 onClick={() => handleQuizDelete(quiz.id)}
               >

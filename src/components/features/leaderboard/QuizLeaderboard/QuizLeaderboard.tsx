@@ -7,8 +7,9 @@ import "./QuizLeaderboard.css";
 import clsx from "clsx";
 import LeaderboardRecord from "./components/LeaderboardRecord";
 
-export default function Leaderboard({ topResults }: { topResults: Result[] }) {
+export default function Leaderboard({ topResults }: { topResults: Result[] | null }) {
   const [user, setUser] = useState<User | null>(null);
+  const results = topResults ?? [];
   useEffect(() => {
     async function fetchUser() {
       const {
@@ -37,7 +38,7 @@ export default function Leaderboard({ topResults }: { topResults: Result[] }) {
           <Box
             as="li"
             flex={1}
-            key={topResults[index].id || index}
+            key={results[index]?.id ?? index}
             className={clsx({
               podium: true,
               firstPlace: index === 0,
@@ -46,7 +47,7 @@ export default function Leaderboard({ topResults }: { topResults: Result[] }) {
             })}
           >
             <LeaderboardRecord
-              result={topResults[index]}
+              result={results[index]}
               index={index}
               user={user}
             />
@@ -56,16 +57,16 @@ export default function Leaderboard({ topResults }: { topResults: Result[] }) {
       <Box as="ul">
         {Array.from({ length: 7 }).map((_, index) => (
           <Box
-            key={topResults[index].id || index}
             as="li"
+            key={results[index + 3]?.id || index}
             justifyContent="space-between"
             className={clsx({
               'leaderboard-record': true,
-              highlight: user?.id == topResults[index].user_id,
+              highlight: user?.id === results[index + 3]?.user_id,
             })}
           >
             <LeaderboardRecord
-              result={topResults[index + 3]}
+              result={results[index + 3]}
               index={index + 3}
               user={user}
             />
