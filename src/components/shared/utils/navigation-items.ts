@@ -1,6 +1,6 @@
 export const navItems = [
   { text: 'Home', href: '/quizzes' },
-  { text: 'Create quiz', href: '/quizzes/new' },
-  { text: 'My quizzes', href: '/my-quizzes' },
-  { text: 'My profile', href: '/my-profile' }
+  { text: 'Create Quiz', href: '/quizzes/new' },
+  { text: 'My Quizzes', href: '/my-quizzes' },
+  { text: 'My Profile', href: '/my-profile' }
 ];

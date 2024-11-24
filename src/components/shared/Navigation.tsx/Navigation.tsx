@@ -1,31 +1,65 @@
+"use client";
 import Link from "next/link";
 import { navItems } from "../utils/navigation-items";
-import styles from "./Navigation.module.css";
+import { Flex, Image } from "@chakra-ui/react";
+import { Button } from "@/styles/theme/components/button";
+import { LuLogOut } from "react-icons/lu";
+import { usePathname } from "next/navigation";
+import clsx from "clsx";
+import "./Navigation.css";
 
 export default function Navigation() {
+  const path = usePathname();
   return (
-    <nav>
-      <div className={styles.navList}>
-        <div className={styles.navActions}>
-          {navItems.map((item) => (
+    <Flex
+      as="nav"
+      justifyContent="space-between"
+      alignItems="center"
+      className="navigation"
+    >
+      <Image
+        src="/logo.svg"
+        alt="logo"
+        height="45px"
+      />
+      <Flex gap={2}>
+        {navItems.map((item) => {
+          const activePath = path === item.href;
+          return (
             <Link
               key={item.href}
-              className={styles.navLink}
               href={item.href}
+              className={clsx({
+                "nav-link": true,
+                active: activePath,
+              })}
             >
-              {item.text}
+              <Button
+                visual="ghost"
+                type="button"
+                color={clsx({ "{colors.tertiary}": activePath })}
+              >
+                {item.text}
+              </Button>
             </Link>
-          ))}
-        </div>
-        <div>
-          <form
-            action="/auth/logout"
-            method="post"
+          );
+        })}
+      </Flex>
+      <div>
+        <form
+          action="/auth/logout"
+          method="post"
+        >
+          <Button
+            visual="ghost"
+            type="submit"
+            className="nav-link"
           >
-            <button className={styles.navLink} type="submit">Logout</button>
-          </form>
-        </div>
+            Logout
+            <LuLogOut />
+          </Button>
+        </form>
       </div>
-    </nav>
+    </Flex>
   );
 }
