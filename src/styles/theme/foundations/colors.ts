@@ -1,7 +1,8 @@
 import { defineTokens } from "@chakra-ui/react";
 
 const colors = defineTokens.colors({
-  primary: {value: "#DCF2F1"},
+  primary: {value: "#dcf2f180"},
+  primaryContrast: {value: "#225250"},
   secondary: {value: "#7FC7D9"},
   tertiary: {value: "#365486"},
   
@@ -12,6 +13,7 @@ const colors = defineTokens.colors({
     800: {value: "#666666"}
   },
   light: {
+    100:{value: "#fffff7"},
     200:{value: "#f2f2f2"},
     400:{value: "#e6e6e6"},
     600:{value: "#d9d9d9"},

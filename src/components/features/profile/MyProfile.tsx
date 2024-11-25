@@ -1,16 +1,19 @@
 "use client";
-import {
-  Card,
-  Flex,
-  Input
-} from "@chakra-ui/react";
-import { Heading } from "@/styles/theme/components/heading";
+import { Card, Flex, Float, Input, chakra, Image, Container } from "@chakra-ui/react";
 import { Button } from "@/styles/theme/components/button";
-import Image from "next/image";
 import { updateUserData } from "@/components/shared/utils/actions/user/updateUserData";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Toaster, toaster } from "@/components/ui/toaster";
 import { FormLabel } from "@chakra-ui/form-control";
+import {
+  FileInput,
+  FileUploadClearTrigger,
+  FileUploadLabel,
+  FileUploadRoot,
+} from "@/components/ui/file-button";
+import { InputGroup } from "@/components/ui/input-group";
+import { LuFileUp } from "react-icons/lu";
+import { CloseButton } from "@/components/ui/close-button";
 
 interface IMyProfileProps {
   id: string;
@@ -22,6 +25,13 @@ interface IMyProfileProps {
 
 export default function MyProfile({ id, profile }: IMyProfileProps) {
   const formRef = useRef<HTMLFormElement>(null);
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  if (!isClient) return null;
+  
+  const avatarSrc = profile?.avatar || "https://fakeimg.pl/100x100/";
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -45,57 +55,92 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
   };
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit}>
-      <Flex
-        flexDir="column"
-        gap={2}
-        align="center"
-        mt={8}
+    <chakra.form
+      ref={formRef}
+      onSubmit={handleSubmit}
+    >
+      <Container
+        maxW="xl"
       >
-        <Card.Root>
-          <Card.Body border="1px solid grey">
-            <Heading
-              as="h1"
-              size="h2"
+        <Card.Root
+          mt="75px"
+          position="relative"
+          rounded="soft"
+          bg="primary"
+          color="primaryContrast"
+          boxShadow="8px 8px 10px var(--chakra-colors-light-600)"
+          border="none"
+        >
+          <Card.Body
+            p={12}
+          >
+            <Float
+              asChild
+              placement="top-center"
             >
-              My Profile
-            </Heading>
-            <div>
-              <FormLabel>Username:</FormLabel>
-              <Input
-                type="text"
-                name="username"
-                defaultValue={profile?.username}
+              <Image
+                src={avatarSrc}
+                alt="profile avatar"
+                width={100}
+                height={100}
+                rounded="full"
               />
-            </div>
-
-            <Image
-              style={{ borderRadius: "50%", width: "100px", height: "100px" }}
-              src={
-                profile.avatar || "https://fakeimg.pl/100x100/"
-              }
-              alt="profile avatar"
-              width={100}
-              height={100}
-              priority={true}
-            />
-            
+            </Float>
             <Flex
-              gap={2}
-              align="baseline"
+              flex={1}
+              flexDirection="column"
+              gap={8}
             >
-              <Input
-                type="file"
-                name="avatar"
-                border={0}
+              <div>
+                <FormLabel>Username:</FormLabel>
+                <Input
+                  type="text"
+                  name="username"
+                  defaultValue={profile?.username}
+                  bg="light.100"
+                />
+              </div>
+
+              <Flex
+                gap={2}
+                align="baseline"
+              >
+                <FileUploadRoot
+                  gap="1"
+                  maxWidth="300px"
+                  name="avatar"
+                  color="primaryContrast"
+                >
+                  <FileUploadLabel>Upload avatar</FileUploadLabel>
+                  <InputGroup
+                    borderColor="{colors.primaryContrast}"
+                    w="full"
+                    startElement={<LuFileUp />}
+                    endElement={
+                      <FileUploadClearTrigger asChild>
+                        <CloseButton
+                          me="-1"
+                          size="xs"
+                          pointerEvents="auto"
+                        />
+                      </FileUploadClearTrigger>
+                    }
+                  >
+                    <FileInput bg="light.100" cursor="pointer" />
+                  </InputGroup>
+                </FileUploadRoot>
+              </Flex>
+              <input
+                type="hidden"
+                name="id"
+                value={id}
               />
+              <Button type="submit">Save Changes</Button>
             </Flex>
-            <input type="hidden" name="id" value={id} />
-            <Button type="submit">Save Changes</Button>
           </Card.Body>
         </Card.Root>
-      </Flex>
+      </Container>
       <Toaster />
-    </form>
+    </chakra.form>
   );
 }

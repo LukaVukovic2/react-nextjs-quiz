@@ -6,5 +6,5 @@ export const globalCss = defineGlobalStyles({
     display: "flex",
     flexWrap: "wrap",
     flexDirection: "column",
-  },
+  }
 });

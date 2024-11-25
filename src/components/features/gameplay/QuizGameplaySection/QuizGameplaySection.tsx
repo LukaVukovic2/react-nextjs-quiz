@@ -183,7 +183,7 @@ export default function QuizGameplaySection({
       <Confetti isShown={isTopResult} />
       <Flex justifyContent="space-between" alignItems="center">
         <QuizGameplayHeader
-          title={quiz.title}
+          quiz={quiz}
           user={user}
         >
           <QuizTimer
