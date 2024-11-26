@@ -6,6 +6,7 @@ import { Flex, VStack } from "@chakra-ui/react";
 import { ControllerRenderProps, FieldValues } from "react-hook-form";
 import clsx from "clsx";
 import "./RadioGroup.scss";
+import { getLetterByIndex } from "@/components/shared/utils/getLetterByIndex";
 
 interface IRadioGroupProps {
   field: ControllerRenderProps<FieldValues, string>;
@@ -33,7 +34,7 @@ export default function RadioGroup(props: IRadioGroupProps) {
         {groupedAnswers &&
           groupedAnswers[question.id]?.map((answer: Answer, index) => {
             const selectedAnsId = selectedAnswers.get(question.id) ?? "";
-            const letter = String.fromCharCode(65 + index);
+            const letter = getLetterByIndex(index);
             const isCorrect = answer?.correct_answer && selectedAnsId === answer.id;
             const isChecked = selectedAnsId === answer.id;
             return (
