@@ -6,7 +6,7 @@ export default async function QuizListPage() {
   const supabase = createClient();
   const { data: quizzes, error } = await supabase.rpc("get_quizzes");
 
-  if (error || !quizzes) notFound();
+  if (error || !quizzes || !quizzes.length) notFound();
 
   return <QuizList quizzes={quizzes} />;
 }

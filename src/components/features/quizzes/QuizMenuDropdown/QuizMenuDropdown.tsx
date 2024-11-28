@@ -10,16 +10,18 @@ import { Quiz } from "@/app/typings/quiz";
 import { DialogBody, DialogCloseTrigger, DialogContent, DialogFooter, DialogHeader, DialogRoot, DialogTitle } from "@/components/ui/dialog";
 import { toaster } from "@/components/ui/toaster";
 import "./QuizMenuDropdown.css";
+import { QuizType } from "@/app/typings/quiz_type";
 
 interface QuizMenuDropdownProps {
   quiz: Quiz;
+  quiz_type: QuizType;
   questions_and_answers: Array<{
     question: Question;
     answers: Answer[];
   }>;
 }
 
-export default function QuizMenuDropdown({ quiz, questions_and_answers }: QuizMenuDropdownProps) {
+export default function QuizMenuDropdown({ quiz, quiz_type, questions_and_answers }: QuizMenuDropdownProps) {
   const [ openEdit, setOpenEdit ] = useState(false);
   const [ openDelete, setOpenDelete ] = useState(false);
 
@@ -95,6 +97,7 @@ export default function QuizMenuDropdown({ quiz, questions_and_answers }: QuizMe
             <DialogBody>
               <QuizUpdateForm
                 quiz={quiz}
+                quiz_type={quiz_type}
                 questions_and_answers={questions_and_answers}
                 onClose={() => setOpenEdit(false)}
               />

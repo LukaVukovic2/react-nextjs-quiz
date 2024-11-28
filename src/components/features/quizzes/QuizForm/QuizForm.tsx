@@ -1,8 +1,5 @@
 "use client";
-import {
-  Flex,
-  chakra,
-} from "@chakra-ui/react";
+import { Flex, chakra } from "@chakra-ui/react";
 import { Button } from "@/styles/theme/components/button";
 import { steps } from "@/components/shared/utils/steps";
 import QuestionList from "@/components/shared/QuestionList/QuestionList";
@@ -18,9 +15,10 @@ import { Toaster, toaster } from "@/components/ui/toaster";
 import { useStep } from "usehooks-ts";
 import QuizDetailsForm from "./components/QuizDetailsForm";
 import QuizQuestionForm from "./components/QuizQuestionForm";
-import { QuizFormContext } from "./utils/QuizFormContext";
+import { QuizFormContext } from "../../../shared/utils/contexts/QuizFormContext";
+import { QuizType } from "@/app/typings/quiz_type";
 
-export default function QuizForm() {
+export default function QuizForm({ quizTypes }: { quizTypes: QuizType[] }) {
   const { push } = useRouter();
 
   const [currentStep, helpers] = useStep(3);
@@ -31,7 +29,9 @@ export default function QuizForm() {
   const [questionTitle, setQuestionTitle] = useState("");
   const [question_id, setQuestionId] = useState(uuidv4());
   const [answers, setAnswers] = useState<Answer[]>([]);
-  const methods = useForm({ mode: "onChange" });
+  const methods = useForm({
+    mode: "onChange",
+  });
 
   const [isCorrect, setIsCorrect] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState({
@@ -42,7 +42,9 @@ export default function QuizForm() {
   const minQuizQuestionCount =
     Number(process.env.NEXT_PUBLIC_MIN_QUIZ_QUESTION_COUNT) || 0;
   const isFormValid =
-    currentStep === 1 ? methods.formState.isValid : questions.length >= minQuizQuestionCount;
+    currentStep === 1
+      ? methods.formState.isValid
+      : questions.length >= minQuizQuestionCount;
 
   const setStepIfValid = (index: number) => {
     if ((isFormValid && index - currentStep < 2) || index < currentStep) {
@@ -51,13 +53,14 @@ export default function QuizForm() {
   };
 
   const handleCreateQuiz = async () => {
+    const formValues = methods.getValues();
     const formData = {
       quiz: {
         id: quiz_id,
         user_id: "",
-        title: methods.getValues().title,
-        category: methods.getValues().category,
-        time: methods.getValues().time,
+        title: formValues.title,
+        time: "" + formValues.time,
+        id_quiz_type: formValues.quiz_type[0],
       },
       questions: {
         questions,
@@ -74,36 +77,53 @@ export default function QuizForm() {
   };
 
   return (
-    <QuizFormContext.Provider value={{
-      currentStep,
-      quiz_id,
-      questions,
-      setQuestions,
-      questionTitle,
-      setQuestionTitle,
-      question_id,
-      setQuestionId,
-      answers,
-      setAnswers,
-      isCorrect,
-      setIsCorrect,
-      currentQuestion,
-      setCurrentQuestion,
-      setStepIfValid
-    }}>
+    <QuizFormContext.Provider
+      value={{
+        currentStep,
+        quiz_id,
+        questions,
+        setQuestions,
+        questionTitle,
+        setQuestionTitle,
+        question_id,
+        setQuestionId,
+        answers,
+        setAnswers,
+        isCorrect,
+        setIsCorrect,
+        currentQuestion,
+        setCurrentQuestion,
+        setStepIfValid,
+        quizTypes,
+      }}
+    >
       <FormProvider {...methods}>
-        <chakra.div px={20} py={5}>
+        <chakra.div
+          px={20}
+          py={5}
+        >
           <StepperProgress />
-          <chakra.form as={Flex} flexDirection="column" gap={5} my={5}>
+          <chakra.form
+            as={Flex}
+            flexDirection="column"
+            gap={5}
+            my={5}
+          >
             {currentStep === 1 && <QuizDetailsForm />}
             {currentStep === 2 && <QuizQuestionForm />}
             {currentStep === 3 && <QuestionList questions={questions} />}
             <Flex justifyContent="space-between">
-              <Button onClick={goToPrevStep} disabled={currentStep === 1}>
+              <Button
+                onClick={goToPrevStep}
+                disabled={currentStep === 1}
+              >
                 Back
               </Button>
               {currentStep < steps.length ? (
-                <Button onClick={goToNextStep} disabled={!isFormValid}>
+                <Button
+                  onClick={goToNextStep}
+                  disabled={!isFormValid}
+                >
                   Next
                 </Button>
               ) : (

@@ -28,11 +28,11 @@ export const updateQuiz = async (changes: FormData) => {
   );
 
   const { error } = await supabase.rpc("update_quiz", {
-    updatedquiz: quizJson,
-    updatedquestions: questionJson,
-    updatedanswers: answerJson,
-    deletedquestions: deletedQuestionsJson,
-    deletedanswers: deletedAnswersJson
+    updated_quiz: quizJson,
+    updated_questions: questionJson,
+    updated_answers: answerJson,
+    deleted_questions: deletedQuestionsJson,
+    deleted_answers: deletedAnswersJson
   });
   if (error) {
     console.error(error);

@@ -40,7 +40,9 @@
     "swr": "^2.2.5",
     "tls": "^0.0.1",
     "usehooks-ts": "^3.1.0",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "webpack": "^5.96.1",
+    "webpack-cli": "^5.1.4"
   },
   "devDependencies": {
     "@types/node": "^20",

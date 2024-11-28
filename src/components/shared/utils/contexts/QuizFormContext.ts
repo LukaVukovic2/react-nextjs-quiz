@@ -1,5 +1,6 @@
 import { Answer } from "@/app/typings/answer";
 import { Question } from "@/app/typings/question";
+import { QuizType } from "@/app/typings/quiz_type";
 import { createContext } from "react";
 
 interface IQuizFormContext {
@@ -21,6 +22,7 @@ interface IQuizFormContext {
   setCurrentQuestion: (question: { correct: boolean; incorrect: boolean }) => void;
   currentStep: number;
   setStepIfValid: (index: number) => void;
+  quizTypes: QuizType[];
 }
 
 export const QuizFormContext = createContext<IQuizFormContext>({
@@ -42,4 +44,5 @@ export const QuizFormContext = createContext<IQuizFormContext>({
   setCurrentQuestion: () => {},
   currentStep: 0,
   setStepIfValid: () => {},
+  quizTypes: []
 });

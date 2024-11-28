@@ -9,7 +9,6 @@ export default function QuizItem({ quiz }: { quiz: Quiz }) {
       <Card.Body>
         <Link href={`/quizzes/${quiz.id}`}>
           <Text>{quiz.title}</Text>
-          <Text>{quiz.category}</Text>
         </Link>
       </Card.Body>
     </Card.Root>

@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { QuizFormContext } from "../utils/QuizFormContext";
+import { QuizFormContext } from "../../../../shared/utils/contexts/QuizFormContext";
 import QuestionList from "@/components/shared/QuestionList/QuestionList";
 import { FormControl } from "@chakra-ui/form-control";
 import { AddIcon } from "@chakra-ui/icons";
@@ -76,6 +76,8 @@ export default function QuizQuestionForm() {
         id,
         title: getValues().questionTitle,
         quiz_id,
+        //privremeno hardkodirana vrijednost
+        id_quest_type: "7966de37-9629-4f9c-b96f-7411bce78f39",
         answers,
       },
     ]);
@@ -145,20 +147,40 @@ export default function QuizQuestionForm() {
             </Card.Body>
           </Card.Root>
         </chakra.div>
-        <Flex flexDirection="column" alignItems="start" gap={2} flex={1} >
-          <Text fontWeight="semibold" fontSize="xl">Current Question</Text>
+        <Flex
+          flexDirection="column"
+          alignItems="start"
+          gap={2}
+          flex={1}
+        >
+          <Text
+            fontWeight="semibold"
+            fontSize="xl"
+          >
+            Current Question
+          </Text>
           <Text textTransform="uppercase">Title:</Text>
-          {questionTitle ? 
-            <Text>{questionTitle}</Text> : 
-            <Text color="dark.800">No title</Text>}
+          {questionTitle ? (
+            <Text>{questionTitle}</Text>
+          ) : (
+            <Text color="dark.800">No title</Text>
+          )}
           <Text textTransform="uppercase">Answers:</Text>
           <div>
-            {answers.length > 0 ? 
+            {answers.length > 0 ? (
               answers.map((answer, index) => {
                 const letter = getLetterByIndex(index);
-                return <AnswerGroupBox key={answer.id} answer={answer} letter={letter} />
-              }) : <Text color="dark.800">No answers</Text>
-            }
+                return (
+                  <AnswerGroupBox
+                    key={answer.id}
+                    answer={answer}
+                    letter={letter}
+                  />
+                );
+              })
+            ) : (
+              <Text color="dark.800">No answers</Text>
+            )}
           </div>
           <Button
             disabled={isQuestionValid}

@@ -109,7 +109,6 @@ export default function QuizGameplaySection({
       }, 500);
     }
   };
-  
 
   const handleFinishQuiz = async (totalSeconds: number) => {
     setIsFinished(true);

@@ -6,7 +6,7 @@ import {
   StepsList,
   StepsRoot,
 } from "@/components/ui/steps";
-import { QuizFormContext } from "@/components/features/quizzes/QuizForm/utils/QuizFormContext";
+import { QuizFormContext } from "@/components/shared/utils/contexts/QuizFormContext";
 
 export default function StepperProgress() {
   const { currentStep, setStepIfValid } = useContext(QuizFormContext);
