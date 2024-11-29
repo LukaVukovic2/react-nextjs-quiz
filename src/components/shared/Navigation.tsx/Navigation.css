@@ -6,7 +6,6 @@
 .nav-link{
   border-radius: var(--chakra-radii-soft);
   font-weight: var(--chakra-font-weights-semibold);
-  color: var(--chakra-colors-dark-600);
 }
 
 .active{

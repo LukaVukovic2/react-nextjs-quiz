@@ -2,13 +2,11 @@
 import QuizItem from "../QuizItem/QuizItem";
 import { Quiz } from "@/app/typings/quiz";
 import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
-import { useState, useEffect } from "react";
-import { Heading } from "@/styles/theme/components/heading";
+import React, { useState, useEffect } from "react";
 import { Flex } from "@chakra-ui/react";
  
-export default function QuizList({quizzes}: {quizzes: Quiz[]}) {
+export default function QuizList({quizzes, children}: {quizzes: Quiz[], children: React.ReactNode}) {
   const [loaded, setLoaded] = useState(false);
-
   useEffect(() => {
     setLoaded(true);
   }, []);
@@ -18,9 +16,7 @@ export default function QuizList({quizzes}: {quizzes: Quiz[]}) {
   }
   return (
     <>
-      <Heading as="h1" size="h1">
-        Quiz List
-      </Heading>
+      {children}
       <Flex flexWrap="wrap" gap="2rem">
         {quizzes && quizzes?.length > 0 && (
           quizzes.map((quiz: Quiz) => (
