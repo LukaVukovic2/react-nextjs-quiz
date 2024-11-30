@@ -3,12 +3,13 @@ import SelectOption from "@/components/core/SelectOption/SelectOption";
 import { FormControl } from "@chakra-ui/form-control";
 import { createListCollection, Flex, Input } from "@chakra-ui/react";
 import { Controller, useFormContext } from "react-hook-form";
-import { QuizFormContext } from "../../../../shared/utils/contexts/QuizFormContext";
-import { useContext } from "react";
 
-export default function QuizDetailsForm() {
+interface IQuizDetailsFormProps {
+  quizTypes: QuizType[];
+}
+
+export default function QuizDetailsForm({ quizTypes }: IQuizDetailsFormProps) {
   const { register, trigger, control } = useFormContext();
-  const { quizTypes } = useContext(QuizFormContext);
 
   const types = createListCollection({
     items: quizTypes.map((quizType: QuizType) => ({
@@ -47,7 +48,7 @@ export default function QuizDetailsForm() {
           <SelectOption
             field={{
               ...field,
-              value: field.value || "",
+              value: field.value || [],
             }}
             list={types}
             defaultMessage="Select quiz type"

@@ -18,7 +18,7 @@ export default function SelectOption({ field, list, defaultMessage }: ISelectOpt
   return (
     <SelectRoot
       name={field.name}
-      defaultValue={[field.value]}
+      defaultValue={field.value}
       onValueChange={({value}) => field.onChange(value)}
       onInteractOutside={field.onBlur}
       collection={list}

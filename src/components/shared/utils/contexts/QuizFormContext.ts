@@ -22,7 +22,6 @@ interface IQuizFormContext {
   setCurrentQuestion: (question: { correct: boolean; incorrect: boolean }) => void;
   currentStep: number;
   setStepIfValid: (index: number) => void;
-  quizTypes: QuizType[];
 }
 
 export const QuizFormContext = createContext<IQuizFormContext>({
@@ -43,6 +42,5 @@ export const QuizFormContext = createContext<IQuizFormContext>({
   },
   setCurrentQuestion: () => {},
   currentStep: 0,
-  setStepIfValid: () => {},
-  quizTypes: []
+  setStepIfValid: () => {}
 });

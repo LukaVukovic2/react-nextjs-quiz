@@ -5,7 +5,7 @@ import { steps } from "@/components/shared/utils/steps";
 import QuestionList from "@/components/shared/QuestionList/QuestionList";
 import StepperProgress from "@/components/shared/StepperProgress/StepperProgress";
 import { createQuiz } from "@/components/shared/utils/actions/quiz/createQuiz";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Question } from "@/app/typings/question";
 import { Answer } from "@/app/typings/answer";
@@ -17,13 +17,18 @@ import QuizDetailsForm from "./components/QuizDetailsForm";
 import QuizQuestionForm from "./components/QuizQuestionForm";
 import { QuizFormContext } from "../../../shared/utils/contexts/QuizFormContext";
 import { QuizType } from "@/app/typings/quiz_type";
+import { QuestionType } from "@/app/typings/question_type";
 
-export default function QuizForm({ quizTypes }: { quizTypes: QuizType[] }) {
+export default function QuizForm({ quizTypes, questTypes }: { quizTypes: QuizType[], questTypes: QuestionType[] }) {
   const { push } = useRouter();
-
+  const [isClient, setIsClient] = useState(false);
   const [currentStep, helpers] = useStep(3);
-  const { setStep, goToNextStep, goToPrevStep } = helpers;
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
+  const { setStep, goToNextStep, goToPrevStep } = helpers;
+  
   const [questions, setQuestions] = useState<Question[]>([]);
   const [quiz_id] = useState(uuidv4());
   const [questionTitle, setQuestionTitle] = useState("");
@@ -32,21 +37,22 @@ export default function QuizForm({ quizTypes }: { quizTypes: QuizType[] }) {
   const methods = useForm({
     mode: "onChange",
   });
-
+  
   const [isCorrect, setIsCorrect] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState({
     correct: false,
     incorrect: false,
   });
-
+  if (!isClient) return null;
+  
   const minQuizQuestionCount =
-    Number(process.env.NEXT_PUBLIC_MIN_QUIZ_QUESTION_COUNT) || 0;
+  Number(process.env.NEXT_PUBLIC_MIN_QUIZ_QUESTION_COUNT) || 0;
   const isFormValid =
-    currentStep === 1
+  currentStep === 1
       ? methods.formState.isValid
       : questions.length >= minQuizQuestionCount;
-
-  const setStepIfValid = (index: number) => {
+      
+      const setStepIfValid = (index: number) => {
     if ((isFormValid && index - currentStep < 2) || index < currentStep) {
       setStep(index);
     }
@@ -93,15 +99,14 @@ export default function QuizForm({ quizTypes }: { quizTypes: QuizType[] }) {
         setIsCorrect,
         currentQuestion,
         setCurrentQuestion,
-        setStepIfValid,
-        quizTypes,
+        setStepIfValid
       }}
     >
-      <FormProvider {...methods}>
-        <chakra.div
-          px={20}
-          py={5}
-        >
+      <chakra.div
+        px={20}
+        py={5}
+      >
+        <FormProvider {...methods}>
           <StepperProgress />
           <chakra.form
             as={Flex}
@@ -109,8 +114,8 @@ export default function QuizForm({ quizTypes }: { quizTypes: QuizType[] }) {
             gap={5}
             my={5}
           >
-            {currentStep === 1 && <QuizDetailsForm />}
-            {currentStep === 2 && <QuizQuestionForm />}
+            {currentStep === 1 && <QuizDetailsForm quizTypes={quizTypes} />}
+            {currentStep === 2 && <QuizQuestionForm questTypes={questTypes} />}
             {currentStep === 3 && <QuestionList questions={questions} />}
             <Flex justifyContent="space-between">
               <Button
@@ -132,8 +137,8 @@ export default function QuizForm({ quizTypes }: { quizTypes: QuizType[] }) {
             </Flex>
             <Toaster />
           </chakra.form>
-        </chakra.div>
-      </FormProvider>
+        </FormProvider>
+      </chakra.div>
     </QuizFormContext.Provider>
   );
 }
