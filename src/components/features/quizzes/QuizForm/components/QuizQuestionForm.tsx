@@ -14,6 +14,9 @@ import { Question } from "@/app/typings/question";
 import { Button } from "@/styles/theme/components/button";
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import QuestionList from "@/components/shared/QuestionList/QuestionList";
+import { InputGroup } from "@/components/ui/input-group";
+import { CheckCircleIcon } from "@chakra-ui/icons";
+import "../QuizForm.css";
 
 interface IQuizQuestionFormProps {
   questTypes: QuestionType[];
@@ -36,7 +39,7 @@ export default function QuizQuestionForm({
     answers: [],
   });
 
-  const { register, control, trigger } = useFormContext();
+  const { register, control, trigger, formState: {isValid} } = useFormContext();
 
   const types = createListCollection({
     items: questTypes.map((type: QuestionType) => ({
@@ -48,8 +51,6 @@ export default function QuizQuestionForm({
   const selectedTypeName = questTypes.find(
     (type) => type.id === currentQuestion.id_quest_type
   )?.type_name;
-
-  console.log(questions)
 
   const addNewAnswer = () => {
     const currentAnswer = {
@@ -64,6 +65,8 @@ export default function QuizQuestionForm({
         answers: [...(prev.answers || []), currentAnswer],
       };
     });
+    trigger(`correctAnswer_${currentQuestion.id}`);
+    trigger(`answer${currentAnswer.id}`);
   };
 
   const addNewQuestion = () => {
@@ -72,13 +75,49 @@ export default function QuizQuestionForm({
       currentQuestion,
     ]);
     setCurrentQuestion({
+      ...currentQuestion,
       id: uuidv4(),
       title: "",
-      quiz_id,
-      id_quest_type: "",
       answers: [],
     });
+    trigger();
   };
+
+  const changeCorrectAnswer = (answerId: string) => {
+    setCurrentQuestion((prev) => ({
+      ...prev,
+      answers: (prev.answers || []).map((ans) => ({
+        ...ans,
+        correct_answer: ans.id === answerId,
+      })),
+    }));
+    trigger(`correctAnswer_${currentQuestion.id}`);
+  }
+
+  const changeQuestionTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentQuestion((prev) => ({
+      ...prev,
+      title: e.target.value,
+    }));
+    trigger("questionTitle");
+  }
+
+  const updateAnswer = (e: React.FocusEvent<HTMLInputElement>, answerId: string) => {
+    setCurrentQuestion((prev) => {
+      return {
+        ...prev,
+        answers: (prev.answers ?? []).map((ans) => {
+          if (ans.id === answerId) {
+            return {
+              ...ans,
+              answer: e.target.value,
+            };
+          }
+          return ans;
+        })
+      }
+    }
+  )};
 
   const renderQuestionForm = () => {
     switch (selectedTypeName) {
@@ -91,7 +130,7 @@ export default function QuizQuestionForm({
                 {
                   id: uuidv4(),
                   answer: "",
-                  correct_answer: false,
+                  correct_answer: true,
                   question_id: currentQuestion.id,
                 },
                 {
@@ -111,12 +150,7 @@ export default function QuizQuestionForm({
                 placeholder="Question title"
                 value={currentQuestion.title}
                 {...register("questionTitle", { required: true })}
-                onChange={(e) => {
-                  setCurrentQuestion(
-                    (prev) => ({ ...prev, title: e.target.value })
-                  );
-                  trigger("questionTitle");
-                }}
+                onChange={(e) => changeQuestionTitle(e)}
               />
             </FormControl>
             {Array.isArray(currentQuestion.answers) && currentQuestion.answers && (
@@ -125,32 +159,36 @@ export default function QuizQuestionForm({
                   <FormControl
                     key={answer.id}
                   >
-                    <Input
-                      placeholder="Add answer option"
-                      {...register(`q_${answer.question_id}_a_${answer.id}`, { required: true })}
-                      onChange={(e) => {
-                        trigger("answer");
-                        setCurrentQuestion((prev) => {
-                          return {
-                            ...prev,
-                            answers: (prev.answers ?? []).map((ans) => {
-                              if (ans.id === answer.id) {
-                                return {
-                                  ...ans,
-                                  answer: e.target.value,
-                                };
-                              }
-                              return ans;
-                            }
-                        )}});
-                      }}
-                    />
+                    <InputGroup
+                      w="100%"
+                      startElement={
+                        answer.correct_answer ? (
+                          <CheckCircleIcon color="green" fontSize="17px" />
+                        ) : (
+                          <input
+                            type="radio"
+                            name={`correctAnswer_${currentQuestion.id}`}
+                            onChange={() => changeCorrectAnswer(answer.id)}
+                            style={{ cursor: "pointer" }}
+                          />
+                        )
+                      }
+                    >
+                      <Input
+                        placeholder="Answer"
+                        defaultValue={answer.answer}
+                        {...register(`answer${answer.id}`, {
+                          required: true,
+                        })}
+                        onBlur={(e) => updateAnswer(e, answer.id)}
+                      />
+                    </InputGroup>
                   </FormControl>
                 );
               })
             )}
-            <Button onClick={addNewAnswer}>Add answer</Button>
-            <Button onClick={addNewQuestion}>Add question</Button>
+            <Button visual="ghost" onClick={addNewAnswer}>Add answer</Button>
+            <Button disabled={!isValid} onClick={addNewQuestion}>Add question</Button>
           </>
         );
 
