@@ -83,12 +83,16 @@ export default function QuizQuestionForm({
     trigger();
   };
 
-  const changeCorrectAnswer = (answerId: string) => {
+  const changeCorrectAnswer = (answerId: string, selectedTypeName: string) => {
     setCurrentQuestion((prev) => ({
       ...prev,
       answers: (prev.answers || []).map((ans) => ({
         ...ans,
-        correct_answer: ans.id === answerId,
+        correct_answer: selectedTypeName === "Single choice"
+          ? ans.id === answerId
+          : ans.id === answerId
+          ? !ans.correct_answer
+          : ans.correct_answer,
       })),
     }));
     trigger(`correctAnswer_${currentQuestion.id}`);
@@ -119,9 +123,10 @@ export default function QuizQuestionForm({
     }
   )};
 
-  const renderQuestionForm = () => {
+  const renderQuestionTypeForm = () => {
     switch (selectedTypeName) {
       case "Single choice":
+      case "Multiple choice":
         if((currentQuestion.answers || []).length === 0) {
           setCurrentQuestion((prev) => {
             return {
@@ -162,16 +167,26 @@ export default function QuizQuestionForm({
                     <InputGroup
                       w="100%"
                       startElement={
-                        answer.correct_answer ? (
+                        selectedTypeName === "Single choice" ? (answer.correct_answer ? (
                           <CheckCircleIcon color="green" fontSize="17px" />
                         ) : (
                           <input
                             type="radio"
+                            checked={answer.correct_answer}
                             name={`correctAnswer_${currentQuestion.id}`}
-                            onChange={() => changeCorrectAnswer(answer.id)}
+                            onChange={() => changeCorrectAnswer(answer.id, selectedTypeName)}
+                            style={{ cursor: "pointer" }}
+                          />
+                        )) : (
+                          <input
+                            type="checkbox"
+                            checked={answer.correct_answer}
+                            name={`correctAnswer_${currentQuestion.id}`}
+                            onChange={() => changeCorrectAnswer(answer.id, selectedTypeName)}
                             style={{ cursor: "pointer" }}
                           />
                         )
+                        
                       }
                     >
                       <Input
@@ -191,7 +206,7 @@ export default function QuizQuestionForm({
             <Button disabled={!isValid} onClick={addNewQuestion}>Add question</Button>
           </>
         );
-
+      
       default:
         return <div>Default</div>;
     }
@@ -221,7 +236,7 @@ export default function QuizQuestionForm({
             />
           )}
         />
-        {currentQuestion.id_quest_type && renderQuestionForm()}
+        {currentQuestion.id_quest_type && renderQuestionTypeForm()}
       </Box>
       <QuestionList questions={questions} />
     </>
