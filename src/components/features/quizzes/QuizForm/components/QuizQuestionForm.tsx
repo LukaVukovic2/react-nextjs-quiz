@@ -15,7 +15,7 @@ import { Button } from "@/styles/theme/components/button";
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import QuestionList from "@/components/shared/QuestionList/QuestionList";
 import { InputGroup } from "@/components/ui/input-group";
-import { CheckCircleIcon } from "@chakra-ui/icons";
+import { CheckCircleIcon, DeleteIcon } from "@chakra-ui/icons";
 import "../QuizForm.css";
 
 interface IQuizQuestionFormProps {
@@ -52,11 +52,52 @@ export default function QuizQuestionForm({
     (type) => type.id === currentQuestion.id_quest_type
   )?.type_name;
 
-  const addNewAnswer = () => {
+  const initializeCurrentAnswers = (typeId: string) => {
+    const typeName = questTypes.find(
+      (type) => type.id === typeId
+    )?.type_name;
+    setCurrentQuestion((prev) => {
+      if(typeName === "Single choice" || typeName === "Multiple choice") {
+        return {
+          ...prev,
+          answers: [
+            {
+              id: uuidv4(),
+              answer: "",
+              correct_answer: true,
+              question_id: currentQuestion.id,
+            },
+            {
+              id: uuidv4(),
+              answer: "",
+              correct_answer: false,
+              question_id: currentQuestion.id,
+            }
+          ],
+        };
+      }
+      else if(typeName === "Short answer") {
+        return {
+          ...prev,
+          answers: [
+            {
+              id: uuidv4(),
+              answer: "",
+              correct_answer: true,
+              question_id: currentQuestion.id,
+            }
+          ],
+        };
+      }
+      return { ...prev };
+    });
+  }
+
+  const addNewAnswer = (type_name?: string) => {
     const currentAnswer = {
       id: uuidv4(),
       answer: "",
-      correct_answer: false,
+      correct_answer: type_name === "Short answer" ? true : false,
       question_id: currentQuestion.id,
     };
     setCurrentQuestion((prev) => {
@@ -81,6 +122,7 @@ export default function QuizQuestionForm({
       answers: [],
     });
     trigger();
+    initializeCurrentAnswers(currentQuestion.id_quest_type);
   };
 
   const changeCorrectAnswer = (answerId: string, selectedTypeName: string) => {
@@ -123,31 +165,19 @@ export default function QuizQuestionForm({
     }
   )};
 
+  const deleteAnswer = (answerId: string) => {
+    setCurrentQuestion((prev) => {
+      return {
+        ...prev,
+        answers: (prev.answers ?? []).filter((ans) => ans.id !== answerId),
+      };
+    });
+  };
+
   const renderQuestionTypeForm = () => {
     switch (selectedTypeName) {
       case "Single choice":
       case "Multiple choice":
-        if((currentQuestion.answers || []).length === 0) {
-          setCurrentQuestion((prev) => {
-            return {
-              ...prev,
-              answers: [
-                {
-                  id: uuidv4(),
-                  answer: "",
-                  correct_answer: true,
-                  question_id: currentQuestion.id,
-                },
-                {
-                  id: uuidv4(),
-                  answer: "",
-                  correct_answer: false,
-                  question_id: currentQuestion.id,
-                }
-              ],
-            };
-          }
-        )}
         return (
           <>
             <FormControl>
@@ -202,10 +232,56 @@ export default function QuizQuestionForm({
                 );
               })
             )}
-            <Button visual="ghost" onClick={addNewAnswer}>Add answer</Button>
+            <Button visual="ghost" onClick={() => addNewAnswer()}>Add answer</Button>
             <Button disabled={!isValid} onClick={addNewQuestion}>Add question</Button>
           </>
         );
+      case "Short answer": 
+        return (
+          <>
+            <FormControl>
+              <Input
+                placeholder="Question title"
+                value={currentQuestion.title}
+                {...register("questionTitle", { required: true })}
+                onChange={(e) => changeQuestionTitle(e)}
+              />
+            </FormControl>
+            {Array.isArray(currentQuestion.answers) && currentQuestion.answers && (
+              currentQuestion.answers.map((answer: Answer) => {
+                return (
+                  <FormControl
+                    key={answer.id}
+                  >
+                    <InputGroup 
+                      w="100%"
+                      endElement={
+                        Array.isArray(currentQuestion.answers) && currentQuestion.answers.length > 1 && (
+                          <Button visual="danger" onClick={() => deleteAnswer(answer.id)}>
+                            <DeleteIcon />
+                          </Button>
+                        )
+                      }
+                      >
+                      <Input
+                        placeholder="Answer"
+                        defaultValue={answer.answer}
+                        {...register(`answer${answer.id}`, {
+                          required: true,
+                        })}
+                        onBlur={(e) => updateAnswer(e, answer.id)}
+                      />
+
+                    </InputGroup>
+                  </FormControl>
+                );
+              }))
+            }
+            <Button visual="ghost" onClick={() => addNewAnswer(selectedTypeName)}>Add answer</Button>
+            <Button disabled={!isValid} onClick={addNewQuestion}>Add question</Button>
+          </>
+        )
+      ;
       
       default:
         return <div>Default</div>;
@@ -231,6 +307,7 @@ export default function QuizQuestionForm({
                   setCurrentQuestion(prev => 
                     ({...prev, id_quest_type: e[0]})
                   );
+                  initializeCurrentAnswers(e[0]);
                 }
               }}
             />
