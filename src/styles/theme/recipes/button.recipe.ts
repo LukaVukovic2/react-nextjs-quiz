@@ -70,6 +70,11 @@ const buttonRecipe = defineRecipe({
         color: "light.200",
         _hover: {
           bg: "danger.400"
+        },
+        _disabled: {
+          bg: "danger.600",
+          color: "light.600",
+          cursor: "not-allowed"
         }
       }
     },
