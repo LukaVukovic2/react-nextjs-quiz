@@ -9,8 +9,9 @@ import QuizGameplaySection from "@/components/features/gameplay/QuizGameplaySect
 import QuizLeaderboard from "@/components/features/leaderboard/QuizLeaderboard/QuizLeaderboard";
 import { Tabs } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import "./QuizTabsClient.css"
 import { Toaster } from "@/components/ui/toaster";
+import { QuestionType } from "@/app/typings/question_type";
+import "./QuizTabsClient.css"
 
 interface IQuizTabsClientProps {
   quiz: Quiz;
@@ -18,6 +19,7 @@ interface IQuizTabsClientProps {
   user: User;
   answers: Answer[];
   topResults: Result[];
+  questTypes: QuestionType[];
   children: React.ReactNode;
 }
 
@@ -27,6 +29,7 @@ export default function QuizTabsClient({
   user,
   answers,
   topResults,
+  questTypes,
   children,
 }: IQuizTabsClientProps) {
   const [loaded, setLoaded] = useState(false);
@@ -58,6 +61,7 @@ export default function QuizTabsClient({
             quiz={quiz}
             questions={questions}
             answers={answers}
+            questTypes={questTypes}
             setActiveTab={() => setValue("Leaderboard")}
           />
         ) : (

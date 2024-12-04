@@ -5,15 +5,15 @@ import { CheckCircleIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import { Flex, VStack } from "@chakra-ui/react";
 import { ControllerRenderProps, FieldValues } from "react-hook-form";
 import clsx from "clsx";
-import "./RadioGroup.scss";
 import { getLetterByIndex } from "@/components/shared/utils/getLetterByIndex";
+import "./RadioGroup.scss";
 
 interface IRadioGroupProps {
   field: ControllerRenderProps<FieldValues, string>;
   isFinished: boolean;
-  selectedAnswers: Map<string, string | null>;
+  selectedAnswers: Map<string, string[] | null>;
   groupedAnswers: { [key: string]: Answer[] };
-  handleSelectAnswer: (questionId: string, answerId: string) => void;
+  handleSelectAnswer: (questionId: string, answerId: string[]) => void;
   question: Question;
   resetKey: number;
 }
@@ -25,7 +25,7 @@ export default function RadioGroup(props: IRadioGroupProps) {
       value={field.value}
       onValueChange={(e) => {
         field.onChange(e.value);
-        handleSelectAnswer(question.id, e.value);
+        handleSelectAnswer(question.id, e.value as unknown as string[]);
       }}
       name={question.id}
       key={resetKey}
