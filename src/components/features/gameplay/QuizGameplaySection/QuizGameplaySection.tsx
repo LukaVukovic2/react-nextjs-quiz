@@ -74,9 +74,18 @@ export default function QuizGameplaySection({
     clickable: true,
     renderBullet: function (index: number, className: string) {
       const isSelected = selectedAnswers.get(questions[index].id) !== null;
-      const isCorrect = 
-        correctAnswers.some(answer => answer.question_id === questions[index].id && 
+      const typeName = questTypes.find(type => type.id === questions[index].id_quest_type)?.type_name;
+      let isCorrect = false;
+      if (typeName === "Short answer") {
+        const acceptableAnswers = correctAnswers
+          .filter(answer => answer.question_id === questions[index].id)
+          .map(answer => answer.answer.toLowerCase());
+        const userInput = String(selectedAnswers.get(questions[index].id)).toLowerCase().trim();
+        isCorrect = acceptableAnswers.some(answer => answer === userInput);
+      } else if (typeName === "Single choice" || typeName === "Multiple choice") {
+        isCorrect = correctAnswers.some(answer => answer.question_id === questions[index].id && 
           selectedAnswers.get(questions[index].id)?.includes(answer.id));
+      }
       return `<span 
         class="${clsx({
           [className]: true,
@@ -100,20 +109,35 @@ export default function QuizGameplaySection({
   );
 
   const calculateScore = () => {
-    const totalScore = Array.from(selectedAnswers).reduce(
-      (acc, [questionId, answerIds]) => {
-        const correctAnswerIds = correctAnswers
-          .filter((answer) => answer.question_id === questionId)
-          .map((answer) => answer.id);
-        const q_score = correctAnswerIds.reduce((acc, id) =>
-          answerIds?.includes(id) ? acc + 1 : acc, 0
-        );
-        return q_score ? acc + (q_score / (correctAnswerIds.length || 1)) : acc;
-      },
-      0
-    );
+    let totalScore = 0;
+
+    Array.from(selectedAnswers).forEach(([questionId, selected]) => {
+      const correctAnswersForQuestion = correctAnswers.filter(
+        (answer) => answer.question_id === questionId
+      );
+
+      const typeId = questions.find((q) => q.id === questionId)?.id_quest_type;
+      const questionType = questTypes.find((type) => type.id === typeId)?.type_name;
+
+      if (questionType === "Single choice" || questionType === "Multiple choice") {
+        const correctIds = correctAnswersForQuestion.map((answer) => answer.id);
+        const correctSelections = correctIds.filter((id) => selected?.includes(id)).length;
+        const questionScore = correctSelections / (correctIds.length || 1);
+        totalScore += questionScore;
+      } else if (questionType === "Short answer") {
+        const acceptableAnswers = correctAnswersForQuestion.map((answer) => answer.answer.toLowerCase());
+        const userInput = String(selected).toLowerCase().trim();
+
+        const isCorrect = acceptableAnswers.some((answer) => answer === userInput);
+
+        totalScore += isCorrect ? 1 : 0;
+      } else {
+        console.warn(`Unknown question type for question ID: ${questionId}`);
+      }
+    });
+
     return totalScore;
-  }
+  };
 
   const handleSelectAnswer = (questionId: string, answerId: string[]) => {
     setSelectedAnswers((prev) => new Map(prev.set(questionId, answerId)));
@@ -289,10 +313,16 @@ export default function QuizGameplaySection({
                         }
                         default: {
                           return(
-                            <ShortAnswerInput />
+                            <ShortAnswerInput 
+                              field={field}
+                              isFinished={isFinished}
+                              groupedAnswers={groupedAnswers}
+                              handleSelectAnswer={handleSelectAnswer}
+                              question={question}
+                              resetKey={resetKey}
+                            />
                           )
                         }
-                      
                     }}}
                   />
                   <br />
