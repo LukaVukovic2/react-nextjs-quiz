@@ -73,28 +73,41 @@ export default function QuizGameplaySection({
   const pagination = {
     clickable: true,
     renderBullet: function (index: number, className: string) {
-      const isSelected = selectedAnswers.get(questions[index].id) !== null;
+      const selectedQuestionAns = selectedAnswers.get(questions[index].id);
+      const correctAnswersForQuestion = correctAnswers.filter(answer => answer.question_id === questions[index].id);
+      const isSelected = selectedQuestionAns !== null;
+      const selectedAnswersArr = Array.isArray(selectedQuestionAns) ? selectedQuestionAns : [];
       const typeName = questTypes.find(type => type.id === questions[index].id_quest_type)?.type_name;
       let isCorrect = false;
+      let hasIncorrectAnswers = false;
+      let hasCorrectAnswers = false;
+      let hasCorrectAnswerNotSelected = false;
+
       if (typeName === "Short answer") {
         const acceptableAnswers = correctAnswers
           .filter(answer => answer.question_id === questions[index].id)
           .map(answer => answer.answer.toLowerCase());
-        const userInput = String(selectedAnswers.get(questions[index].id)).toLowerCase().trim();
+        const userInput = String(selectedQuestionAns).toLowerCase().trim();
         isCorrect = acceptableAnswers.some(answer => answer === userInput);
-      } else if (typeName === "Single choice" || typeName === "Multiple choice") {
-        isCorrect = correctAnswers.some(answer => answer.question_id === questions[index].id && 
-          selectedAnswers.get(questions[index].id)?.includes(answer.id));
+      } else if (typeName === "Single choice") {
+        isCorrect = String(selectedQuestionAns) === correctAnswersForQuestion[0]?.id;
+      } else if (typeName === "Multiple choice") {
+        hasIncorrectAnswers = selectedAnswersArr.some(id => !correctAnswersForQuestion.some(ans => ans.id === id));
+        hasCorrectAnswers = correctAnswersForQuestion.some(answer => selectedAnswersArr.includes(answer.id));
+        hasCorrectAnswerNotSelected = correctAnswersForQuestion.some(answer => !selectedAnswersArr.includes(answer.id));
       }
-      return `<span 
-        class="${clsx({
-          [className]: true,
-          'selectedAnswer': !isFinished && isSelected,
-          'correctAnswer': isFinished && isCorrect,
-          'wrongAnswer': isFinished && !isCorrect
-        })}"
-        >${index + 1}  
-      </span>`;
+      return `
+        <span 
+          class="${clsx({
+            [className]: true,
+            'selectedAnswer': !isFinished && isSelected,
+            'correctAnswer': isFinished && (isCorrect || (!hasIncorrectAnswers && hasCorrectAnswers && !hasCorrectAnswerNotSelected)),
+            'partiallyCorrect': isFinished && hasCorrectAnswers && (hasIncorrectAnswers || hasCorrectAnswerNotSelected),
+            'wrongAnswer': isFinished && !isCorrect
+          })}"
+          >${index + 1}  
+        </span>
+      `;
     }
   };
 
@@ -118,11 +131,15 @@ export default function QuizGameplaySection({
 
       const typeId = questions.find((q) => q.id === questionId)?.id_quest_type;
       const questionType = questTypes.find((type) => type.id === typeId)?.type_name;
+      const selectedArr = Array.isArray(selected) ? selected : [];
 
       if (questionType === "Single choice" || questionType === "Multiple choice") {
         const correctIds = correctAnswersForQuestion.map((answer) => answer.id);
         const correctSelections = correctIds.filter((id) => selected?.includes(id)).length;
-        const questionScore = correctSelections / (correctIds.length || 1);
+        const incorrectSelections = selectedArr?.filter((id) => !correctIds.includes(id)).length || 0;
+        const isNegativeQuestionScore = incorrectSelections > correctSelections;
+        const questionScore = 
+          (isNegativeQuestionScore ? 0 : correctSelections - incorrectSelections) / (correctIds.length || 1);
         totalScore += questionScore;
       } else if (questionType === "Short answer") {
         const acceptableAnswers = correctAnswersForQuestion.map((answer) => answer.answer.toLowerCase());

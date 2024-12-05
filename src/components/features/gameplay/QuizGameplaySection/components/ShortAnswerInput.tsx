@@ -25,7 +25,7 @@ export default function ShortAnswerInput(props: IShortAnswerInputProps) {
     <Stack m={4}>
       <Input
         name={field.name}
-        value={field.value}
+        value={field.value || ""}
         onChange={field.onChange}
         key={resetKey}
         placeholder="Type your answer here"
