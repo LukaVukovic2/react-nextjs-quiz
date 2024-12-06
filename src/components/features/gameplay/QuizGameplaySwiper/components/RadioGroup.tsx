@@ -6,20 +6,20 @@ import { Flex, VStack } from "@chakra-ui/react";
 import { ControllerRenderProps, FieldValues } from "react-hook-form";
 import clsx from "clsx";
 import { getLetterByIndex } from "@/components/shared/utils/getLetterByIndex";
-import "./RadioGroup.scss";
+import "../QuizGameplaySwiper.scss";
 
 interface IRadioGroupProps {
   field: ControllerRenderProps<FieldValues, string>;
   isFinished: boolean;
-  selectedAnswers: Map<string, string[] | null>;
-  groupedAnswers: { [key: string]: Answer[] };
+  selectedAnsId: string;
+  answerOptions: Answer[];
   handleSelectAnswer: (questionId: string, answerId: string[]) => void;
   question: Question;
   resetKey: number;
 }
 
 export default function RadioGroup(props: IRadioGroupProps) {
-  const { isFinished, selectedAnswers, groupedAnswers, handleSelectAnswer, question, field, resetKey } = props;
+  const { isFinished, selectedAnsId, answerOptions, handleSelectAnswer, question, field, resetKey } = props;
   return (
     <RadioGroupComponent
       value={field.value}
@@ -31,9 +31,8 @@ export default function RadioGroup(props: IRadioGroupProps) {
       key={resetKey}
     >
       <VStack gap={1} m={4}>
-        {groupedAnswers &&
-          groupedAnswers[question.id]?.map((answer: Answer, index) => {
-            const selectedAnsId = selectedAnswers.get(question.id) ?? "";
+        {
+          answerOptions.map((answer: Answer, index) => {
             const letter = getLetterByIndex(index);
             const isCorrect = answer?.correct_answer && selectedAnsId === answer.id;
             const isChecked = selectedAnsId === answer.id;

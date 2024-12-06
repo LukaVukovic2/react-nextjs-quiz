@@ -10,13 +10,13 @@ import {
 } from "@chakra-ui/react";
 import clsx from "clsx";
 import { ControllerRenderProps, FieldValues } from "react-hook-form";
-import "./RadioGroup.scss";
+import "../QuizGameplaySwiper.scss";
 
 interface ICheckboxGroupProps {
   field: ControllerRenderProps<FieldValues, string>;
   isFinished: boolean;
-  selectedAnswers: Map<string, string[] | null>;
-  groupedAnswers: { [key: string]: Answer[] };
+  answerOptions: Answer[];
+  selectedAnsIds: string[];
   handleSelectAnswer: (questionId: string, answerId: string[]) => void;
   question: Question;
   resetKey: number;
@@ -25,8 +25,8 @@ interface ICheckboxGroupProps {
 export default function CheckboxGroup(props: ICheckboxGroupProps) {
   const {
     isFinished,
-    selectedAnswers,
-    groupedAnswers,
+    answerOptions,
+    selectedAnsIds,
     handleSelectAnswer,
     question,
     field,
@@ -44,12 +44,10 @@ export default function CheckboxGroup(props: ICheckboxGroupProps) {
         key={resetKey}
       >
         <Fieldset.Content gap={0}>
-          {groupedAnswers &&
-            groupedAnswers[question.id]?.map((answer: Answer, index) => {
-              const selectedAnsArr = selectedAnswers.get(question.id) ?? [];
-
+          {
+            answerOptions.map((answer: Answer, index) => {
               const letter = getLetterByIndex(index);
-              const isChecked = selectedAnsArr.includes(answer.id);
+              const isChecked = selectedAnsIds.includes(answer.id);
               const isCorrect = answer?.correct_answer && isChecked;
               return (
                 <Checkbox

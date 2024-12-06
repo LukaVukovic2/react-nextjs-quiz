@@ -6,7 +6,7 @@ import { ControllerRenderProps, FieldValues } from "react-hook-form";
 interface IShortAnswerInputProps {
   field: ControllerRenderProps<FieldValues, string>;
   isFinished: boolean;
-  groupedAnswers: { [key: string]: Answer[] };
+  acceptableAnswers: Answer[];
   question: Question;
   handleSelectAnswer: (questionId: string, answerId: string[]) => void;
   resetKey: number;
@@ -18,7 +18,7 @@ export default function ShortAnswerInput(props: IShortAnswerInputProps) {
     question,
     handleSelectAnswer,
     isFinished,
-    groupedAnswers,
+    acceptableAnswers,
     resetKey,
   } = props;
   return (
@@ -38,7 +38,7 @@ export default function ShortAnswerInput(props: IShortAnswerInputProps) {
         {isFinished && (
           <>
             <Text fontWeight="semibold">Acceptable answers:</Text>
-            {groupedAnswers[question.id]?.map((answer) => (
+            {acceptableAnswers.map((answer) => (
               <Text key={answer.id}>{answer.answer}</Text>
             ))}
           </>
