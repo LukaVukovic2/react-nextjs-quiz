@@ -1,15 +1,12 @@
 "use client";
 import {
-  Button,
   Card,
-  CardBody,
-  CardHeader,
   chakra,
-  FormLabel,
-  Heading,
-  Textarea,
-  useToast,
+  Textarea
 } from "@chakra-ui/react";
+import { Heading } from "@/styles/theme/components/heading";
+import { Button } from "@/styles/theme/components/button";
+import { Toaster, toaster } from "@/components/ui/toaster";
 import { SliderInput } from "@/components/core/Slider/Slider";
 import { addReview } from "@/components/shared/utils/actions/review/addReview";
 import { useParams } from "next/navigation";
@@ -24,7 +21,6 @@ export default function QuizReviewForm() {
     reset,
     getValues
   } = useForm({ defaultValues: { rating: "3", comment: "" } });
-  const toast = useToast();
   const id = useParams().id as string;
 
   const addNewReview = async () => {
@@ -33,26 +29,25 @@ export default function QuizReviewForm() {
     formData.append("rating", getValues("rating"));
 
     const success = await addReview(formData, id);
-    toast({
+    toaster.create({
       title: success ? "Review added" : "Failed to add review",
-      status: success ? "success" : "error",
-      duration: 3000,
+      type: success ? "success" : "error",
+      duration: 3000
     });
     reset();
   };
 
   return (
-    <Card mb={5}>
-      <CardHeader>
-        <Heading size="md" py={2}>Add a review</Heading>
-      </CardHeader>
-      <CardBody>
+    <Card.Root mb={5}>
+      <Card.Header>
+        <Heading as="h2" size="h4">Add a review</Heading>
+      </Card.Header>
+      <Card.Body>
         <chakra.form onSubmit={handleSubmit(addNewReview)}>
           <Textarea
             {...register("comment")}
             placeholder="Enter your comment"
           />
-          <FormLabel>Rating</FormLabel>
           <Controller
             control={control}
             name="rating"
@@ -64,14 +59,15 @@ export default function QuizReviewForm() {
             render={({ field }) => <SliderInput {...field} />}
           />
           <Button
-            isLoading={isSubmitting}
-            isDisabled={!isValid || isSubmitting}
+            visual="outline"
+            disabled={!isValid || isSubmitting}
             type="submit"
           >
             Submit
           </Button>
+          <Toaster />
         </chakra.form>
-      </CardBody>
-    </Card>
+      </Card.Body>
+    </Card.Root>
   );
 }

@@ -1,5 +1,5 @@
 "use client";
-import { Flex, Button } from "@chakra-ui/react";
+import { Flex, chakra } from "@chakra-ui/react";
 import NextLink from "next/link";
 
 export default function Pagination({ id, currentPage, totalPages }: { id: string, currentPage: number, totalPages: number }) {
@@ -9,14 +9,16 @@ export default function Pagination({ id, currentPage, totalPages }: { id: string
       mt={2}
     >
       <NextLink href={`/quizzes/${id}?page=${currentPage - 1}`}>
-        <Button visibility={currentPage > 1 ? "visible" : "hidden"}>
-          Previous
-        </Button>
+        <chakra.div visibility={currentPage > 1 ? "visible" : "hidden"}>
+          <i className="fa-solid fa-xl fa-circle-arrow-left"></i>
+          <span> Previous</span>
+        </chakra.div>
       </NextLink>
       <NextLink href={`/quizzes/${id}?page=${currentPage + 1}`}>
-        <Button visibility={currentPage < totalPages ? "visible" : "hidden"}>
-          Next
-        </Button>
+        <chakra.div visibility={currentPage < totalPages ? "visible" : "hidden"}>
+          <span>Next </span>
+          <i className="fa-solid fa-xl fa-circle-arrow-right"></i>
+        </chakra.div>
       </NextLink>
     </Flex>
   )

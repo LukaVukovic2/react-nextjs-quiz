@@ -1,0 +1,14 @@
+.navigation{
+  padding: var(--chakra-spacing-3);
+  border-bottom: 1px solid var(--chakra-colors-light-800);
+}
+
+.nav-link{
+  border-radius: var(--chakra-radii-soft);
+  font-weight: var(--chakra-font-weights-semibold);
+}
+
+.active{
+  background-color: var(--chakra-colors-primary);
+  color: var(--chakra-colors-light-800);
+}

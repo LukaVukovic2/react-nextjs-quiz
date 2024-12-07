@@ -1,0 +1,12 @@
+.chakra-tabs__root {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  flex: 1;
+}
+
+.chakra-tabs__content{
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}

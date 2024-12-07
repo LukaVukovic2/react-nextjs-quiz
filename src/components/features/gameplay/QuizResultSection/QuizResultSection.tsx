@@ -1,4 +1,5 @@
-import { Text } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
+import QuizResultBox from "./components/QuizResultBox";
 
 interface IQuizResultSectionProps {
   score: number;
@@ -10,10 +11,10 @@ export default function QuizResultSection({score, questionCount, averageScore}: 
   const resultPercentage = ((score / questionCount) * 100).toFixed(0);
 
   return (
-    <>
-      <Text>Quiz results</Text>
-      <Text>Your score: {resultPercentage}%</Text>
-      <Text>Average score: {(averageScore * 100).toFixed(0)}%</Text>
-    </>
+    <Flex gap={2}>
+      <QuizResultBox title="Correct" value={`${score}/${questionCount}`} />
+      <QuizResultBox title="Percentage" value={`${resultPercentage}%`} />
+      <QuizResultBox title="Average" value={`${(averageScore * 100).toFixed(0)}%`} />
+    </Flex>
   );
 }

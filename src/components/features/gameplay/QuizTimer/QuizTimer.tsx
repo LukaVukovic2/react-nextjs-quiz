@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTimer } from "react-timer-hook";
+import "./QuizTimer.css";
+import clsx from "clsx";
 
 interface IQuizTimerProps {
   quizTime: Date;
@@ -41,17 +43,20 @@ export default function QuizTimer({
     } else {
       pause();
     }
-  }, [hasStarted, isFinished, start, pause]);
+  }, [hasStarted, isFinished]);
 
   useEffect(() => {
     if (isFinished && !isTimeUp) {
       handleFinishQuiz(totalSeconds);
       setIsTimeUp(true);
     }
-  }, [isFinished, isTimeUp, totalSeconds, handleFinishQuiz]);
+  }, [isFinished, isTimeUp]);
 
   return (
-    <div>
+    <div className={clsx({
+      "timer": true,
+      "fa-bounce": totalSeconds < 10 && !isTimeUp,
+    })}>
       {hours ? String(hours).padStart(2, "0") + ":" : ""}
       {String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0")}
     </div>

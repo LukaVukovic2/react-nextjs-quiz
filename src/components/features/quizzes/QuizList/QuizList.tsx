@@ -1,14 +1,12 @@
 "use client";
-import styles from "./QuizList.module.css";
 import QuizItem from "../QuizItem/QuizItem";
 import { Quiz } from "@/app/typings/quiz";
 import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
-import { useState, useEffect } from "react";
-import { Heading } from "@chakra-ui/react";
-
-export default function QuizList({quizzes}: {quizzes: Quiz[]}) {
+import React, { useState, useEffect } from "react";
+import { Flex } from "@chakra-ui/react";
+ 
+export default function QuizList({quizzes, children}: {quizzes: Quiz[], children: React.ReactNode}) {
   const [loaded, setLoaded] = useState(false);
-
   useEffect(() => {
     setLoaded(true);
   }, []);
@@ -18,21 +16,17 @@ export default function QuizList({quizzes}: {quizzes: Quiz[]}) {
   }
   return (
     <>
-      <Heading as="h1">
-        Quiz List
-      </Heading>
-      <div className={styles.quizListContainer}>
-        {quizzes && quizzes?.length > 0 ? (
+      {children}
+      <Flex flexWrap="wrap" gap="2rem">
+        {quizzes && quizzes?.length > 0 && (
           quizzes.map((quiz: Quiz) => (
             <QuizItem
               key={quiz.id}
               quiz={quiz}
             />
           ))
-        ) : (
-          <p>No quizzes found</p>
         )}
-      </div>
+      </Flex>
     </>
   );
 }

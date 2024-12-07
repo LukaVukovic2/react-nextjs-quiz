@@ -11,12 +11,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isDev = process.env.NODE_ENV === 'development'
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning={isDev}>
       <head>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+        <link rel="preconnect" href="https://fonts.googleapis.com"/>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous"/>
       </head>
-      <body style={{minHeight: "100vh", display: "flex", flexWrap: "wrap", flexDirection: "column"}}>
+      <body>
         <Providers>
           {children}
         </Providers>

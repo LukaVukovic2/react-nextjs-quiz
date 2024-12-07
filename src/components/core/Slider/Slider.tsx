@@ -1,41 +1,34 @@
 import {
-  forwardRef,
   Box,
-  Slider,
-  SliderMark,
-  SliderTrack,
-  SliderFilledTrack,
-  SliderThumb,
   Input,
 } from "@chakra-ui/react";
+import { Slider } from "@/components/ui/slider";
+import { forwardRef } from "react";
 
-export const SliderInput = forwardRef(({ value, onChange, name }, ref) => (
-  <Box py={4}>
-    <Input name={name} type="hidden" value={value} ref={ref} />
-    <Slider
-      aria-label="rating-slider"
-      value={value}
-      min={1}
-      max={5}
-      onChange={onChange}
-    >
-      <SliderMark value={1}>1</SliderMark>
-      <SliderMark value={5}>5</SliderMark>
-      <SliderMark
-        value={value}
-        textAlign="center"
-        bg="blue.500"
-        color="white"
-        mt="-10"
-        ml="-5"
-        w="12"
+interface ISliderInputProps {
+  value: string;
+  onChange: (value: number) => void;
+  name: string;
+}
+
+export const SliderInput = forwardRef<HTMLInputElement, ISliderInputProps>((props, ref) => {
+  return (
+    <Box py={4}>
+      <Input name={props.name} type="hidden" value={props.value} ref={ref} />
+      <Slider
+        variant="outline"
+        cursor="grab"
+        colorPalette="cyan"
+        label="Rating"
+        value={[Number(props.value) || 0]}
+        defaultValue={[3]}
+        min={1}
+        max={5}
+        onValueChange={({value}) => props.onChange(value[0])}
       >
-        {value}
-      </SliderMark>
-      <SliderTrack>
-        <SliderFilledTrack />
-      </SliderTrack>
-      <SliderThumb />
-    </Slider>
-  </Box>
-));
+      </Slider>
+    </Box>
+  )
+});
+
+SliderInput.displayName = "SliderInput";

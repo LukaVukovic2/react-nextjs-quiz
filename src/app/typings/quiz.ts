@@ -1,9 +1,9 @@
 export interface Quiz {
   id: string;
-  category: string;
   user_id: string;
   title: string;
   time: string;
+  id_quiz_type: string;
   created_at?: Date;
   updated_at?: Date;
   average_rating?: number;

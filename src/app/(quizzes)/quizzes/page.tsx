@@ -1,12 +1,12 @@
-import QuizList from "@/components/features/quizzes/QuizList/QuizList";
+import Homepage from "@/components/shared/Homepage/Homepage";
 import createClient from "@/components/shared/utils/createClient";
 import { notFound } from "next/navigation";
 
 export default async function QuizListPage() {
   const supabase = createClient();
-  const { data: quizzes, error } = await supabase.rpc("get_quizzes");
+  const { data: types, error } = await supabase.rpc("get_quiz_types");
 
-  if (error || !quizzes) notFound();
+  if (error || !types || !types.length) notFound();
 
-  return <QuizList quizzes={quizzes} />;
+  return <Homepage types={types} />;
 }

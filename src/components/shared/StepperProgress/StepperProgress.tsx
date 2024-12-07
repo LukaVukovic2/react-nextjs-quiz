@@ -1,52 +1,33 @@
-import {
-  Stepper,
-  Step,
-  StepIndicator,
-  StepStatus,
-  StepIcon,
-  StepNumber,
-  Box,
-  StepTitle,
-  StepDescription,
-  StepSeparator,
-} from "@chakra-ui/react";
+import { useContext } from "react";
 import { steps } from "../utils/steps";
+import {
+  StepsContent,
+  StepsItem,
+  StepsList,
+  StepsRoot,
+} from "@/components/ui/steps";
+import { QuizFormContext } from "@/components/shared/utils/contexts/QuizFormContext";
 
-interface IStepperProgress {
-  activeStep: number;
-  setStepIfValid: (index: number) => void;
-}
-
-export default function StepperProgress({
-  activeStep,
-  setStepIfValid,
-}: IStepperProgress) {
+export default function StepperProgress() {
+  const { currentStep, setStepIfValid } = useContext(QuizFormContext);
   return (
-    <Stepper
+    <StepsRoot
       size="lg"
-      index={activeStep}
+      step={currentStep - 1}
+      count={steps.length}
+      colorPalette="cyan"
     >
-      {steps.map((step, index) => (
-        <Step
-          key={step.title}
-          onClick={() => setStepIfValid(index)}
-        >
-          <StepIndicator>
-            <StepStatus
-              complete={<StepIcon />}
-              incomplete={<StepNumber />}
-              active={<StepNumber />}
-            />
-          </StepIndicator>
-
-          <Box flexShrink="0">
-            <StepTitle>{step.title}</StepTitle>
-            <StepDescription>{step.description}</StepDescription>
-          </Box>
-
-          <StepSeparator />
-        </Step>
-      ))}
-    </Stepper>
+      <StepsList>
+        {steps.map((step, index) => (
+          <StepsItem
+            key={step.title}
+            index={index}
+            title={step.title}
+            onClick={() => setStepIfValid(index + 1)}
+          />
+        ))}
+      </StepsList>
+      <StepsContent index={2}>This is your Quiz!</StepsContent>
+    </StepsRoot>
   );
 }
