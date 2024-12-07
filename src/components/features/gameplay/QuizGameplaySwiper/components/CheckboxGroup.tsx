@@ -17,7 +17,7 @@ interface ICheckboxGroupProps {
   isFinished: boolean;
   answerOptions: Answer[];
   selectedAnsIds: string[];
-  handleSelectAnswer: (questionId: string, answerId: string[]) => void;
+  handleSelectAnswer: (questionId: string, answerId: string[], questionType: string) => void;
   question: Question;
   resetKey: number;
 }
@@ -39,7 +39,7 @@ export default function CheckboxGroup(props: ICheckboxGroupProps) {
         value={field.value}
         onValueChange={(e) => {
           field.onChange(e);
-          handleSelectAnswer(question.id, e);
+          handleSelectAnswer(question.id, e, "Multiple choice");
         }}
         key={resetKey}
       >

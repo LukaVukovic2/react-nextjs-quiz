@@ -75,7 +75,7 @@ export default function QuizGameplaySection({
     }
   };
 
-  const handleSelectAnswer = (questionId: string, answerId: string[]) => {
+  const handleSelectAnswer = (questionId: string, answerId: string[], questionType: string) => {
     setSelectedAnswers((prev) => new Map(prev.set(questionId, answerId)));
     setValue(questionId, answerId);
   
@@ -83,11 +83,10 @@ export default function QuizGameplaySection({
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
   
       timeoutRef.current = setTimeout(() => {
-        if (!swiperRef.current || !swiperRef.current.pagination) {
-          return;
-        }
+        if (!swiperRef.current || !swiperRef.current.pagination) return;
+        
         swiperRef.current.pagination.render();
-        swiperRef.current.slideNext();
+        if(questionType === "Single choice") swiperRef.current.slideNext();
         timeoutRef.current = null;
       }, 500);
     }

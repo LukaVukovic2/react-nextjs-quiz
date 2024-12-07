@@ -13,7 +13,7 @@ interface IRadioGroupProps {
   isFinished: boolean;
   selectedAnsId: string;
   answerOptions: Answer[];
-  handleSelectAnswer: (questionId: string, answerId: string[]) => void;
+  handleSelectAnswer: (questionId: string, answerId: string[], questionType: string) => void;
   question: Question;
   resetKey: number;
 }
@@ -25,7 +25,7 @@ export default function RadioGroup(props: IRadioGroupProps) {
       value={field.value}
       onValueChange={(e) => {
         field.onChange(e.value);
-        handleSelectAnswer(question.id, e.value as unknown as string[]);
+        handleSelectAnswer(question.id, e.value as unknown as string[], "Single choice");
       }}
       name={question.id}
       key={resetKey}

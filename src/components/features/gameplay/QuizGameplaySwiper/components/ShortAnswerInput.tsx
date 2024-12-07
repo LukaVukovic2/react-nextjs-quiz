@@ -8,7 +8,7 @@ interface IShortAnswerInputProps {
   isFinished: boolean;
   acceptableAnswers: Answer[];
   question: Question;
-  handleSelectAnswer: (questionId: string, answerId: string[]) => void;
+  handleSelectAnswer: (questionId: string, answerId: string[], questionType: string) => void;
   resetKey: number;
 }
 
@@ -31,7 +31,7 @@ export default function ShortAnswerInput(props: IShortAnswerInputProps) {
         placeholder="Type your answer here"
         onBlur={() => {
           field.onBlur();
-          handleSelectAnswer(question.id, field.value);
+          handleSelectAnswer(question.id, field.value, "Short answer");
         }}
       />
       <Box>

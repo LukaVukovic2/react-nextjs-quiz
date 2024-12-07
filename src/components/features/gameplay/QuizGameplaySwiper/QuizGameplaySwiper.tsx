@@ -16,7 +16,7 @@ interface IQuizGameplaySwiperProps {
   selectedAnswers: Map<string, string[] | null>;
   groupedAnswers: { [key: string]: Answer[] };
   isFinished: boolean;
-  handleSelectAnswer: (questionId: string, answerId: string[]) => void;
+  handleSelectAnswer: (questionId: string, answerId: string[], questionType: string) => void;
   resetKey: number;
   setIsTransitioning: React.Dispatch<React.SetStateAction<boolean>>;
   pagination: {
