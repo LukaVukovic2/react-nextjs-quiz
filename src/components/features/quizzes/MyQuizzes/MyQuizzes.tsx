@@ -11,6 +11,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { QuizType } from "@/app/typings/quiz_type";
 import { MyQuizzesContext } from "@/components/shared/utils/contexts/MyQuizzesContext";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { QuestionType } from "@/app/typings/question_type";
 
 interface MyQuizzesProps {
   quizzes: Array<{
@@ -25,20 +26,31 @@ interface MyQuizzesProps {
 
 export default function MyQuizzes({quizzes}: MyQuizzesProps) {
   const [loaded, setLoaded] = useState(false);
-  const [types, setTypes] = useState<ListCollection>({} as ListCollection<QuizType>);
+  const [quizTypes, setQuizTypes] = useState<ListCollection>({} as ListCollection<QuizType>);
+  const [questTypes, setQuestTypes] = useState<ListCollection>({} as ListCollection<QuestionType>);
   const supabase = createClientComponentClient();
 
   useEffect(() => {
     setLoaded(true);
     const fetchTypes = async () => {
-      const { data: types } = await supabase.rpc("get_quiz_types");
-      const typesCollection: ListCollection<QuizType> = createListCollection({
-        items: types.map((quizType: QuizType) => ({
+      const [{data: quizTypes}, {data: questTypes}] = await Promise.all([
+        supabase.rpc("get_quiz_types"),
+        supabase.rpc("get_question_types"),
+      ]);
+      const quizTypesCollection: ListCollection<QuizType> = createListCollection({
+        items: quizTypes.map((quizType: QuizType) => ({
           value: quizType.id,
           label: quizType.type_name,
         })),
       });
-      setTypes(typesCollection);
+      const questTypesCollection: ListCollection<QuestionType> = createListCollection({
+        items: questTypes.map((questType: QuestionType) => ({
+          value: questType.id,
+          label: questType.type_name,
+        })),
+      });
+      setQuizTypes(quizTypesCollection);
+      setQuestTypes(questTypesCollection);
     }
     fetchTypes();
   }, []);
@@ -47,7 +59,7 @@ export default function MyQuizzes({quizzes}: MyQuizzesProps) {
     return <LoadingSpinner text="Loading your quizzes..." />;
   }
   return (
-    <MyQuizzesContext.Provider value={{ types: types }}>
+    <MyQuizzesContext.Provider value={{ quizTypes, questTypes }}>
       <Flex
         flexDir="column"
         alignItems="center"
@@ -79,7 +91,7 @@ export default function MyQuizzes({quizzes}: MyQuizzesProps) {
                 <Text>{quiz_type.type_name}</Text>
                 <Text>{quiz.time}</Text>
               </div>
-              <QuizMenuDropdown quiz={quiz} quiz_type={quiz_type} questions_and_answers={quizzes[index].questions_and_answers} />
+              <QuizMenuDropdown quiz={quiz} quizType={quiz_type} questions_and_answers={quizzes[index].questions_and_answers} />
             </Box>
           ))}
         </Box>

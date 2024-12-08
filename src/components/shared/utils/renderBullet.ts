@@ -26,7 +26,7 @@ export default function renderBullet({
   const correctAnswersForQuestion = correctAnswers.filter(
     (answer) => answer.question_id === questions[index].id
   );
-  const isSelected = selectedQuestionAns !== null;
+  const isSelected = !!selectedQuestionAns;
   const selectedAnswersArr = Array.isArray(selectedQuestionAns)
     ? selectedQuestionAns
     : [];

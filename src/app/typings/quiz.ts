@@ -6,7 +6,7 @@ export interface Quiz {
   id_quiz_type: string;
   created_at?: Date;
   updated_at?: Date;
-  average_rating?: number;
+  rating?: number;
   plays?: number;
   number_of_ratings?: number;
   average_score?: number;

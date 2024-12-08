@@ -24,6 +24,8 @@ export default function ShortAnswerInput(props: IShortAnswerInputProps) {
   return (
     <Stack m={4}>
       <Input
+        readOnly={isFinished}
+        cursor={isFinished ? "not-allowed" : "auto"}
         name={field.name}
         value={field.value || ""}
         onChange={field.onChange}
