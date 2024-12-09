@@ -8,10 +8,10 @@ import { toaster } from "@/components/ui/toaster";
 import { Button } from "@/styles/theme/components/button";
 import { InputGroup } from "@/components/ui/input-group";
 import { FormLabel, FormControl } from "@chakra-ui/form-control";
-import { AddIcon, CheckCircleIcon, DeleteIcon } from "@chakra-ui/icons";
+import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { updateQuiz } from "@/components/shared/utils/actions/quiz/updateQuiz";
 import { FocusEvent, useContext, useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 import { Answer } from "@/app/typings/answer";
 import { Question } from "@/app/typings/question";
@@ -20,6 +20,7 @@ import { QuizType } from "@/app/typings/quiz_type";
 import SelectOption from "@/components/core/SelectOption/SelectOption";
 import { MyQuizzesContext } from "@/components/shared/utils/contexts/MyQuizzesContext";
 import { Field } from "@/components/ui/field";
+import QuizUpdateQuestion from "./components/QuizUpdateQuestion";
 import "./QuizUpdateForm.css";
 
 interface QuizUpdateFormProps {
@@ -33,12 +34,8 @@ interface QuizUpdateFormProps {
 }
 
 export default function QuizUpdateForm({ quiz, quizType, questions_and_answers, onClose }: QuizUpdateFormProps) {
-  const {
-    register,
-    trigger,
-    control,
-    formState: { isValid },
-  } = useForm();
+  const methods = useForm();
+  const { register, trigger, control, formState: {isValid}} = methods;
   const [dirtyQuizFields, setDirtyQuizFields] = useState<Quiz>();
   const [dirtyQuestions, setDirtyQuestions] = useState<Question[]>([]);
   const [deletedQuestions, setDeletedQuestions] = useState<string[]>([]);
@@ -298,8 +295,8 @@ export default function QuizUpdateForm({ quiz, quizType, questions_and_answers, 
 
 
   return (
-    <>
-      <chakra.form style={{ overflowY: "scroll", height: "70vh" }}>
+    <FormProvider {...methods}>
+      <chakra.form overflowY="scroll" height="70vh">
         <FormControl>
           <FormLabel>Quiz title</FormLabel>
           <Input
@@ -356,7 +353,6 @@ export default function QuizUpdateForm({ quiz, quizType, questions_and_answers, 
         >
           {questionsArr.map((q, index) => {
             const questType = questTypes.items.find((type) => type.value === q.id_quest_type)?.label;
-            console.log(q)
             return (
             <div key={q.id}>
               {
@@ -423,125 +419,14 @@ export default function QuizUpdateForm({ quiz, quizType, questions_and_answers, 
                   
                 </InputGroup>
               </FormControl>
-              {
-                (() => {
-                  console.log(questType);
-                switch(questType) {
-                  case "Single choice":
-                    return answersArr
-                      .filter((answer) => answer.question_id === q.id)
-                      .map((answer) => (
-                        <FormControl key={answer.id}>
-                          <InputGroup
-                            w="100%"
-                            startElement={
-                              answer.correct_answer ? (
-                                <CheckCircleIcon color="green" fontSize="17px" />
-                              ) : (
-                                <input
-                                  type="radio"
-                                  {...register(`answer${answer.id}`)}
-                                  onChange={(e) => changeCorrectAnswer(q.id, answer.id, questType)}
-                                  style={{ cursor: "pointer" }}
-                                />
-                              )
-                            }
-                            endElement={
-                              <Button
-                                visual="ghost"
-                                p={0}
-                                onClick={() => handleDeleteAnswer(answer.id)}
-                                disabled={answer.correct_answer}
-                              >
-                                <DeleteIcon color="red" />
-                              </Button>
-                            }
-                          >
-                            <Input
-                              placeholder="Answer"
-                              defaultValue={answer.answer}
-                              {...register(`answer${q.id}${answer.id}`, {
-                                required: true,
-                              })}
-                              onBlur={(e) => {
-                                handleUpdateAnswer(e.target.value, answer)
-                              }}
-                            />
-                          </InputGroup>
-                        </FormControl>
-                      )
-                    );
-                  case "Multiple choice":
-                    return answersArr
-                    .filter((answer) => answer.question_id === q.id)
-                    .map((answer) => (
-                      <FormControl key={answer.id}>
-                        <InputGroup
-                          w="100%"
-                          startElement={
-                            <input
-                              type="checkbox"
-                              checked={answer.correct_answer}
-                              {...register(`answer${answer.id}`)}
-                              onChange={(e) => {
-                                changeCorrectAnswer(q.id, answer.id, questType);
-                              }}
-                              style={{ cursor: "pointer", accentColor: "green", scale: 1.3 }}
-                            />
-                          }
-                          endElement={
-                            <Button
-                              visual="ghost"
-                              p={0}
-                              onClick={() => handleDeleteAnswer(answer.id)}
-                              disabled={answer.correct_answer}
-                            >
-                              <DeleteIcon color="red" />
-                            </Button>
-                          }
-                        >
-                          <Input
-                            placeholder="Answer"
-                            defaultValue={answer.answer}
-                            {...register(`answer${q.id}${answer.id}`, {
-                              required: true,
-                            })}
-                            onBlur={(e) => handleUpdateAnswer(e.target.value, answer)}
-                          />
-                        </InputGroup>
-                      </FormControl>
-                    ));
-                  default:
-                    return (
-                      answersArr.filter((answer) => answer.question_id === q.id).map((answer) => (
-                        <FormControl key={answer.id}>
-                          <InputGroup
-                            w="100%"
-                            endElement={
-                              <Button
-                                visual="ghost"
-                                p={0}
-                                onClick={() => handleDeleteAnswer(answer.id)}
-                              >
-                                <DeleteIcon color="red" />
-                              </Button>
-                            }
-                          >
-                            <Input
-                              placeholder="Answer"
-                              defaultValue={answer.answer}
-                              {...register(`answer${q.id}${answer.id}`, {
-                                required: true,
-                              })}
-                              onBlur={(e) => handleUpdateAnswer(e.target.value, answer)}
-                            />
-                          </InputGroup>
-                        </FormControl>
-                      )
-                    ));
-                  }
-                })()
-              }
+              <QuizUpdateQuestion
+                answersArr={answersArr.filter((answer) => answer.question_id === q.id)}
+                question={q}
+                questType={questType}
+                handleDeleteAnswer={handleDeleteAnswer}
+                handleUpdateAnswer={handleUpdateAnswer}
+                changeCorrectAnswer={changeCorrectAnswer}  
+              />
               <Button
                 onClick={() => addNewAnswer(q.id)}
                 disabled={answersArr
@@ -575,6 +460,6 @@ export default function QuizUpdateForm({ quiz, quizType, questions_and_answers, 
           Update Quiz
         </Button>
       </chakra.form>
-    </>
+    </FormProvider>
   );
 }
