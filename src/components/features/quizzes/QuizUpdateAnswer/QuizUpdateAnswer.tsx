@@ -7,7 +7,7 @@ import { DeleteIcon } from "@chakra-ui/icons";
 import { Input } from "@chakra-ui/react";
 import { useFormContext } from "react-hook-form";
 import clsx from "clsx";
-import QuestionTypeInput from "./QuestionTypeInput";
+import CorrectAnswerInput from "./components/CorrectAnswerInput";
 
 interface IQuizUpdateQuestionProps {
   answersArr: Answer[];
@@ -22,7 +22,7 @@ interface IQuizUpdateQuestionProps {
   ) => void;
 }
 
-export default function QuizUpdateQuestion({
+export default function QuizUpdateAnswer({
   answersArr,
   question,
   questType,
@@ -33,16 +33,20 @@ export default function QuizUpdateQuestion({
   const { register } = useFormContext();
 
   return answersArr.map((answer) => {
-    const correctAnswerCount = answersArr.filter((a) => a.correct_answer).length;
-    const disableDelete = 
-      (questType === "Short answer" ? answersArr.length === 1 : answersArr.length <= 2) ||
+    const correctAnswerCount = answersArr.filter(
+      (a) => a.correct_answer
+    ).length;
+    const disableDelete =
+      (questType === "Short answer"
+        ? answersArr.length === 1
+        : answersArr.length <= 2) ||
       (correctAnswerCount === 1 && answer.correct_answer);
     return (
       <FormControl key={answer.id}>
         <InputGroup
           w="100%"
           startElement={
-            <QuestionTypeInput
+            <CorrectAnswerInput
               answer={answer}
               question={question}
               questType={questType}
@@ -76,6 +80,6 @@ export default function QuizUpdateQuestion({
           />
         </InputGroup>
       </FormControl>
-    )}
-  );
+    );
+  });
 }

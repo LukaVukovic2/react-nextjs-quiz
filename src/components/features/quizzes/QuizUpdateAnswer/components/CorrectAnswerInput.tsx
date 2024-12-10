@@ -16,7 +16,7 @@ interface IQuestionStartElementProps {
   ) => void;
 }
 
-export default function QuestionTypeInput({answer, question, questType, correctCount, changeCorrectAnswer}: IQuestionStartElementProps) {
+export default function CorrectAnswerInput({answer, question, questType, correctCount, changeCorrectAnswer}: IQuestionStartElementProps) {
   if(questType === "Short answer") return null;
 
   if (answer.correct_answer && questType === "Single choice") {
