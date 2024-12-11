@@ -16,6 +16,7 @@ import { MyQuizzesContext } from "@/components/shared/utils/contexts/MyQuizzesCo
 import "./QuizUpdateForm.css";
 import QuizUpdateAnswer from "../QuizUpdateAnswer/QuizUpdateAnswer";
 import QuizUpdateQuestion from "../QuizUpdateQuestion/QuizUpdateQuestion";
+import { useQuizUpdateContext } from "@/components/shared/utils/contexts/QuizUpdateContext";
 
 interface QuizUpdateFormProps {
   quiz: Quiz;
@@ -41,43 +42,31 @@ export default function QuizUpdateForm({
     formState: { isValid },
   } = methods;
   const [dirtyQuizFields, setDirtyQuizFields] = useState<Quiz>();
-  const [dirtyQuestions, setDirtyQuestions] = useState<Question[]>([]);
-  const [deletedQuestions, setDeletedQuestions] = useState<string[]>([]);
-  const [questionsArr, setQuestionsArr] = useState<Question[]>([]);
-  const [dirtyAnswers, setDirtyAnswers] = useState<Answer[]>([]);
-  const [deletedAnswers, setDeletedAnswers] = useState<string[]>([]);
-  const [answersArr, setAnswersArr] = useState<Answer[]>([]);
   const { quizTypes, questTypes } = useContext(MyQuizzesContext);
+  const { answersArr, questionsArr, dirtyQuestions, deletedQuestions, dirtyAnswers, deletedAnswers } = useQuizUpdateContext([
+    "answersArr",
+    "questionsArr",
+    "dirtyQuestions",
+    "deletedQuestions",
+    "dirtyAnswers",
+    "deletedAnswers"
+  ]);
 
   const formDataEntries = {
     quiz: dirtyQuizFields,
-    questions: dirtyQuestions,
-    answers: dirtyAnswers,
-    deletedQuestions: deletedQuestions,
-    deletedAnswers: deletedAnswers,
+    questions: dirtyQuestions.get,
+    answers: dirtyAnswers.get,
+    deletedQuestions: deletedQuestions.get,
+    deletedAnswers: deletedAnswers.get,
   };
 
   useEffect(() => {
-    const answers = questions_and_answers.map((qa) => qa.answers).flat();
-    setAnswersArr(answers);
-    setQuestionsArr(questions_and_answers.map((qa) => qa.question));
+    const answers: Answer[] = questions_and_answers
+      .map((qa) => qa.answers)
+      .flat();
+    answersArr.set(answers);
+    questionsArr.set(questions_and_answers.map((qa) => qa.question));
   }, [questions_and_answers]);
-
-  const handleDeleteQuestion = async (id: string) => {
-    setQuestionsArr((prev) => prev.filter((question) => question.id !== id));
-    setDirtyQuestions((prev) => prev.filter((question) => question.id !== id));
-    setDeletedQuestions((prev) => [...prev, id]);
-    setAnswersArr((prev) => prev.filter((answer) => answer.question_id !== id));
-    setDirtyAnswers((prev) =>
-      prev.filter((answer) => answer.question_id !== id)
-    );
-  };
-
-  const handleDeleteAnswer = async (id: string) => {
-    setAnswersArr((prev) => prev.filter((ans) => ans.id !== id));
-    setDirtyAnswers((prev) => prev.filter((ans) => ans.id !== id));
-    setDeletedAnswers((prev) => [...prev, id]);
-  };
 
   const handleUpdateQuizInfo = async (
     e: FocusEvent<HTMLInputElement, Element>,
@@ -110,99 +99,28 @@ export default function QuizUpdateForm({
     );
   };
 
-  const handleUpdateQuestion = async (
-    e: FocusEvent<HTMLInputElement, Element>,
-    q: Question
-  ) => {
-    const { value } = e.target;
-
-    const validateInput = await trigger("q_title" + q.id);
-    if (!validateInput) return;
-
-    setDirtyQuestions((prev) => {
-      const questionIndex = prev.findIndex((question) => question.id === q.id);
-      const newQuestion: Question = {
-        id: q.id,
-        title: value,
-        quiz_id: q.quiz_id,
-        id_quest_type: q.id_quest_type,
-      };
-
-      if (questionIndex === -1) {
-        return [...prev, newQuestion];
-      } else {
-        const updatedQuestions = [...prev];
-        updatedQuestions[questionIndex] = newQuestion;
-        return updatedQuestions;
-      }
-    });
-  };
-
-  const handleUpdateAnswer = async (value: string, a: Answer) => {
-    const validateInput = await trigger(`answer${a.question_id}${a.id}`);
-    if (!validateInput) return;
-
-    const updatedAnswers = answersArr.map((answer) => {
-      if (answer.id === a.id) {
-        return { ...answer, answer: value };
-      }
-      return answer;
-    });
-
-    setAnswersArr([...updatedAnswers]);
-
-    setDirtyAnswers((prev) => {
-      const dirtyAns = [...prev];
-      updatedAnswers.forEach((answer) => {
-        const answerIndex = dirtyAns.findIndex((ans) => ans.id === answer.id);
-        if (answer.id === a.id) {
-          if (answerIndex === -1) {
-            dirtyAns.push({ ...answer, answer: value });
-          } else {
-            dirtyAns[answerIndex] = { ...answer, answer: value };
-          }
-        }
-      });
-
-      return dirtyAns;
-    });
-  };
-
   const addNewQuestion = () => {
     const id = uuidv4();
-    const answerId = uuidv4();
     const newQuestion: Question = {
       id,
       title: "",
       quiz_id: quiz.id,
       id_quest_type: "",
     };
-    const defaultCorrectAns: Answer = {
-      id: uuidv4(),
-      answer: "",
-      question_id: id,
-      correct_answer: true,
-    };
-    const defaultFalseAns: Answer = {
-      ...defaultCorrectAns,
-      id: answerId,
-      correct_answer: !defaultCorrectAns.correct_answer,
-    };
-    setQuestionsArr((prev) => [...prev, newQuestion]);
-    setDirtyQuestions((prev) => [...prev, newQuestion]);
-    setAnswersArr((prev) => [...prev, defaultCorrectAns, defaultFalseAns]);
-    setDirtyAnswers((prev) => [...prev, defaultCorrectAns, defaultFalseAns]);
+    questionsArr.set([...(questionsArr.get as Question[]), newQuestion]);
+    dirtyQuestions.set([...(dirtyQuestions.get as Question[]), newQuestion]);
   };
 
-  const addNewAnswer = (question_id: string) => {
+  const addNewAnswer = (question: Question) => {
+    const questType = questTypes.items.find(type => type.value === question.id_quest_type)?.label;
     const newAnswer: Answer = {
       id: uuidv4(),
       answer: "",
-      question_id,
-      correct_answer: false,
+      question_id: question.id,
+      correct_answer: questType === "Short answer",
     };
-    setAnswersArr((prev) => [...prev, newAnswer]);
-    setDirtyAnswers((prev) => [...prev, newAnswer]);
+    answersArr.set([...(answersArr.get as Answer[]), newAnswer]);
+    dirtyAnswers.set([...((dirtyAnswers.get as Answer[]) || []), newAnswer]);
   };
 
   const handleSubmit = async () => {
@@ -220,80 +138,10 @@ export default function QuizUpdateForm({
     });
     if (success) {
       setDirtyQuizFields(undefined);
-      setDirtyQuestions([]);
-      setDirtyAnswers([]);
+      dirtyQuestions.set([]);
+      dirtyAnswers.set([]);
     }
     onClose();
-  };
-
-  const changeCorrectAnswer = (
-    questionId: string,
-    answerId: string,
-    questionType: string
-  ) => {
-    const updatedAnswers = answersArr.map((answer) => {
-      if (answer.question_id === questionId) {
-        if (questionType === "Single choice") {
-          return {
-            ...answer,
-            correct_answer: answer.id === answerId,
-          };
-        } else if (questionType === "Multiple choice") {
-          return {
-            ...answer,
-            correct_answer:
-              answer.id === answerId
-                ? !answer.correct_answer
-                : answer.correct_answer,
-          };
-        }
-      }
-      return answer;
-    });
-    setAnswersArr(updatedAnswers);
-    setDirtyAnswers((prev) => {
-      const dirtyAns = [...prev];
-      updatedAnswers.forEach((answer) => {
-        const answerIndex = dirtyAns.findIndex((ans) => ans.id === answer.id);
-        if (answer.question_id === questionId) {
-          if (answerIndex === -1) {
-            dirtyAns.push(answer);
-          } else {
-            dirtyAns[answerIndex] = answer;
-          }
-        }
-      });
-
-      return dirtyAns;
-    });
-  };
-
-  const selectQuestionType = (value: string, question: Question) => {
-    if (!value) return;
-    setDirtyQuestions((prev) => {
-      const questionIndex = prev.findIndex((q) => q.id === question.id);
-      const newQuestion: Question = { ...question, id_quest_type: value };
-
-      if (questionIndex === -1) {
-        return [...prev, newQuestion];
-      } else {
-        const updatedQuestions = [...prev];
-        updatedQuestions[questionIndex] = newQuestion;
-        return updatedQuestions;
-      }
-    });
-    setQuestionsArr((prev) => {
-      const questionIndex = prev.findIndex((q) => q.id === question.id);
-      const newQuestion: Question = { ...question, id_quest_type: value };
-
-      if (questionIndex === -1) {
-        return [...prev, newQuestion];
-      } else {
-        const updatedQuestions = [...prev];
-        updatedQuestions[questionIndex] = newQuestion;
-        return updatedQuestions;
-      }
-    });
   };
 
   return (
@@ -355,36 +203,26 @@ export default function QuizUpdateForm({
           gap={5}
           my={3}
         >
-          {questionsArr.map((q, index) => {
+          {(questionsArr.get as Question[]).map((q, index) => {
             const questType = questTypes.items.find(
               (type) => type.value === q.id_quest_type
             )?.label;
             return (
               <div key={q.id}>
-                <QuizUpdateQuestion 
+                <QuizUpdateQuestion
                   index={index}
                   question={q}
-                  questionsArr={questionsArr}
                   questType={questType}
                   questTypes={questTypes}
-                  handleDeleteQuestion={handleDeleteQuestion}
-                  handleUpdateQuestion={handleUpdateQuestion}
-                  selectQuestionType={selectQuestionType}
                 />
-                
+
                 <QuizUpdateAnswer
-                  answersArr={answersArr.filter(
-                    (answer) => answer.question_id === q.id
-                  )}
                   question={q}
                   questType={questType}
-                  handleDeleteAnswer={handleDeleteAnswer}
-                  handleUpdateAnswer={handleUpdateAnswer}
-                  changeCorrectAnswer={changeCorrectAnswer}
                 />
                 <Button
-                  onClick={() => addNewAnswer(q.id)}
-                  disabled={answersArr
+                  onClick={() => addNewAnswer(q)}
+                  disabled={(answersArr.get as Answer[])
                     .filter((ans) => ans.question_id === q.id)
                     .some((answer) => !answer.answer)}
                   visual="ghost"

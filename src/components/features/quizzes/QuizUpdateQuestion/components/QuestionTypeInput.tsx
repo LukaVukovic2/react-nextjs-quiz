@@ -9,7 +9,7 @@ interface IQuestionTypeInputProps {
   question: Question;
   questType: string;
   questTypes: ListCollection;
-  selectQuestionType: (id: string, q: any) => void;
+  selectQuestionType: (id: string, q: Question) => void;
 }
 
 export default function QuestionTypeInput({question, questType, questTypes, selectQuestionType}: IQuestionTypeInputProps) {

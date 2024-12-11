@@ -8,38 +8,104 @@ import { Input } from "@chakra-ui/react";
 import { useFormContext } from "react-hook-form";
 import clsx from "clsx";
 import CorrectAnswerInput from "./components/CorrectAnswerInput";
+import { useQuizUpdateContext } from "@/components/shared/utils/contexts/QuizUpdateContext";
 
 interface IQuizUpdateQuestionProps {
-  answersArr: Answer[];
   question: Question;
   questType: string;
-  handleDeleteAnswer: (id: string) => void;
-  handleUpdateAnswer: (answer: string, answerObj: Answer) => void;
-  changeCorrectAnswer: (
-    questionId: string,
-    answerId: string,
-    questionType: string
-  ) => void;
 }
 
 export default function QuizUpdateAnswer({
-  answersArr,
   question,
-  questType,
-  handleDeleteAnswer,
-  handleUpdateAnswer,
-  changeCorrectAnswer,
+  questType
 }: IQuizUpdateQuestionProps) {
-  const { register } = useFormContext();
+  const { register, trigger } = useFormContext();
+  const { answersArr, dirtyAnswers, deletedAnswers } = useQuizUpdateContext(["answersArr", "dirtyAnswers", "deletedAnswers"]);
+  const answersForQuestion = (answersArr.get as Answer[]).filter(ans => ans.question_id === question.id);
 
-  return answersArr.map((answer) => {
-    const correctAnswerCount = answersArr.filter(
+  const handleUpdateAnswer = async (value: string, a: Answer) => {
+    const validateInput = await trigger(`answer${a.question_id}${a.id}`);
+    if (!validateInput) return;
+
+    const updatedAnswers = (answersArr.get as Answer[]).map((answer) => {
+      if (answer.id === a.id) {
+        return { ...answer, answer: value };
+      }
+      return answer;
+    });
+
+    answersArr.set(updatedAnswers);
+
+    const dirtyAns = dirtyAnswers.get as Answer[];
+    updatedAnswers.forEach((answer) => {
+      const answerIndex = dirtyAns.findIndex((ans) => ans.id === answer.id);
+      if (answer.id === a.id) {
+        if (answerIndex === -1) {
+          dirtyAns.push({ ...answer, answer: value });
+        } else {
+          dirtyAns[answerIndex] = { ...answer, answer: value };
+        }
+      }
+    });
+
+    dirtyAnswers.set(dirtyAns);
+  };
+
+  const changeCorrectAnswer = (
+    questionId: string,
+    answerId: string,
+    questionType: string
+  ) => {
+    const updatedAnswers = (answersArr.get as Answer[]).map((answer) => {
+      if (answer.question_id === questionId) {
+        if (questionType === "Single choice") {
+          return {
+            ...answer,
+            correct_answer: answer.id === answerId,
+          };
+        } else if (questionType === "Multiple choice") {
+          return {
+            ...answer,
+            correct_answer:
+              answer.id === answerId
+                ? !answer.correct_answer
+                : answer.correct_answer,
+          };
+        }
+      }
+      return answer;
+    });
+    answersArr.set(updatedAnswers);
+
+    const dirtyAns = dirtyAnswers.get as Answer[];
+    updatedAnswers.forEach((answer) => {
+      const answerIndex = dirtyAns.findIndex((ans) => ans.id === answer.id);
+      if (answer.question_id === questionId) {
+        if (answerIndex === -1) {
+          dirtyAns.push(answer);
+        } else {
+          dirtyAns[answerIndex] = answer;
+        }
+      }
+    });
+
+    dirtyAnswers.set(dirtyAns);
+  };
+  
+  const handleDeleteAnswer = async (id: string) => {
+    answersArr.set([...(answersArr.get as Answer[]).filter((ans) => ans.id !== id)]);
+    dirtyAnswers.set([...(dirtyAnswers.get as Answer[]).filter((ans) => ans.id !== id)]);
+    deletedAnswers.set([...(deletedAnswers.get as string[]), id]);
+  };
+
+  return answersForQuestion.map((answer) => {
+    const correctAnswerCount = answersForQuestion.filter(
       (a) => a.correct_answer
     ).length;
     const disableDelete =
       (questType === "Short answer"
-        ? answersArr.length === 1
-        : answersArr.length <= 2) ||
+        ? answersForQuestion.length === 1
+        : answersForQuestion.length <= 2) ||
       (correctAnswerCount === 1 && answer.correct_answer);
     return (
       <FormControl key={answer.id}>

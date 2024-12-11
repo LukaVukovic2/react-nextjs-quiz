@@ -11,6 +11,7 @@ import { DialogBody, DialogCloseTrigger, DialogContent, DialogFooter, DialogHead
 import { toaster } from "@/components/ui/toaster";
 import "./QuizMenuDropdown.css";
 import { QuizType } from "@/app/typings/quiz_type";
+import { QuizUpdateContextProvider } from "@/components/shared/utils/contexts/QuizUpdateContext";
 
 interface QuizMenuDropdownProps {
   quiz: Quiz;
@@ -95,12 +96,14 @@ export default function QuizMenuDropdown({ quiz, quizType, questions_and_answers
               <DialogTitle>Update Quiz</DialogTitle>
             </DialogHeader>
             <DialogBody>
-              <QuizUpdateForm
-                quiz={quiz}
-                quizType={quizType}
-                questions_and_answers={questions_and_answers}
-                onClose={() => setOpenEdit(false)}
-              />
+              <QuizUpdateContextProvider>
+                <QuizUpdateForm
+                  quiz={quiz}
+                  quizType={quizType}
+                  questions_and_answers={questions_and_answers}
+                  onClose={() => setOpenEdit(false)}
+                />
+              </QuizUpdateContextProvider>
             </DialogBody>
           </DialogContent>
         </DialogRoot>
