@@ -1,17 +1,29 @@
 "use client";
 import { Button } from "@/styles/theme/components/button";
-import { MenuRoot, MenuItem, MenuContent, MenuTrigger } from "@/components/ui/menu";
+import {
+  MenuRoot,
+  MenuItem,
+  MenuContent,
+  MenuTrigger,
+} from "@/components/ui/menu";
 import QuizUpdateForm from "../QuizUpdateForm/QuizUpdateForm";
-import { deleteQuiz } from "@/components/shared/utils/actions/quiz/deleteQuiz"; 
+import { deleteQuiz } from "@/components/shared/utils/actions/quiz/deleteQuiz";
 import { useState } from "react";
 import { Question } from "@/app/typings/question";
 import { Answer } from "@/app/typings/answer";
 import { Quiz } from "@/app/typings/quiz";
-import { DialogBody, DialogCloseTrigger, DialogContent, DialogFooter, DialogHeader, DialogRoot, DialogTitle } from "@/components/ui/dialog";
+import {
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { toaster } from "@/components/ui/toaster";
-import "./QuizMenuDropdown.css";
 import { QuizType } from "@/app/typings/quiz_type";
-import { QuizUpdateContextProvider } from "@/components/shared/utils/contexts/QuizUpdateContext";
+import "./QuizMenuDropdown.css";
 
 interface QuizMenuDropdownProps {
   quiz: Quiz;
@@ -22,16 +34,20 @@ interface QuizMenuDropdownProps {
   }>;
 }
 
-export default function QuizMenuDropdown({ quiz, quizType, questions_and_answers }: QuizMenuDropdownProps) {
-  const [ openEdit, setOpenEdit ] = useState(false);
-  const [ openDelete, setOpenDelete ] = useState(false);
+export default function QuizMenuDropdown({
+  quiz,
+  quizType,
+  questions_and_answers,
+}: QuizMenuDropdownProps) {
+  const [openEdit, setOpenEdit] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
 
   const handleQuizDelete = async (id: string) => {
     const success = await deleteQuiz(id);
     toaster.create({
       title: success ? "Quiz deleted" : "Failed to delete quiz",
       type: success ? "success" : "error",
-      duration: 3000
+      duration: 3000,
     });
   };
 
@@ -51,8 +67,22 @@ export default function QuizMenuDropdown({ quiz, quizType, questions_and_answers
         <i className="fa-solid fa-ellipsis-vertical"></i>
       </MenuTrigger>
       <MenuContent>
-        <MenuItem className="menu-item" value="Edit" valueText="Edit" onClick={() => setOpenEdit(true)}>Edit</MenuItem>
-        <MenuItem className="menu-item" value="Delete" valueText="Delete" onClick={() => setOpenDelete(true)}>Delete</MenuItem>
+        <MenuItem
+          className="menu-item"
+          value="Edit"
+          valueText="Edit"
+          onClick={() => setOpenEdit(true)}
+        >
+          Edit
+        </MenuItem>
+        <MenuItem
+          className="menu-item"
+          value="Delete"
+          valueText="Delete"
+          onClick={() => setOpenDelete(true)}
+        >
+          Delete
+        </MenuItem>
 
         <DialogRoot
           motionPreset="slide-in-bottom"
@@ -64,9 +94,7 @@ export default function QuizMenuDropdown({ quiz, quizType, questions_and_answers
             <DialogHeader>
               <DialogTitle>Delete Quiz</DialogTitle>
             </DialogHeader>
-            <DialogBody>
-              Are you sure you want to delete this quiz?
-            </DialogBody>
+            <DialogBody>Are you sure you want to delete this quiz?</DialogBody>
             <DialogFooter>
               <Button
                 onClick={() => setOpenDelete(false)}
@@ -96,14 +124,12 @@ export default function QuizMenuDropdown({ quiz, quizType, questions_and_answers
               <DialogTitle>Update Quiz</DialogTitle>
             </DialogHeader>
             <DialogBody>
-              <QuizUpdateContextProvider>
-                <QuizUpdateForm
-                  quiz={quiz}
-                  quizType={quizType}
-                  questions_and_answers={questions_and_answers}
-                  onClose={() => setOpenEdit(false)}
-                />
-              </QuizUpdateContextProvider>
+              <QuizUpdateForm
+                quiz={quiz}
+                quizType={quizType}
+                questions_and_answers={questions_and_answers}
+                onClose={() => setOpenEdit(false)}
+              />
             </DialogBody>
           </DialogContent>
         </DialogRoot>

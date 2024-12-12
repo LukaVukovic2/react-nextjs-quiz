@@ -1,14 +1,14 @@
 import { Answer } from "@/app/typings/answer";
 import { Question } from "@/app/typings/question";
 import SelectOption from "@/components/core/SelectOption/SelectOption";
-import { useQuizUpdateContext } from "@/components/shared/utils/contexts/QuizUpdateContext";
+import { QuizUpdateContext } from "@/components/shared/utils/contexts/QuizUpdateContext";
 import { Field } from "@/components/ui/field";
 import { InputGroup } from "@/components/ui/input-group";
 import { Button } from "@/styles/theme/components/button";
 import { FormControl } from "@chakra-ui/form-control";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { Input, ListCollection, Text } from "@chakra-ui/react";
-import { FocusEvent } from "react";
+import { FocusEvent, useContext } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 
@@ -26,9 +26,15 @@ export default function QuizUpdateQuestion({
   questTypes,
 }: IQuizUpdateQuestionProps) {
   const { control, register, trigger } = useFormContext();
-  
-  const { questionsArr, dirtyQuestions, deletedQuestions, answersArr, dirtyAnswers } = useQuizUpdateContext(
-    ["questionsArr", "dirtyQuestions", "deletedQuestions", "answersArr", "dirtyAnswers"]);
+
+  const {
+    questionsArr,
+    setQuestionsArr,
+    setDirtyQuestions,
+    setDeletedQuestions,
+    setAnswersArr,
+    setDirtyAnswers,
+  } = useContext(QuizUpdateContext);
 
   const handleUpdateQuestion = async (
     e: FocusEvent<HTMLInputElement, Element>,
@@ -39,46 +45,60 @@ export default function QuizUpdateQuestion({
     const validateInput = await trigger("q_title" + q.id);
     if (!validateInput) return;
 
-    const dirtyQuest = dirtyQuestions.get as Question[];
-    const questionIndex = dirtyQuest.findIndex((question) => question.id === q.id);
-    const newQuestion: Question = {
-      id: q.id,
-      title: value,
-      quiz_id: q.quiz_id,
-      id_quest_type: q.id_quest_type,
-    };
+    setDirtyQuestions((prev) => {
+      const questionIndex = prev.findIndex((question) => question.id === q.id);
+      const newQuestion: Question = {
+        id: q.id,
+        title: value,
+        quiz_id: q.quiz_id,
+        id_quest_type: q.id_quest_type,
+      };
 
-    const updatedQuestions = questionIndex === -1 ? [...dirtyQuest, newQuestion] : dirtyQuest.map((q, index) => (index === questionIndex ? newQuestion : q));
-    dirtyQuestions.set(updatedQuestions);
+      if (questionIndex === -1) {
+        return [...prev, newQuestion];
+      } else {
+        const updatedQuestions = [...prev];
+        updatedQuestions[questionIndex] = newQuestion;
+        return updatedQuestions;
+      }
+    });
   };
 
   const selectQuestionType = (value: string, question: Question) => {
     if (!value) return;
-    const questType = questTypes.items.find(qt => qt.value === value)?.label;
-  
-    const prevDirtyQuestions = dirtyQuestions.get as Question[];
-    const dirtyQuestionIndex = prevDirtyQuestions.findIndex((q) => q.id === question.id);
-    const newDirtyQuestion: Question = { ...question, id_quest_type: value };
-  
-    const updatedDirtyQuestions =
-      dirtyQuestionIndex === -1
-        ? [...prevDirtyQuestions, newDirtyQuestion]
-        : prevDirtyQuestions.map((q, index) =>
-            index === dirtyQuestionIndex ? newDirtyQuestion : q
-          );
-  
-    dirtyQuestions.set(updatedDirtyQuestions);
-  
-    const prevQuestions = questionsArr.get as Question[];
-    const questionIndex = prevQuestions.findIndex((q) => q.id === question.id);
-    const newQuestion: Question = { ...question, id_quest_type: value };
-  
-    const updatedQuestions =
-      questionIndex === -1
-        ? [...prevQuestions, newQuestion]
-        : prevQuestions.map((q, index) => (index === questionIndex ? newQuestion : q));
-  
-    questionsArr.set(updatedQuestions);
+    const questType = questTypes.items.find((qt) => qt.value === value)?.label;
+
+    setDirtyQuestions((prev) => {
+      const questionIndex = prev.findIndex((q) => q.id === question.id);
+      const newQuestion: Question = {
+        ...question,
+        id_quest_type: value,
+      };
+
+      if (questionIndex === -1) {
+        return [...prev, newQuestion];
+      } else {
+        const updatedQuestions = [...prev];
+        updatedQuestions[questionIndex] = newQuestion;
+        return updatedQuestions;
+      }
+    });
+
+    setQuestionsArr((prev) => {
+      const questionIndex = prev.findIndex((q) => q.id === question.id);
+      const newQuestion: Question = {
+        ...question,
+        id_quest_type: value,
+      };
+
+      if (questionIndex === -1) {
+        return [...prev, newQuestion];
+      } else {
+        const updatedQuestions = [...prev];
+        updatedQuestions[questionIndex] = newQuestion;
+        return updatedQuestions;
+      }
+    });
 
     const answerId = uuidv4();
     const defaultCorrectAns: Answer = {
@@ -87,35 +107,34 @@ export default function QuizUpdateQuestion({
       question_id: question.id,
       correct_answer: true,
     };
-    if(questType === "Short answer"){
-      answersArr.set([
-        ...(answersArr.get as Answer[]),
-        defaultCorrectAns
-      ]);
-      dirtyAnswers.set([...((dirtyAnswers.get as Answer[]) || []), defaultCorrectAns]);
-    }
-    else {
+    if (questType === "Short answer") {
+      setAnswersArr((prev) => [...prev, defaultCorrectAns]);
+      setDirtyAnswers((prev) => [...prev, defaultCorrectAns]);
+    } else {
       const defaultFalseAns: Answer = {
         ...defaultCorrectAns,
         id: answerId,
         correct_answer: !defaultCorrectAns.correct_answer,
       };
-      answersArr.set([
-        ...(answersArr.get as Answer[]),
-        defaultCorrectAns,
-        defaultFalseAns,
-      ]);
-      dirtyAnswers.set([...((dirtyAnswers.get as Answer[]) || []), defaultCorrectAns, defaultFalseAns]);
+      setAnswersArr((prev) => [...prev, defaultCorrectAns, defaultFalseAns]);
+      setDirtyAnswers((prev) => [...prev, defaultCorrectAns, defaultFalseAns]);
     }
   };
-  
 
   const handleDeleteQuestion = async (id: string) => {
-    questionsArr.set([...(questionsArr.get as Question[]).filter((question) => question.id !== id)]);
-    dirtyQuestions.set([...(dirtyQuestions.get as Question[]).filter((question) => question.id !== id)]);
-    deletedQuestions.set([...(deletedQuestions.get as string[]), id]);
-    answersArr.set([...(answersArr.get as Answer[]).filter((answer) => answer.question_id !== id)]);
-    dirtyAnswers.set([...(dirtyAnswers.get as Answer[]).filter((answer) => answer.question_id !== id)]);
+    setQuestionsArr((prev) => [
+      ...prev.filter((question) => question.id !== id),
+    ]);
+    setDirtyQuestions((prev) => [
+      ...prev.filter((question) => question.id !== id),
+    ]);
+    setDeletedQuestions((prev) => [...prev, id]);
+    setAnswersArr((prev) => [
+      ...prev.filter((answer) => answer.question_id !== id),
+    ]);
+    setDirtyAnswers((prev) => [
+      ...prev.filter((answer) => answer.question_id !== id),
+    ]);
     trigger();
   };
 
@@ -167,7 +186,7 @@ export default function QuizUpdateQuestion({
               visual="ghost"
               p={0}
               onClick={() => handleDeleteQuestion(question.id)}
-              disabled={(questionsArr.get as Question[]).length === 1}
+              disabled={questionsArr.length === 1}
             >
               <DeleteIcon color="red" />
             </Button>

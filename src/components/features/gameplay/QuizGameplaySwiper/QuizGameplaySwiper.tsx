@@ -24,7 +24,7 @@ interface IQuizGameplaySwiperProps {
     renderBullet: (index: number, className: string) => string;
   };
   swiperRef: React.MutableRefObject<SwiperCore | null>;
-  control: Control<FieldValues, any>;
+  control: Control<FieldValues>;
 }
 
 export default function QuizGameplaySwiper({

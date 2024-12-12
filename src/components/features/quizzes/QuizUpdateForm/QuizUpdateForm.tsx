@@ -1,22 +1,21 @@
-import { chakra, Flex, Input, Text } from "@chakra-ui/react";
+import { chakra, Flex, Text } from "@chakra-ui/react";
 import { toaster } from "@/components/ui/toaster";
 import { Button } from "@/styles/theme/components/button";
-import { FormLabel, FormControl } from "@chakra-ui/form-control";
 import { AddIcon } from "@chakra-ui/icons";
 import { updateQuiz } from "@/components/shared/utils/actions/quiz/updateQuiz";
-import { FocusEvent, useContext, useEffect, useState } from "react";
-import { Controller, FormProvider, useForm } from "react-hook-form";
+import { useContext, useEffect, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 import { Answer } from "@/app/typings/answer";
 import { Question } from "@/app/typings/question";
 import { Quiz } from "@/app/typings/quiz";
 import { QuizType } from "@/app/typings/quiz_type";
-import SelectOption from "@/components/core/SelectOption/SelectOption";
 import { MyQuizzesContext } from "@/components/shared/utils/contexts/MyQuizzesContext";
-import "./QuizUpdateForm.css";
 import QuizUpdateAnswer from "../QuizUpdateAnswer/QuizUpdateAnswer";
 import QuizUpdateQuestion from "../QuizUpdateQuestion/QuizUpdateQuestion";
-import { useQuizUpdateContext } from "@/components/shared/utils/contexts/QuizUpdateContext";
+import { QuizUpdateContext } from "@/components/shared/utils/contexts/QuizUpdateContext";
+import QuizUpdateInfo from "../QuizUpdateInfo/QuizUpdateInfo";
+import "./QuizUpdateForm.css";
 
 interface QuizUpdateFormProps {
   quiz: Quiz;
@@ -36,68 +35,33 @@ export default function QuizUpdateForm({
 }: QuizUpdateFormProps) {
   const methods = useForm();
   const {
-    register,
-    trigger,
-    control,
     formState: { isValid },
   } = methods;
-  const [dirtyQuizFields, setDirtyQuizFields] = useState<Quiz>();
   const { quizTypes, questTypes } = useContext(MyQuizzesContext);
-  const { answersArr, questionsArr, dirtyQuestions, deletedQuestions, dirtyAnswers, deletedAnswers } = useQuizUpdateContext([
-    "answersArr",
-    "questionsArr",
-    "dirtyQuestions",
-    "deletedQuestions",
-    "dirtyAnswers",
-    "deletedAnswers"
-  ]);
+  
+  const [answersArr, setAnswersArr] = useState<Answer[]>([]);
+  const [questionsArr, setQuestionsArr] = useState<Question[]>([]);
+  const [dirtyQuestions, setDirtyQuestions] = useState<Question[]>([]);
+  const [deletedQuestions, setDeletedQuestions] = useState<string[]>([]);
+  const [dirtyAnswers, setDirtyAnswers] = useState<Answer[]>([]);
+  const [deletedAnswers, setDeletedAnswers] = useState<string[]>([]);
+  const [dirtyQuizFields, setDirtyQuizFields] = useState<Quiz>();
 
   const formDataEntries = {
     quiz: dirtyQuizFields,
-    questions: dirtyQuestions.get,
-    answers: dirtyAnswers.get,
-    deletedQuestions: deletedQuestions.get,
-    deletedAnswers: deletedAnswers.get,
+    questions: dirtyQuestions,
+    answers: dirtyAnswers,
+    deletedQuestions: deletedQuestions,
+    deletedAnswers: deletedAnswers,
   };
 
   useEffect(() => {
     const answers: Answer[] = questions_and_answers
       .map((qa) => qa.answers)
       .flat();
-    answersArr.set(answers);
-    questionsArr.set(questions_and_answers.map((qa) => qa.question));
+    setAnswersArr(answers);
+    setQuestionsArr(questions_and_answers.map((qa) => qa.question));
   }, [questions_and_answers]);
-
-  const handleUpdateQuizInfo = async (
-    e: FocusEvent<HTMLInputElement, Element>,
-    id: string
-  ) => {
-    const { name, value } = e.target;
-
-    const validateInput = await trigger(name);
-    if (!validateInput) return;
-
-    setDirtyQuizFields(
-      (prev) =>
-        ({
-          ...prev,
-          id,
-          [name]: value,
-        } as Quiz)
-    );
-  };
-
-  const selectQuizType = (value: string) => {
-    if (!value) return;
-    setDirtyQuizFields(
-      (prev) =>
-        ({
-          ...prev,
-          id: quiz.id,
-          id_quiz_type: value,
-        } as Quiz)
-    );
-  };
 
   const addNewQuestion = () => {
     const id = uuidv4();
@@ -107,20 +71,22 @@ export default function QuizUpdateForm({
       quiz_id: quiz.id,
       id_quest_type: "",
     };
-    questionsArr.set([...(questionsArr.get as Question[]), newQuestion]);
-    dirtyQuestions.set([...(dirtyQuestions.get as Question[]), newQuestion]);
+    setQuestionsArr([...questionsArr, newQuestion]);
+    setDirtyQuestions([...dirtyQuestions, newQuestion]);
   };
 
   const addNewAnswer = (question: Question) => {
-    const questType = questTypes.items.find(type => type.value === question.id_quest_type)?.label;
+    const questType = questTypes.items.find(
+      (type) => type.value === question.id_quest_type
+    )?.label;
     const newAnswer: Answer = {
       id: uuidv4(),
       answer: "",
       question_id: question.id,
       correct_answer: questType === "Short answer",
     };
-    answersArr.set([...(answersArr.get as Answer[]), newAnswer]);
-    dirtyAnswers.set([...((dirtyAnswers.get as Answer[]) || []), newAnswer]);
+    setAnswersArr([...answersArr, newAnswer]);
+    setDirtyAnswers([...dirtyAnswers, newAnswer]);
   };
 
   const handleSubmit = async () => {
@@ -138,121 +104,97 @@ export default function QuizUpdateForm({
     });
     if (success) {
       setDirtyQuizFields(undefined);
-      dirtyQuestions.set([]);
-      dirtyAnswers.set([]);
+      setDirtyQuestions([]);
+      setDirtyAnswers([]);
     }
     onClose();
   };
 
   return (
-    <FormProvider {...methods}>
-      <chakra.form
-        overflowY="scroll"
-        height="70vh"
-      >
-        <FormControl>
-          <FormLabel>Quiz title</FormLabel>
-          <Input
-            placeholder="Quiz Title"
-            defaultValue={quiz.title}
-            {...register("title", { required: true })}
-            onBlur={(e) => handleUpdateQuizInfo(e, quiz.id)}
+    <QuizUpdateContext.Provider value={{
+      answersArr,
+      setAnswersArr,
+      questionsArr,
+      setQuestionsArr,
+      dirtyQuestions,
+      setDirtyQuestions,
+      deletedQuestions,
+      setDeletedQuestions,
+      dirtyAnswers,
+      setDirtyAnswers,
+      deletedAnswers,
+      setDeletedAnswers,
+      dirtyQuizFields,
+      setDirtyQuizFields
+    }}>
+      <FormProvider {...methods}>
+        <chakra.form
+          overflowY="scroll"
+          height="70vh"
+        >
+          <QuizUpdateInfo
+            quiz={quiz}
+            quizType={quizType}
+            quizTypes={quizTypes}
           />
-        </FormControl>
-        {quizTypes && (
-          <FormControl>
-            <FormLabel>Quiz type</FormLabel>
-            <Controller
-              name="id_quiz_type"
-              control={control}
-              defaultValue={quizType.id}
-              rules={{ required: true }}
-              render={({ field }) => (
-                <SelectOption
-                  field={{
-                    ...field,
-                    value: field.value || quizType.id || "",
-                    onChange: (e) => selectQuizType(e[0]),
-                  }}
-                  list={quizTypes}
-                  defaultMessage="Select quiz type"
-                />
-              )}
-            />
-          </FormControl>
-        )}
-        <FormControl>
-          <FormLabel>Quiz playtime</FormLabel>
-          <Input
-            placeholder="Quiz playtime (HH:MM:SS)"
-            defaultValue={quiz.time}
-            {...register("time", {
-              required: true,
-              pattern: {
-                value: /^([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/,
-                message: "Invalid time format. Use HH:MM:SS",
-              },
+
+          <Text>Questions</Text>
+          <Flex
+            flexDirection="column"
+            gap={5}
+            my={3}
+          >
+            {questionsArr.map((q, index) => {
+              const questType = questTypes.items.find(
+                (type) => type.value === q.id_quest_type
+              )?.label;
+              const answersForQuestion = answersArr.filter(ans => ans.question_id === q.id);
+              return (
+                <div key={q.id}>
+                  <QuizUpdateQuestion
+                    index={index}
+                    question={q}
+                    questType={questType}
+                    questTypes={questTypes}
+                  />
+
+                  <QuizUpdateAnswer
+                    question={q}
+                    questType={questType}
+                  />
+                  <Button
+                    onClick={() => addNewAnswer(q)}
+                    disabled={(!q.id_quest_type || answersForQuestion
+                      .some((answer) => !answer.answer))}
+                    visual="ghost"
+                  >
+                    <AddIcon fontSize="12px" />
+                    Add answer
+                  </Button>
+                </div>
+              );
             })}
-            onBlur={(e) => handleUpdateQuizInfo(e, quiz.id)}
-          />
-        </FormControl>
-
-        <Text>Questions</Text>
-        <Flex
-          flexDirection="column"
-          gap={5}
-          my={3}
-        >
-          {(questionsArr.get as Question[]).map((q, index) => {
-            const questType = questTypes.items.find(
-              (type) => type.value === q.id_quest_type
-            )?.label;
-            return (
-              <div key={q.id}>
-                <QuizUpdateQuestion
-                  index={index}
-                  question={q}
-                  questType={questType}
-                  questTypes={questTypes}
-                />
-
-                <QuizUpdateAnswer
-                  question={q}
-                  questType={questType}
-                />
-                <Button
-                  onClick={() => addNewAnswer(q)}
-                  disabled={(answersArr.get as Answer[])
-                    .filter((ans) => ans.question_id === q.id)
-                    .some((answer) => !answer.answer)}
-                  visual="ghost"
-                >
-                  <AddIcon fontSize="12px" />
-                  Add answer
-                </Button>
-              </div>
-            );
-          })}
-          <Flex>
-            <Button
-              onClick={addNewQuestion}
-              visual="ghost"
-              disabled={!isValid}
-            >
-              <AddIcon fontSize="12px" />
-              Add question
-            </Button>
+            <Flex>
+              <Button
+                onClick={addNewQuestion}
+                visual="ghost"
+                disabled={!isValid}
+              >
+                <AddIcon fontSize="12px" />
+                Add question
+              </Button>
+            </Flex>
           </Flex>
-        </Flex>
 
-        <Button
-          disabled={!isValid}
-          onClick={handleSubmit}
-          type="button"
-        >
-          Update Quiz
-        </Button>
-      </chakra.form>
-    </FormProvider>
+          <Button
+            disabled={!isValid}
+            onClick={handleSubmit}
+            type="button"
+          >
+            Update Quiz
+          </Button>
+        </chakra.form>
+      </FormProvider>
+    </QuizUpdateContext.Provider>
   );
 }

@@ -16,24 +16,35 @@ interface IQuestionStartElementProps {
   ) => void;
 }
 
-export default function CorrectAnswerInput({answer, question, questType, correctCount, changeCorrectAnswer}: IQuestionStartElementProps) {
-  if(questType === "Short answer") return null;
+export default function CorrectAnswerInput({
+  answer,
+  question,
+  questType,
+  correctCount,
+  changeCorrectAnswer,
+}: IQuestionStartElementProps) {
+  const { register } = useFormContext();
+
+  if (questType === "Short answer") return null;
 
   if (answer.correct_answer && questType === "Single choice") {
-    return <CheckCircleIcon color="green" fontSize="17px" />;
+    return (
+      <CheckCircleIcon
+        color="green"
+        fontSize="17px"
+      />
+    );
   }
-  const { register } = useFormContext();
 
   return (
     <input
       type={questType === "Single choice" ? "radio" : "checkbox"}
       checked={answer.correct_answer}
       {...register(`answer${answer.id}`)}
-      onChange={(e) =>{
-        if(!e.target.checked && correctCount === 1) return;
-        changeCorrectAnswer(question.id, answer.id, questType)
-      }
-      }
+      onChange={(e) => {
+        if (!e.target.checked && correctCount === 1) return;
+        changeCorrectAnswer(question.id, answer.id, questType);
+      }}
       className={clsx({
         checkbox: questType === "Multiple choice",
       })}

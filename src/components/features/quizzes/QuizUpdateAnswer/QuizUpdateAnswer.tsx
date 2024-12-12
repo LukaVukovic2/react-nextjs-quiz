@@ -8,7 +8,8 @@ import { Input } from "@chakra-ui/react";
 import { useFormContext } from "react-hook-form";
 import clsx from "clsx";
 import CorrectAnswerInput from "./components/CorrectAnswerInput";
-import { useQuizUpdateContext } from "@/components/shared/utils/contexts/QuizUpdateContext";
+import { useContext } from "react";
+import { QuizUpdateContext } from "@/components/shared/utils/contexts/QuizUpdateContext";
 
 interface IQuizUpdateQuestionProps {
   question: Question;
@@ -17,38 +18,43 @@ interface IQuizUpdateQuestionProps {
 
 export default function QuizUpdateAnswer({
   question,
-  questType
+  questType,
 }: IQuizUpdateQuestionProps) {
   const { register, trigger } = useFormContext();
-  const { answersArr, dirtyAnswers, deletedAnswers } = useQuizUpdateContext(["answersArr", "dirtyAnswers", "deletedAnswers"]);
-  const answersForQuestion = (answersArr.get as Answer[]).filter(ans => ans.question_id === question.id);
+  const { answersArr, setAnswersArr, setDirtyAnswers, setDeletedAnswers } =
+    useContext(QuizUpdateContext);
+  const answersForQuestion = answersArr.filter(
+    (ans) => ans.question_id === question.id
+  );
 
   const handleUpdateAnswer = async (value: string, a: Answer) => {
     const validateInput = await trigger(`answer${a.question_id}${a.id}`);
     if (!validateInput) return;
 
-    const updatedAnswers = (answersArr.get as Answer[]).map((answer) => {
+    const updatedAnswers = answersArr.map((answer) => {
       if (answer.id === a.id) {
         return { ...answer, answer: value };
       }
       return answer;
     });
 
-    answersArr.set(updatedAnswers);
+    setAnswersArr(updatedAnswers);
 
-    const dirtyAns = dirtyAnswers.get as Answer[];
-    updatedAnswers.forEach((answer) => {
-      const answerIndex = dirtyAns.findIndex((ans) => ans.id === answer.id);
-      if (answer.id === a.id) {
-        if (answerIndex === -1) {
-          dirtyAns.push({ ...answer, answer: value });
-        } else {
-          dirtyAns[answerIndex] = { ...answer, answer: value };
+    setDirtyAnswers((prev) => {
+      const dirtyAns = [...prev];
+      updatedAnswers.forEach((answer) => {
+        const answerIndex = dirtyAns.findIndex((ans) => ans.id === answer.id);
+        if (answer.id === a.id) {
+          if (answerIndex === -1) {
+            dirtyAns.push({ ...answer, answer: value });
+          } else {
+            dirtyAns[answerIndex] = { ...answer, answer: value };
+          }
         }
-      }
-    });
+      });
 
-    dirtyAnswers.set(dirtyAns);
+      return dirtyAns;
+    });
   };
 
   const changeCorrectAnswer = (
@@ -56,7 +62,7 @@ export default function QuizUpdateAnswer({
     answerId: string,
     questionType: string
   ) => {
-    const updatedAnswers = (answersArr.get as Answer[]).map((answer) => {
+    const updatedAnswers = answersArr.map((answer) => {
       if (answer.question_id === questionId) {
         if (questionType === "Single choice") {
           return {
@@ -75,27 +81,28 @@ export default function QuizUpdateAnswer({
       }
       return answer;
     });
-    answersArr.set(updatedAnswers);
+    setAnswersArr(updatedAnswers);
 
-    const dirtyAns = dirtyAnswers.get as Answer[];
-    updatedAnswers.forEach((answer) => {
-      const answerIndex = dirtyAns.findIndex((ans) => ans.id === answer.id);
-      if (answer.question_id === questionId) {
-        if (answerIndex === -1) {
-          dirtyAns.push(answer);
-        } else {
-          dirtyAns[answerIndex] = answer;
+    setDirtyAnswers((prev) => {
+      const dirtyAns = [...prev];
+      updatedAnswers.forEach((answer) => {
+        const answerIndex = dirtyAns.findIndex((ans) => ans.id === answer.id);
+        if (answer.question_id === questionId) {
+          if (answerIndex === -1) {
+            dirtyAns.push(answer);
+          } else {
+            dirtyAns[answerIndex] = answer;
+          }
         }
-      }
+      });
+      return dirtyAns;
     });
-
-    dirtyAnswers.set(dirtyAns);
   };
-  
+
   const handleDeleteAnswer = async (id: string) => {
-    answersArr.set([...(answersArr.get as Answer[]).filter((ans) => ans.id !== id)]);
-    dirtyAnswers.set([...(dirtyAnswers.get as Answer[]).filter((ans) => ans.id !== id)]);
-    deletedAnswers.set([...(deletedAnswers.get as string[]), id]);
+    setAnswersArr((prev) => [...prev.filter((ans) => ans.id !== id)]);
+    setDirtyAnswers((prev) => [...prev.filter((ans) => ans.id !== id)]);
+    setDeletedAnswers((prev) => [...prev, id]);
   };
 
   return answersForQuestion.map((answer) => {
