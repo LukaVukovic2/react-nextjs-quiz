@@ -4,6 +4,7 @@ import SelectOption from "@/components/core/SelectOption/SelectOption";
 import { QuizUpdateContext } from "@/components/shared/utils/contexts/QuizUpdateContext";
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input, ListCollection } from "@chakra-ui/react";
+import debounce from "debounce";
 import { FocusEvent, useContext } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
@@ -17,20 +18,19 @@ export default function QuizUpdateInfo({ quiz, quizType, quizTypes }: IQuizUpdat
   const { register, control, trigger } = useFormContext();
   const { setDirtyQuizFields } = useContext(QuizUpdateContext);
 
-  const handleUpdateQuizInfo = async (
+  const updateQuizInfo = (
     e: FocusEvent<HTMLInputElement, Element>,
     id: string
   ) => {
     const { name, value } = e.target;
 
-    const validateInput = await trigger(name);
+    const validateInput = trigger(name);
     if (!validateInput) return;
 
     setDirtyQuizFields((prev) => ({...prev, id, [name]: value}) as Quiz);
   };
 
   const selectQuizType = (value: string) => {
-    if (!value) return;
     setDirtyQuizFields((prev) => ({...prev, id: quiz.id, id_quiz_type: value}) as Quiz);
   };
 
@@ -41,8 +41,14 @@ export default function QuizUpdateInfo({ quiz, quizType, quizTypes }: IQuizUpdat
         <Input
           placeholder="Quiz Title"
           defaultValue={quiz.title}
-          {...register("title", { required: true })}
-          onBlur={(e) => handleUpdateQuizInfo(e, quiz.id)}
+          {...register("title", { 
+            required: true,
+            minLength: {
+              value: 3,
+              message: "Title must be at least 3 characters long",
+            },
+            onChange: (e) => updateQuizInfo(e, quiz.id),
+          })}
         />
       </FormControl>
       {quizTypes && (
@@ -78,8 +84,8 @@ export default function QuizUpdateInfo({ quiz, quizType, quizTypes }: IQuizUpdat
               value: /^([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/,
               message: "Invalid time format. Use HH:MM:SS",
             },
+            onChange: debounce((e) => updateQuizInfo(e, quiz.id), 500),
           })}
-          onBlur={(e) => handleUpdateQuizInfo(e, quiz.id)}
         />
       </FormControl>
     </>

@@ -40,7 +40,7 @@ export default function CorrectAnswerInput({
     <input
       type={questType === "Single choice" ? "radio" : "checkbox"}
       checked={answer.correct_answer}
-      {...register(`answer${answer.id}`)}
+      {...register(`correctAnswer${answer.id}`)}
       onChange={(e) => {
         if (!e.target.checked && correctCount === 1) return;
         changeCorrectAnswer(question.id, answer.id, questType);

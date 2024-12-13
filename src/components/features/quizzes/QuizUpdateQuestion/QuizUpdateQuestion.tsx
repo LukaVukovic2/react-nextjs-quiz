@@ -1,14 +1,16 @@
 import { Answer } from "@/app/typings/answer";
 import { Question } from "@/app/typings/question";
 import SelectOption from "@/components/core/SelectOption/SelectOption";
+import { MyQuizzesContext } from "@/components/shared/utils/contexts/MyQuizzesContext";
 import { QuizUpdateContext } from "@/components/shared/utils/contexts/QuizUpdateContext";
 import { Field } from "@/components/ui/field";
 import { InputGroup } from "@/components/ui/input-group";
 import { Button } from "@/styles/theme/components/button";
 import { FormControl } from "@chakra-ui/form-control";
 import { DeleteIcon } from "@chakra-ui/icons";
-import { Input, ListCollection, Text } from "@chakra-ui/react";
-import { FocusEvent, useContext } from "react";
+import { Input, Text } from "@chakra-ui/react";
+import debounce from "debounce";
+import { useContext } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 
@@ -16,16 +18,16 @@ interface IQuizUpdateQuestionProps {
   index: number;
   question: Question;
   questType: string;
-  questTypes: ListCollection;
 }
 
 export default function QuizUpdateQuestion({
   index,
   question,
   questType,
-  questTypes,
 }: IQuizUpdateQuestionProps) {
   const { control, register, trigger } = useFormContext();
+
+  const { questTypes } = useContext(MyQuizzesContext);
 
   const {
     questionsArr,
@@ -36,20 +38,15 @@ export default function QuizUpdateQuestion({
     setDirtyAnswers,
   } = useContext(QuizUpdateContext);
 
-  const handleUpdateQuestion = async (
-    e: FocusEvent<HTMLInputElement, Element>,
+  const changeQuestionTitle = (
+    title: string,
     q: Question
   ) => {
-    const { value } = e.target;
-
-    const validateInput = await trigger("q_title" + q.id);
-    if (!validateInput) return;
-
     setDirtyQuestions((prev) => {
       const questionIndex = prev.findIndex((question) => question.id === q.id);
       const newQuestion: Question = {
         id: q.id,
-        title: value,
+        title,
         quiz_id: q.quiz_id,
         id_quest_type: q.id_quest_type,
       };
@@ -65,7 +62,6 @@ export default function QuizUpdateQuestion({
   };
 
   const selectQuestionType = (value: string, question: Question) => {
-    if (!value) return;
     const questType = questTypes.items.find((qt) => qt.value === value)?.label;
 
     setDirtyQuestions((prev) => {
@@ -90,14 +86,9 @@ export default function QuizUpdateQuestion({
         ...question,
         id_quest_type: value,
       };
-
-      if (questionIndex === -1) {
-        return [...prev, newQuestion];
-      } else {
-        const updatedQuestions = [...prev];
-        updatedQuestions[questionIndex] = newQuestion;
-        return updatedQuestions;
-      }
+      const updatedQuestions = [...prev];
+      updatedQuestions[questionIndex] = newQuestion;
+      return updatedQuestions;
     });
 
     const answerId = uuidv4();
@@ -121,20 +112,12 @@ export default function QuizUpdateQuestion({
     }
   };
 
-  const handleDeleteQuestion = async (id: string) => {
-    setQuestionsArr((prev) => [
-      ...prev.filter((question) => question.id !== id),
-    ]);
-    setDirtyQuestions((prev) => [
-      ...prev.filter((question) => question.id !== id),
-    ]);
+  const deleteQuestion = (id: string) => {
+    setQuestionsArr((prev) => prev.filter((question) => question.id !== id));
+    setDirtyQuestions((prev) => prev.filter((question) => question.id !== id));
     setDeletedQuestions((prev) => [...prev, id]);
-    setAnswersArr((prev) => [
-      ...prev.filter((answer) => answer.question_id !== id),
-    ]);
-    setDirtyAnswers((prev) => [
-      ...prev.filter((answer) => answer.question_id !== id),
-    ]);
+    setAnswersArr((prev) => prev.filter((answer) => answer.question_id !== id));
+    setDirtyAnswers((prev) => prev.filter((answer) => answer.question_id !== id));
     trigger();
   };
 
@@ -144,16 +127,17 @@ export default function QuizUpdateQuestion({
         <FormControl>
           <Field label="Question type">
             <Controller
-              name="id_quest_type"
+              name={`quest_type${question.id}`}
               control={control}
-              defaultValue={question.id_quest_type}
               rules={{ required: true }}
               render={({ field }) => (
                 <SelectOption
                   field={{
                     ...field,
-                    value: question.id_quest_type || "",
-                    onChange: (e) => selectQuestionType(e[0], question),
+                    onChange: (e) => {
+                      field.onChange(e[0]);
+                      selectQuestionType(e[0], question);
+                    },
                   }}
                   list={questTypes}
                   defaultMessage="Select question type"
@@ -185,7 +169,7 @@ export default function QuizUpdateQuestion({
             <Button
               visual="ghost"
               p={0}
-              onClick={() => handleDeleteQuestion(question.id)}
+              onClick={() => deleteQuestion(question.id)}
               disabled={questionsArr.length === 1}
             >
               <DeleteIcon color="red" />
@@ -195,8 +179,10 @@ export default function QuizUpdateQuestion({
           <Input
             placeholder="Question"
             defaultValue={question.title}
-            {...register(`q_title${question.id}`, { required: true })}
-            onBlur={(e) => handleUpdateQuestion(e, question)}
+            {...register(`q_title${question.id}`, { 
+              required: true,
+              onChange: debounce((e) => changeQuestionTitle(e.target.value, question), 500)
+            })}
           />
         </InputGroup>
       </FormControl>

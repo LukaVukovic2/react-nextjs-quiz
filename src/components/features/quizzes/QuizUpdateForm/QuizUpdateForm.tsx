@@ -33,12 +33,10 @@ export default function QuizUpdateForm({
   questions_and_answers,
   onClose,
 }: QuizUpdateFormProps) {
-  const methods = useForm();
-  const {
-    formState: { isValid },
-  } = methods;
+  const methods = useForm({ mode: "onChange" });
+  const {formState: { isValid }} = methods;
+
   const { quizTypes, questTypes } = useContext(MyQuizzesContext);
-  
   const [answersArr, setAnswersArr] = useState<Answer[]>([]);
   const [questionsArr, setQuestionsArr] = useState<Question[]>([]);
   const [dirtyQuestions, setDirtyQuestions] = useState<Question[]>([]);
@@ -111,22 +109,24 @@ export default function QuizUpdateForm({
   };
 
   return (
-    <QuizUpdateContext.Provider value={{
-      answersArr,
-      setAnswersArr,
-      questionsArr,
-      setQuestionsArr,
-      dirtyQuestions,
-      setDirtyQuestions,
-      deletedQuestions,
-      setDeletedQuestions,
-      dirtyAnswers,
-      setDirtyAnswers,
-      deletedAnswers,
-      setDeletedAnswers,
-      dirtyQuizFields,
-      setDirtyQuizFields
-    }}>
+    <QuizUpdateContext.Provider
+      value={{
+        answersArr,
+        setAnswersArr,
+        questionsArr,
+        setQuestionsArr,
+        dirtyQuestions,
+        setDirtyQuestions,
+        deletedQuestions,
+        setDeletedQuestions,
+        dirtyAnswers,
+        setDirtyAnswers,
+        deletedAnswers,
+        setDeletedAnswers,
+        dirtyQuizFields,
+        setDirtyQuizFields,
+      }}
+    >
       <FormProvider {...methods}>
         <chakra.form
           overflowY="scroll"
@@ -148,14 +148,18 @@ export default function QuizUpdateForm({
               const questType = questTypes.items.find(
                 (type) => type.value === q.id_quest_type
               )?.label;
-              const answersForQuestion = answersArr.filter(ans => ans.question_id === q.id);
+              const answersForQuestion = answersArr.filter(
+                (ans) => ans.question_id === q.id
+              );
+              const isDisableAns =
+                !q.id_quest_type ||
+                answersForQuestion.some((answer) => !answer.answer);
               return (
                 <div key={q.id}>
                   <QuizUpdateQuestion
                     index={index}
                     question={q}
                     questType={questType}
-                    questTypes={questTypes}
                   />
 
                   <QuizUpdateAnswer
@@ -164,8 +168,7 @@ export default function QuizUpdateForm({
                   />
                   <Button
                     onClick={() => addNewAnswer(q)}
-                    disabled={(!q.id_quest_type || answersForQuestion
-                      .some((answer) => !answer.answer))}
+                    disabled={isDisableAns}
                     visual="ghost"
                   >
                     <AddIcon fontSize="12px" />

@@ -10,6 +10,7 @@ import clsx from "clsx";
 import CorrectAnswerInput from "./components/CorrectAnswerInput";
 import { useContext } from "react";
 import { QuizUpdateContext } from "@/components/shared/utils/contexts/QuizUpdateContext";
+import debounce from "debounce";
 
 interface IQuizUpdateQuestionProps {
   question: Question;
@@ -21,19 +22,17 @@ export default function QuizUpdateAnswer({
   questType,
 }: IQuizUpdateQuestionProps) {
   const { register, trigger } = useFormContext();
-  const { answersArr, setAnswersArr, setDirtyAnswers, setDeletedAnswers } =
-    useContext(QuizUpdateContext);
+  const { answersArr, setAnswersArr, setDirtyAnswers, setDeletedAnswers } = useContext(QuizUpdateContext);
+
   const answersForQuestion = answersArr.filter(
     (ans) => ans.question_id === question.id
   );
 
-  const handleUpdateAnswer = async (value: string, a: Answer) => {
-    const validateInput = await trigger(`answer${a.question_id}${a.id}`);
-    if (!validateInput) return;
+  const changeAnswer = (text: string, a: Answer) =>{
 
     const updatedAnswers = answersArr.map((answer) => {
       if (answer.id === a.id) {
-        return { ...answer, answer: value };
+        return { ...answer, answer: text };
       }
       return answer;
     });
@@ -46,9 +45,9 @@ export default function QuizUpdateAnswer({
         const answerIndex = dirtyAns.findIndex((ans) => ans.id === answer.id);
         if (answer.id === a.id) {
           if (answerIndex === -1) {
-            dirtyAns.push({ ...answer, answer: value });
+            dirtyAns.push({ ...answer, answer: text });
           } else {
-            dirtyAns[answerIndex] = { ...answer, answer: value };
+            dirtyAns[answerIndex] = { ...answer, answer: text };
           }
         }
       });
@@ -99,16 +98,15 @@ export default function QuizUpdateAnswer({
     });
   };
 
-  const handleDeleteAnswer = async (id: string) => {
+  const deleteAnswer = (id: string) => {
     setAnswersArr((prev) => [...prev.filter((ans) => ans.id !== id)]);
     setDirtyAnswers((prev) => [...prev.filter((ans) => ans.id !== id)]);
     setDeletedAnswers((prev) => [...prev, id]);
+    trigger();
   };
 
   return answersForQuestion.map((answer) => {
-    const correctAnswerCount = answersForQuestion.filter(
-      (a) => a.correct_answer
-    ).length;
+    const correctAnswerCount = answersForQuestion.filter(a => a.correct_answer).length;
     const disableDelete =
       (questType === "Short answer"
         ? answersForQuestion.length === 1
@@ -131,7 +129,7 @@ export default function QuizUpdateAnswer({
             <Button
               visual="ghost"
               p={0}
-              onClick={() => handleDeleteAnswer(answer.id)}
+              onClick={() => deleteAnswer(answer.id)}
               disabled={disableDelete}
             >
               <DeleteIcon color="red" />
@@ -141,12 +139,10 @@ export default function QuizUpdateAnswer({
           <Input
             placeholder="Answer"
             defaultValue={answer.answer}
-            {...register(`answer${question.id}${answer.id}`, {
+            {...register(`answer${answer.id}`, {
               required: true,
+              onChange: debounce((e) => changeAnswer(e.target.value, answer), 500),
             })}
-            onBlur={(e) => {
-              handleUpdateAnswer(e.target.value, answer);
-            }}
             className={clsx({
               "css-1fcpzq2 short-answer": questType === "Short answer",
             })}
