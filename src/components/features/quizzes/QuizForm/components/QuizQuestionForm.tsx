@@ -1,198 +1,138 @@
-import { useContext } from "react";
+import { useState } from "react";
+import { Controller, useFormContext } from "react-hook-form";
+import { QuestionType } from "@/app/typings/question_type";
+import SelectOption from "@/components/core/SelectOption/SelectOption";
+import { chakra, createListCollection, Flex } from "@chakra-ui/react";
+import { Question } from "@/app/typings/question";
+import { Field } from "@/components/ui/field";
+import QuestionListAccordion from "@/components/shared/QuestionListAccordion/QuestionListAccordion";
+import QuestionTypeForm from "./QuestionTypeForm";
 import { v4 as uuidv4 } from "uuid";
-import { QuizFormContext } from "../../../../shared/utils/contexts/QuizFormContext";
-import QuestionList from "@/components/shared/QuestionList/QuestionList";
-import { FormControl } from "@chakra-ui/form-control";
-import { AddIcon } from "@chakra-ui/icons";
-import {
-  Flex,
-  chakra,
-  Card,
-  Stack,
-  StackSeparator,
-  Box,
-  Input,
-  Text,
-} from "@chakra-ui/react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/styles/theme/components/button";
-import { Answer } from "@/app/typings/answer";
-import { useFormContext } from "react-hook-form";
-import AnswerGroupBox from "@/components/shared/AnswerGroupBox/AnswerGroupBox";
-import { getLetterByIndex } from "@/components/shared/utils/getLetterByIndex";
+import "../QuizForm.css";
 
-export default function QuizQuestionForm() {
-  const {
-    quiz_id,
-    questions,
-    setQuestions,
-    questionTitle,
-    setQuestionTitle,
-    question_id,
-    setQuestionId,
-    answers,
-    setAnswers,
-    isCorrect,
-    setIsCorrect,
-    currentQuestion,
-    setCurrentQuestion,
-  } = useContext(QuizFormContext);
+interface IQuizQuestionFormProps {
+  questions: Question[];
+  setQuestions: React.Dispatch<React.SetStateAction<Question[]>>;
+  questTypes: QuestionType[];
+  quizId: string;
+}
 
-  const { register, trigger, resetField, getValues } = useFormContext();
+export default function QuizQuestionForm({
+  questions,
+  setQuestions,
+  questTypes,
+  quizId,
+}: IQuizQuestionFormProps) {
+  const [currentQuestion, setCurrentQuestion] = useState<Question>({
+    id: uuidv4(),
+    title: "",
+    quiz_id: quizId,
+    id_quest_type: "",
+    answers: [],
+  });
 
-  const validateQuestion = (answer: Answer) => {
-    if (answer.correct_answer) {
-      setCurrentQuestion({ ...currentQuestion, correct: true });
-    } else {
-      setCurrentQuestion({ ...currentQuestion, incorrect: true });
-    }
+  const { control } = useFormContext();
+
+  const types = createListCollection({
+    items: questTypes.map((type: QuestionType) => ({
+      value: type.id,
+      label: type.type_name,
+    })),
+  });
+
+  const initializeCurrentAnswers = (typeId: string) => {
+    const typeName = questTypes.find((type) => type.id === typeId)?.type_name;
+    setCurrentQuestion((prev) => {
+      if (typeName === "Single choice" || typeName === "Multiple choice") {
+        return {
+          ...prev,
+          answers: [
+            {
+              id: uuidv4(),
+              answer: "",
+              correct_answer: true,
+              question_id: prev.id,
+            },
+            {
+              id: uuidv4(),
+              answer: "",
+              correct_answer: false,
+              question_id: prev.id,
+            },
+          ],
+        };
+      } else if (typeName === "Short answer") {
+        return {
+          ...prev,
+          answers: [
+            {
+              id: uuidv4(),
+              answer: "",
+              correct_answer: true,
+              question_id: prev.id,
+            },
+          ],
+        };
+      }
+      return { ...prev };
+    });
   };
 
-  const isQuestionValid =
-    !currentQuestion.correct ||
-    !currentQuestion.incorrect ||
-    questionTitle === "";
-
-  const addAnswer = () => {
-    const answer = {
-      id: uuidv4(),
-      answer: getValues().answer,
-      correct_answer: getValues().correctAnswer,
-      question_id,
-    };
-    const newAnswers = [...answers, answer];
-    setAnswers(newAnswers);
-    validateQuestion(answer);
-    resetField("answer");
-    resetField("correctAnswer", { defaultValue: false });
-    setIsCorrect(false);
-  };
-
-  const addQuestion = () => {
-    const id = question_id;
-    setQuestions([
-      ...questions,
-      {
-        id,
-        title: getValues().questionTitle,
-        quiz_id,
-        //privremeno hardkodirana vrijednost
-        id_quest_type: "7966de37-9629-4f9c-b96f-7411bce78f39",
-        answers,
-      },
-    ]);
-    setAnswers([]);
-    setQuestionTitle("");
-    resetField("questionTitle");
-    resetField("answer");
-    resetField("correctAnswer", { defaultValue: false });
-    setIsCorrect(false);
-    setQuestionId(uuidv4());
-    setCurrentQuestion({ correct: false, incorrect: false });
-  };
   return (
-    <>
-      <Flex gap={10}>
-        <chakra.div flex={1}>
-          <Card.Root>
-            <Card.Body>
-              <Stack
-                separator={<StackSeparator />}
-                spaceY={4}
-              >
-                <Box>
-                  <FormControl>
-                    <Input
-                      placeholder="Question title"
-                      {...register("questionTitle", { required: true })}
-                      onChange={(e) => {
-                        setQuestionTitle(e.target.value);
-                        trigger("questionTitle");
-                      }}
-                    />
-                  </FormControl>
-                </Box>
-                <Box>
-                  <FormControl>
-                    <Input
-                      placeholder="Add answer option"
-                      {...register("answer", { required: true })}
-                      onBlur={() => trigger("answer")}
-                    />
-                  </FormControl>
-                </Box>
-                <Box>
-                  <FormControl>
-                    <Checkbox
-                      disabled={currentQuestion.correct}
-                      {...register("correctAnswer")}
-                      checked={isCorrect}
-                      cursor="pointer"
-                      onCheckedChange={(e) => setIsCorrect(!!e.checked)}
-                    >
-                      Correct Answer
-                    </Checkbox>
-                  </FormControl>
-                </Box>
-              </Stack>
-              <div>
-                <Button
-                  disabled={!getValues("answer")}
-                  onClick={addAnswer}
-                  visual="outline"
-                >
-                  New Answer
-                </Button>
-              </div>
-            </Card.Body>
-          </Card.Root>
-        </chakra.div>
+    <Flex
+      flexDirection="column"
+      flex={1}
+    >
+      <Flex
+        flexDirection="column"
+        gap={2}
+        flex={1}
+      >
+        <Field
+          label="Choose question type"
+          helperText="You can add different types of questions to your quiz"
+        >
+          <Controller
+            control={control}
+            name="questionType"
+            render={({ field }) => (
+              <SelectOption
+                list={types}
+                defaultMessage="Select question type"
+                field={{
+                  ...field,
+                  value: field.value || [],
+                  onChange: (e) => {
+                    field.onChange(e);
+                    setCurrentQuestion((prev) => ({
+                      ...prev,
+                      id_quest_type: e[0],
+                    }));
+                    initializeCurrentAnswers(e[0]);
+                  },
+                }}
+              />
+            )}
+          />
+        </Field>
         <Flex
           flexDirection="column"
-          alignItems="start"
-          gap={2}
-          flex={1}
+          gap={4}
         >
-          <Text
-            fontWeight="semibold"
-            fontSize="xl"
-          >
-            Current Question
-          </Text>
-          <Text textTransform="uppercase">Title:</Text>
-          {questionTitle ? (
-            <Text>{questionTitle}</Text>
-          ) : (
-            <Text color="dark.800">No title</Text>
+          {currentQuestion.id_quest_type && (
+            <QuestionTypeForm
+              setQuestions={setQuestions}
+              currentQuestion={currentQuestion}
+              setCurrentQuestion={setCurrentQuestion}
+              questTypes={questTypes}
+              initializeCurrentAnswers={initializeCurrentAnswers}
+            />
           )}
-          <Text textTransform="uppercase">Answers:</Text>
-          <div>
-            {answers.length > 0 ? (
-              answers.map((answer, index) => {
-                const letter = getLetterByIndex(index);
-                return (
-                  <AnswerGroupBox
-                    key={answer.id}
-                    answer={answer}
-                    letter={letter}
-                  />
-                );
-              })
-            ) : (
-              <Text color="dark.800">No answers</Text>
-            )}
-          </div>
-          <Button
-            disabled={isQuestionValid}
-            onClick={addQuestion}
-          >
-            <AddIcon />
-            Add Question
-          </Button>
         </Flex>
       </Flex>
-      <Text>Your Questions:</Text>
-      <QuestionList questions={questions} />
-    </>
+      <chakra.div flex={1}>
+        <QuestionListAccordion questions={questions} />
+      </chakra.div>
+    </Flex>
   );
 }

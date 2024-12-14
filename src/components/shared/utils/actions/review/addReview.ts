@@ -18,7 +18,7 @@ export const addReview = async (data: FormData, id: string) => {
     return;
   }
 
-  const newReview: Review = {
+  const new_review: Review = {
     id: uuidv4(),
     comment,
     rating,
@@ -26,12 +26,12 @@ export const addReview = async (data: FormData, id: string) => {
     quiz_id: id,
   }
 
-  const { error } = await supabase.rpc("add_review", { newreview: newReview });
+  const { error } = await supabase.rpc("add_review", { new_review });
   
   if (error) {
     console.error("Error adding review:", error.message);
     return false;
   }
-  revalidatePath(`/quiz/${id}`);
+  revalidatePath(`/quizzes/${id}`);
   return true;
 }

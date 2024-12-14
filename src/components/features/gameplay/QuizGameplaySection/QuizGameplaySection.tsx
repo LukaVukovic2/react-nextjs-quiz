@@ -4,9 +4,8 @@ import QuizResultSection from "../QuizResultSection/QuizResultSection";
 import QuizTimer from "../QuizTimer/QuizTimer";
 import { updateQuizPlay } from "../../../shared/utils/actions/quiz/updateQuizPlay";
 import { MutableRefObject, useMemo, useRef, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Flex, chakra } from "@chakra-ui/react";
-import { Heading } from "@/styles/theme/components/heading";
 import { Button } from "@/styles/theme/components/button";
 import { Quiz } from "@/app/typings/quiz";
 import { User } from "@/app/typings/user";
@@ -16,43 +15,38 @@ import { Result } from "@/app/typings/result";
 import { v4 as uuidv4 } from "uuid";
 import { updateLeaderboard } from "@/components/shared/utils/actions/leaderboard/updateLeaderboard";
 import { ConfettiComponent as Confetti } from "@/components/core/Confetti/Confetti";
-import { formatToSeconds } from "@/components/shared/utils/formatToSeconds";
-import clsx from "clsx";
-import { Swiper } from "swiper/react";
-import { SwiperSlide } from "swiper/react";
+import { formatToSeconds } from "@/components/shared/utils/formatTime";
+import { QuestionType } from "@/app/typings/question_type";
 import { Swiper as SwiperCore } from 'swiper';
-import { Keyboard, Pagination } from "swiper/modules";
-import "swiper/css";
+import { initializeSelectedAnswers } from "@/components/shared/utils/initializeSelectedAnswers";
+import { groupAnswersByQuestion } from "@/components/shared/utils/groupAnswersByQuestion";
+import { calculateScore } from "@/components/shared/utils/calculateScore";
+import renderBullet from "@/components/shared/utils/renderBullet";
+import QuizGameplayFooter from "../QuizGameplayFooter/QuizGameplayFooter";
+import QuizGameplaySwiper from "../QuizGameplaySwiper/QuizGameplaySwiper";
 import "swiper/css/pagination";
+import "swiper/css";
 import "./QuizGameplaySection.css";
-import RadioGroup from "./components/RadioGroup";
 
 interface IQuizGameplayProps {
   quiz: Quiz;
   user: User;
   questions: Question[];
   answers: Answer[];
+  questTypes: QuestionType[];
   setActiveTab: (index: number) => void;
 }
-
-const initializeSelectedAnswers = (
-  questions: Question[]
-): Map<string, string | null> => {
-  const map = new Map<string, string | null>();
-  questions.forEach((question) => map.set(question.id, null));
-  return map;
-};
 
 export default function QuizGameplaySection({
   quiz,
   user,
   questions,
   answers,
+  questTypes,
   setActiveTab,
 }: IQuizGameplayProps) {
-  const [selectedAnswers, setSelectedAnswers] = useState<
-    Map<string, string | null>
-  >(initializeSelectedAnswers(questions));
+  const [selectedAnswers, setSelectedAnswers] = 
+    useState<Map<string, string[] | null>>(initializeSelectedAnswers(questions));
   const [score, setScore] = useState<number>();
   const [hasStarted, setHasStarted] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
@@ -64,35 +58,24 @@ export default function QuizGameplaySection({
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const correctAnswers = useMemo(() => answers?.filter(answer => answer.correct_answer), [answers]);
+  const groupedAnswers = useMemo(() => groupAnswersByQuestion(answers), [answers]);
 
   const pagination = {
     clickable: true,
     renderBullet: function (index: number, className: string) {
-      const isSelected = selectedAnswers.get(questions[index].id) !== null;
-      const isCorrect = correctAnswers.some(answer => answer.question_id === questions[index].id && answer.id === selectedAnswers.get(questions[index].id));
-      return `<span 
-        class="${clsx({
-          [className]: true,
-          'selectedAnswer': !isFinished && isSelected,
-          'correctAnswer': isFinished && isCorrect,
-          'wrongAnswer': isFinished && !isCorrect
-        })}"
-        >${index + 1}  
-      </span>`;
+      return renderBullet({
+        index,
+        className,
+        selectedAnswers,
+        questions,
+        correctAnswers,
+        questTypes,
+        isFinished,
+      });
     }
   };
 
-  const groupedAnswers = useMemo(
-    () =>
-      answers?.reduce((acc, answer) => {
-        acc[answer.question_id] = acc[answer.question_id] || [];
-        acc[answer.question_id].push(answer);
-        return acc;
-      }, {} as { [key: string]: Answer[] }),
-    [answers]
-  );
-
-  const handleSelectAnswer = (questionId: string, answerId: string) => {
+  const handleSelectAnswer = (questionId: string, answerId: string[], questionType: string) => {
     setSelectedAnswers((prev) => new Map(prev.set(questionId, answerId)));
     setValue(questionId, answerId);
   
@@ -100,11 +83,10 @@ export default function QuizGameplaySection({
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
   
       timeoutRef.current = setTimeout(() => {
-        if (!swiperRef.current || !swiperRef.current.pagination) {
-          return;
-        }
+        if (!swiperRef.current || !swiperRef.current.pagination) return;
+        
         swiperRef.current.pagination.render();
-        swiperRef.current.slideNext();
+        if(questionType === "Single choice") swiperRef.current.slideNext();
         timeoutRef.current = null;
       }, 500);
     }
@@ -112,13 +94,7 @@ export default function QuizGameplaySection({
 
   const handleFinishQuiz = async (totalSeconds: number) => {
     setIsFinished(true);
-    const totalScore = Array.from(selectedAnswers).reduce(
-      (score, [questionId, answerId]) => {
-        const correctAnswer = correctAnswers.find(answer => answer.question_id === questionId);
-        return correctAnswer?.id === answerId ? score + 1 : score;
-      },
-      0
-    );
+    const totalScore = calculateScore(selectedAnswers, correctAnswers, questions, questTypes);
     setScore(totalScore);
     swiperRef.current?.pagination.render();
     updateQuizPlay(
@@ -180,6 +156,7 @@ export default function QuizGameplaySection({
         </Button>
       }
       <Confetti isShown={isTopResult} />
+
       <Flex justifyContent="space-between" alignItems="center">
         <QuizGameplayHeader
           quiz={quiz}
@@ -187,7 +164,7 @@ export default function QuizGameplaySection({
         >
           <QuizTimer
             key={resetKey}
-            quizTime={formatToSeconds(quiz.time)}
+            quizTime={formatToSeconds(+quiz.time)}
             hasStarted={hasStarted}
             isFinished={isFinished}
             handleFinishQuiz={handleFinishQuiz}
@@ -201,6 +178,7 @@ export default function QuizGameplaySection({
           />
         )}
       </Flex>
+
       {!hasStarted ? (
         <Flex flex={1} justifyContent="center" alignItems="center" flexWrap="wrap" direction="column">
           <Flex alignItems="center" flex={1}>
@@ -211,70 +189,24 @@ export default function QuizGameplaySection({
         </Flex>
       ) : (
         <chakra.form width="100%">
-          <Swiper
+          <QuizGameplaySwiper
+            questions={questions}
+            questTypes={questTypes}
+            selectedAnswers={selectedAnswers}
+            groupedAnswers={groupedAnswers}
+            isFinished={isFinished}
+            handleSelectAnswer={handleSelectAnswer}
+            resetKey={resetKey}
+            setIsTransitioning={setIsTransitioning}
             pagination={pagination}
-            modules={[Pagination, Keyboard]}
-            keyboard={{
-              enabled: true
-            }}
-            className="mySwiper swiper"
-            onSwiper={(swiper) => (swiperRef.current = swiper)}
-            onTransitionStart={() => setIsTransitioning(true)}
-            onTransitionEnd={() => setIsTransitioning(false)}
-          >
-            {questions.map((question, index) => {
-              return (
-                <SwiperSlide key={question.id} onFocus={() => {
-                  if (!swiperRef.current) return;
-                  swiperRef.current.el.scrollLeft = 0;
-                  swiperRef.current?.slideTo(index);
-                }}>
-                  <Heading
-                    as="h2"
-                    size="h6"
-                    visual="reversed"
-                    textAlign="center"
-                    p="{spacing.2}"
-                  >
-                    {index + 1 + ". " + question.title}
-                  </Heading>
-                  <hr />
-                  <Controller
-                    control={control}
-                    name={question.id}
-                    render={({field}) => (
-                      <RadioGroup 
-                        field={field}
-                        question={question} 
-                        isFinished={isFinished} 
-                        selectedAnswers={selectedAnswers} 
-                        groupedAnswers={groupedAnswers} 
-                        handleSelectAnswer={handleSelectAnswer}
-                        resetKey={resetKey}
-                      />
-                    )}
-                  />
-                  <br />
-                </SwiperSlide>
-              );
-            })}
-          </Swiper>
-          <Flex justifyContent="space-between">
-            <Button
-              onClick={() => setIsFinished(true)}
-              disabled={isFinished}
-            >
-              Finish quiz
-            </Button>
-            {isFinished && (
-              <Button
-                type="reset"
-                onClick={resetQuiz}
-              >
-                <i className="fa-solid fa-repeat"></i>
-              </Button>
-            )}
-          </Flex>
+            swiperRef={swiperRef}
+            control={control}
+          />
+          <QuizGameplayFooter 
+            isFinished={isFinished} 
+            setIsFinished={setIsFinished} 
+            resetQuiz={resetQuiz} 
+          />
         </chakra.form>
       )}
     </Flex>

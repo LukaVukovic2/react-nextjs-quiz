@@ -22,7 +22,6 @@ export default function QuizTimer({
     totalSeconds,
     seconds,
     minutes,
-    hours,
     start,
     pause,
   } = useTimer({
@@ -57,7 +56,6 @@ export default function QuizTimer({
       "timer": true,
       "fa-bounce": totalSeconds < 10 && !isTimeUp,
     })}>
-      {hours ? String(hours).padStart(2, "0") + ":" : ""}
       {String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0")}
     </div>
   );

@@ -38,13 +38,18 @@
   color: black;
 }
 
-.correctAnswer{
-  background: #4CAF50;
+.wrongAnswer{
+  background: #f44336;
   color: white;
 }
 
-.wrongAnswer{
-  background: #f44336;
+.partiallyCorrect{
+  background: linear-gradient(135deg, #4CAF50 50%, #f44336 50%);
+  color: white;
+}
+
+.correctAnswer{
+  background: #4CAF50;
   color: white;
 }
 

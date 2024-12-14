@@ -1,15 +1,17 @@
-import { useContext } from "react";
 import { steps } from "../utils/steps";
 import {
-  StepsContent,
   StepsItem,
   StepsList,
   StepsRoot,
 } from "@/components/ui/steps";
-import { QuizFormContext } from "@/components/shared/utils/contexts/QuizFormContext";
 
-export default function StepperProgress() {
-  const { currentStep, setStepIfValid } = useContext(QuizFormContext);
+interface IStepperProgressProps {
+  currentStep: number;
+  setStep: (index: number) => void;
+  children?: React.ReactNode;
+}
+
+export default function StepperProgress({currentStep, setStep, children}: IStepperProgressProps) {
   return (
     <StepsRoot
       size="lg"
@@ -23,11 +25,11 @@ export default function StepperProgress() {
             key={step.title}
             index={index}
             title={step.title}
-            onClick={() => setStepIfValid(index + 1)}
+            onClick={() => setStep(index + 1)}
           />
         ))}
       </StepsList>
-      <StepsContent index={2}>This is your Quiz!</StepsContent>
+      {children}
     </StepsRoot>
   );
 }

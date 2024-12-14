@@ -3,12 +3,29 @@ import createClient from "@/components/shared/utils/createClient";
 
 export default async function NewQuizForm() {
   const supabase = createClient();
-  const { data: quizTypes, error } = await supabase.rpc("get_quiz_types");
-  if (error || !quizTypes || !quizTypes.length) return null;
+
+  const [
+    { data: quizTypes, error: quizTypesErr },
+    { data: questTypes, error: questTypesErr },
+  ] = await Promise.all([
+    supabase.rpc("get_quiz_types"),
+    supabase.rpc("get_question_types"),
+  ]);
+
+  if (
+    quizTypesErr ||
+    !quizTypes ||
+    !quizTypes.length ||
+    questTypesErr ||
+    !questTypes ||
+    !questTypes.length
+  )
+    return null;
 
   return (
-    <div>
-      <QuizForm quizTypes={quizTypes}/>
-    </div>
+    <QuizForm
+      quizTypes={quizTypes}
+      questTypes={questTypes}
+    />
   );
 }

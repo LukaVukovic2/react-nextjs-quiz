@@ -5,14 +5,29 @@ import QuizReviewSection from "@/components/features/reviews/QuizReviewSection/Q
 
 export default async function QuizTabs({ id }: { id: string }) {
   const supabase = createClient();
-  const { data, error } = await supabase.rpc("get_quiz_data", {quizid: id});
-  if(error || !data.quiz) notFound();
 
-  const { quiz, questions, answers, user } = data;
-  const { data: topResults } = await supabase.rpc("get_leaderboard", {quizid: id});
+  const [
+    { data: quizData, error: quizError },
+    { data: topResults },
+    { data: questTypes, error: questTypesError },
+  ] = await Promise.all([
+    supabase.rpc("get_quiz_data", { quizid: id }),
+    supabase.rpc("get_leaderboard", { quizid: id }),
+    supabase.rpc("get_question_types"),
+  ]);
+  if (quizError || !quizData.quiz || !questTypes || questTypesError) notFound();
+
+  const { quiz, questions, answers, user } = quizData;
 
   return (
-    <QuizTabsClient quiz={quiz} questions={questions} answers={answers} user={user} topResults={topResults}>
+    <QuizTabsClient
+      quiz={quiz}
+      questions={questions}
+      answers={answers}
+      user={user}
+      topResults={topResults}
+      questTypes={questTypes}
+    >
       <QuizReviewSection id={id} />
     </QuizTabsClient>
   );
