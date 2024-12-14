@@ -1,5 +1,5 @@
 "use client";
-import { Flex, chakra } from "@chakra-ui/react";
+import { Container, Flex, chakra } from "@chakra-ui/react";
 import { Button } from "@/styles/theme/components/button";
 import { steps } from "@/components/shared/utils/steps";
 import StepperProgress from "@/components/shared/StepperProgress/StepperProgress";
@@ -80,7 +80,9 @@ export default function QuizForm({
   };
 
   return (
-    <Flex
+    <Container
+      maxW="3xl"
+      as={Flex}
       flexDirection="column"
       px={20}
       py={5}
@@ -131,6 +133,6 @@ export default function QuizForm({
           <Toaster />
         </chakra.form>
       </FormProvider>
-    </Flex>
+    </Container>
   );
 }

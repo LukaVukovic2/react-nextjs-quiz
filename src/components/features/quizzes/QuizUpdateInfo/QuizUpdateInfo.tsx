@@ -45,7 +45,7 @@ export default function QuizUpdateInfo({ quiz, quizType, quizTypes }: IQuizUpdat
               value: 3,
               message: "Title must be at least 3 characters long",
             },
-            onChange: debounce((e) => updateQuizInfo(e), 500),
+            onChange: debounce((e) => updateQuizInfo(e.target.value), 500),
           })}
         />
       </FormControl>
