@@ -1,4 +1,5 @@
 import { Result } from "@/app/typings/result";
+import { formatToMMSS } from "@/components/shared/utils/formatTime";
 import { Tag } from "@/components/ui/tag";
 import { Flex, Float, Text, chakra } from "@chakra-ui/react";
 import { User } from "@supabase/supabase-js";
@@ -68,7 +69,7 @@ export default function LeaderboardRecord({
               <Float placement="top-center" offsetY={-5}>
                 <Text fontSize="xs">Time</Text>
               </Float>}
-            {result.time}
+            {formatToMMSS(result.time)}
           </chakra.div>
         </>
       ) : (

@@ -12,6 +12,7 @@ import { QuizType } from "@/app/typings/quiz_type";
 import { MyQuizzesContext } from "@/components/shared/utils/contexts/MyQuizzesContext";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { QuestionType } from "@/app/typings/question_type";
+import { formatToMMSS } from "@/components/shared/utils/formatTime";
 
 interface MyQuizzesProps {
   quizzes: Array<{
@@ -89,7 +90,7 @@ export default function MyQuizzes({quizzes}: MyQuizzesProps) {
               <div>
                 <Heading as="h2" size="h5">{quiz.title}</Heading>
                 <Text>{quiz_type.type_name}</Text>
-                <Text>{quiz.time}</Text>
+                <Text>{formatToMMSS(+quiz.time)}</Text>
               </div>
               <QuizMenuDropdown quiz={quiz} quizType={quiz_type} questions_and_answers={quizzes[index].questions_and_answers} />
             </Box>

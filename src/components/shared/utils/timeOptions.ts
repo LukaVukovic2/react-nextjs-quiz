@@ -1,0 +1,37 @@
+import { createListCollection, ListCollection } from "@chakra-ui/react";
+
+export const timeOptions: ListCollection =
+  createListCollection({
+    items: [
+      { value: "15", label: "00:15" },
+      { value: "30", label: "00:30" },
+      { value: "45", label: "00:45" },
+      { value: "60", label: "01:00" },
+      { value: "90", label: "01:30" },
+      { value: "120", label: "02:00" },
+      { value: "150", label: "02:30" },
+      { value: "180", label: "03:00" },
+      { value: "240", label: "04:00" },
+      { value: "300", label: "05:00" },
+      { value: "360", label: "06:00" },
+      { value: "420", label: "07:00" },
+      { value: "480", label: "08:00" },
+      { value: "540", label: "09:00" },
+      { value: "600", label: "10:00" },
+      { value: "660", label: "11:00" },
+      { value: "720", label: "12:00" },
+      { value: "780", label: "13:00" },
+      { value: "840", label: "14:00" },
+      { value: "900", label: "15:00" },
+      { value: "960", label: "16:00" },
+      { value: "1020", label: "17:00" },
+      { value: "1080", label: "18:00" },
+      { value: "1140", label: "19:00" },
+      { value: "1200", label: "20:00" },
+      { value: "1260", label: "21:00" },
+      { value: "1320", label: "22:00" },
+      { value: "1380", label: "23:00" },
+      { value: "1440", label: "24:00" },
+      { value: "1500", label: "25:00" },
+    ],
+  });

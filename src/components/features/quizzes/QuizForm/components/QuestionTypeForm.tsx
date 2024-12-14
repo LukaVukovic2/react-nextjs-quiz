@@ -5,6 +5,7 @@ import ShortAnswerOptionInput from "@/components/shared/ShortAnswerOptionInput/S
 import { Field } from "@/components/ui/field";
 import { Button } from "@/styles/theme/components/button";
 import { Input } from "@chakra-ui/react";
+import debounce from "debounce";
 import { useFormContext } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 
@@ -130,7 +131,7 @@ export default function QuestionTypeForm({
               placeholder="Question title"
               value={currentQuestion.title}
               {...register("questionTitle", { required: true })}
-              onChange={(e) => changeQuestionTitle(e)}
+              onChange={debounce((e) => changeQuestionTitle(e), 500)}
               autoComplete="off"
             />
           </Field>

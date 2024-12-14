@@ -5,6 +5,7 @@ import { InputGroup } from "@/components/ui/input-group";
 import { Button } from "@/styles/theme/components/button";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { Input } from "@chakra-ui/react";
+import debounce from "debounce";
 import { useFormContext } from "react-hook-form";
 
 interface IShortAnswerOptionInputProps {
@@ -49,7 +50,7 @@ export default function ShortAnswerOptionInput({
               {...register(`answer${answer.id}`, {
                 required: true,
               })}
-              onBlur={(e) => updateAnswer(e, answer.id)}
+              onChange={debounce((e) => updateAnswer(e, answer.id), 500)}
               autoComplete="off"
             />
           </InputGroup>

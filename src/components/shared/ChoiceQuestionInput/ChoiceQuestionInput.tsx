@@ -5,6 +5,7 @@ import { Button } from "@/styles/theme/components/button";
 import { FormControl } from "@chakra-ui/form-control";
 import { CheckCircleIcon, DeleteIcon } from "@chakra-ui/icons";
 import { Input } from "@chakra-ui/react";
+import debounce from "debounce";
 import { useFormContext } from "react-hook-form";
 
 interface IChoiceQuestionInputProps {
@@ -69,7 +70,7 @@ export default function ChoiceQuestionInput({
                 {...register(`answer${answer.id}`, {
                   required: true,
                 })}
-                onBlur={(e) => updateAnswer(e, answer.id)}
+                onChange={debounce((e) => updateAnswer(e, answer.id), 500)}
                 autoComplete="off"
               />
             </InputGroup>

@@ -15,7 +15,7 @@ import { Result } from "@/app/typings/result";
 import { v4 as uuidv4 } from "uuid";
 import { updateLeaderboard } from "@/components/shared/utils/actions/leaderboard/updateLeaderboard";
 import { ConfettiComponent as Confetti } from "@/components/core/Confetti/Confetti";
-import { formatToSeconds } from "@/components/shared/utils/formatToSeconds";
+import { formatToSeconds } from "@/components/shared/utils/formatTime";
 import { QuestionType } from "@/app/typings/question_type";
 import { Swiper as SwiperCore } from 'swiper';
 import { initializeSelectedAnswers } from "@/components/shared/utils/initializeSelectedAnswers";
@@ -164,7 +164,7 @@ export default function QuizGameplaySection({
         >
           <QuizTimer
             key={resetKey}
-            quizTime={formatToSeconds(quiz.time)}
+            quizTime={formatToSeconds(+quiz.time)}
             hasStarted={hasStarted}
             isFinished={isFinished}
             handleFinishQuiz={handleFinishQuiz}

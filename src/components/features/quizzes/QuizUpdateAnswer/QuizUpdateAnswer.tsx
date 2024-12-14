@@ -3,7 +3,6 @@ import { Question } from "@/app/typings/question";
 import { InputGroup } from "@/components/ui/input-group";
 import { Button } from "@/styles/theme/components/button";
 import { FormControl } from "@chakra-ui/form-control";
-import { DeleteIcon } from "@chakra-ui/icons";
 import { Input } from "@chakra-ui/react";
 import { useFormContext } from "react-hook-form";
 import clsx from "clsx";
@@ -11,6 +10,7 @@ import CorrectAnswerInput from "./components/CorrectAnswerInput";
 import { useContext } from "react";
 import { QuizUpdateContext } from "@/components/shared/utils/contexts/QuizUpdateContext";
 import debounce from "debounce";
+import { TbTrash, TbTrashOff } from "react-icons/tb";
 
 interface IQuizUpdateQuestionProps {
   question: Question;
@@ -132,7 +132,9 @@ export default function QuizUpdateAnswer({
               onClick={() => deleteAnswer(answer.id)}
               disabled={disableDelete}
             >
-              <DeleteIcon color="red" />
+              {
+                disableDelete ? <TbTrashOff size={20} /> : <TbTrash size={20} color="red" />
+              }
             </Button>
           }
         >

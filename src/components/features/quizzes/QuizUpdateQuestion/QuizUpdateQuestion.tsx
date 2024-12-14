@@ -7,12 +7,12 @@ import { Field } from "@/components/ui/field";
 import { InputGroup } from "@/components/ui/input-group";
 import { Button } from "@/styles/theme/components/button";
 import { FormControl } from "@chakra-ui/form-control";
-import { DeleteIcon } from "@chakra-ui/icons";
 import { Input, Text } from "@chakra-ui/react";
 import debounce from "debounce";
 import { useContext } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
+import { TbTrashOff, TbTrash } from "react-icons/tb";
 
 interface IQuizUpdateQuestionProps {
   index: number;
@@ -38,10 +38,7 @@ export default function QuizUpdateQuestion({
     setDirtyAnswers,
   } = useContext(QuizUpdateContext);
 
-  const changeQuestionTitle = (
-    title: string,
-    q: Question
-  ) => {
+  const changeQuestionTitle = (title: string, q: Question) => {
     setDirtyQuestions((prev) => {
       const questionIndex = prev.findIndex((question) => question.id === q.id);
       const newQuestion: Question = {
@@ -117,9 +114,12 @@ export default function QuizUpdateQuestion({
     setDirtyQuestions((prev) => prev.filter((question) => question.id !== id));
     setDeletedQuestions((prev) => [...prev, id]);
     setAnswersArr((prev) => prev.filter((answer) => answer.question_id !== id));
-    setDirtyAnswers((prev) => prev.filter((answer) => answer.question_id !== id));
+    setDirtyAnswers((prev) =>
+      prev.filter((answer) => answer.question_id !== id)
+    );
     trigger();
   };
+  const isDisabled = questionsArr.length === 1;
 
   return (
     <>
@@ -170,18 +170,21 @@ export default function QuizUpdateQuestion({
               visual="ghost"
               p={0}
               onClick={() => deleteQuestion(question.id)}
-              disabled={questionsArr.length === 1}
+              disabled={isDisabled}
             >
-              <DeleteIcon color="red" />
+              {isDisabled ? <TbTrashOff size={20} /> : <TbTrash color="red" size={20} />}
             </Button>
           }
         >
           <Input
             placeholder="Question"
             defaultValue={question.title}
-            {...register(`q_title${question.id}`, { 
+            {...register(`q_title${question.id}`, {
               required: true,
-              onChange: debounce((e) => changeQuestionTitle(e.target.value, question), 500)
+              onChange: debounce(
+                (e) => changeQuestionTitle(e.target.value, question),
+                500
+              ),
             })}
           />
         </InputGroup>

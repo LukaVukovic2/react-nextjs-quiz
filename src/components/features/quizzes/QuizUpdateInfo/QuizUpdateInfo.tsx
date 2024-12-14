@@ -2,10 +2,12 @@ import { Quiz } from "@/app/typings/quiz";
 import { QuizType } from "@/app/typings/quiz_type";
 import SelectOption from "@/components/core/SelectOption/SelectOption";
 import { QuizUpdateContext } from "@/components/shared/utils/contexts/QuizUpdateContext";
+import { formatToMMSS } from "@/components/shared/utils/formatTime";
+import { timeOptions } from "@/components/shared/utils/timeOptions";
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input, ListCollection } from "@chakra-ui/react";
 import debounce from "debounce";
-import { FocusEvent, useContext } from "react";
+import { useContext } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
 interface IQuizUpdateInfoProps {
@@ -15,19 +17,15 @@ interface IQuizUpdateInfoProps {
 }
 
 export default function QuizUpdateInfo({ quiz, quizType, quizTypes }: IQuizUpdateInfoProps) {
-  const { register, control, trigger } = useFormContext();
+  const { register, control } = useFormContext();
   const { setDirtyQuizFields } = useContext(QuizUpdateContext);
 
-  const updateQuizInfo = (
-    e: FocusEvent<HTMLInputElement, Element>,
-    id: string
-  ) => {
-    const { name, value } = e.target;
+  const updateQuizInfo = (title: string) => {
+    setDirtyQuizFields((prev) => ({...prev, id: quiz.id, title}) as Quiz);
+  };
 
-    const validateInput = trigger(name);
-    if (!validateInput) return;
-
-    setDirtyQuizFields((prev) => ({...prev, id, [name]: value}) as Quiz);
+  const changeTime = (time: string) => {
+    setDirtyQuizFields((prev) => ({...prev, id: quiz.id, time}) as Quiz);
   };
 
   const selectQuizType = (value: string) => {
@@ -47,7 +45,7 @@ export default function QuizUpdateInfo({ quiz, quizType, quizTypes }: IQuizUpdat
               value: 3,
               message: "Title must be at least 3 characters long",
             },
-            onChange: (e) => updateQuizInfo(e, quiz.id),
+            onChange: debounce((e) => updateQuizInfo(e), 500),
           })}
         />
       </FormControl>
@@ -67,7 +65,7 @@ export default function QuizUpdateInfo({ quiz, quizType, quizTypes }: IQuizUpdat
                   onChange: (e) => selectQuizType(e[0]),
                 }}
                 list={quizTypes}
-                defaultMessage="Select quiz type"
+                defaultMessage={quizType ? quizType.type_name : "Select quiz type"}
               />
             )}
           />
@@ -75,17 +73,22 @@ export default function QuizUpdateInfo({ quiz, quizType, quizTypes }: IQuizUpdat
       )}
       <FormControl>
         <FormLabel>Quiz playtime</FormLabel>
-        <Input
-          placeholder="Quiz playtime (HH:MM:SS)"
+        <Controller
+          name="time"
+          control={control}
           defaultValue={quiz.time}
-          {...register("time", {
-            required: true,
-            pattern: {
-              value: /^([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/,
-              message: "Invalid time format. Use HH:MM:SS",
-            },
-            onChange: debounce((e) => updateQuizInfo(e, quiz.id), 500),
-          })}
+          rules={{ required: true }}
+          render={({ field }) => (
+            <SelectOption
+              field={{
+                ...field,
+                value: formatToMMSS(+quiz.time)|| "",
+                onChange: (e) => changeTime(e[0]),
+              }}
+              list={timeOptions}
+              defaultMessage={quiz.time ? formatToMMSS(+quiz.time) : "Timer"}
+            />
+          )}
         />
       </FormControl>
     </>
