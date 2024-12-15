@@ -4,6 +4,7 @@ import ChoiceQuestionInput from "@/components/shared/ChoiceQuestionInput/ChoiceQ
 import ShortAnswerOptionInput from "@/components/shared/ShortAnswerOptionInput/ShortAnswerOptionInput";
 import { Field } from "@/components/ui/field";
 import { Button } from "@/styles/theme/components/button";
+import { FormControl } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/react";
 import { useFormContext } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
@@ -83,7 +84,7 @@ export default function QuestionTypeForm({
   };
 
   const updateAnswer = (
-    e: React.FocusEvent<HTMLInputElement>,
+    value: string,
     answerId: string
   ) => {
     setCurrentQuestion((prev) => {
@@ -93,7 +94,7 @@ export default function QuestionTypeForm({
           if (ans.id === answerId) {
             return {
               ...ans,
-              answer: e.target.value,
+              answer: value,
             };
           }
           return ans;
@@ -125,15 +126,17 @@ export default function QuestionTypeForm({
     <>
       {selectedTypeName && (
         <>
-          <Field>
-            <Input
-              placeholder="Question title"
-              value={currentQuestion.title}
-              {...register("questionTitle", { required: true })}
-              onChange={(e) => changeQuestionTitle(e.target.value)}
-              autoComplete="off"
-            />
-          </Field>
+          <FormControl>
+            <Field>
+              <Input
+                placeholder="Question title"
+                value={currentQuestion.title}
+                {...register("questionTitle", { required: true })}
+                onChange={(e) => changeQuestionTitle(e.target.value)}
+                autoComplete="off"
+              />
+            </Field>
+          </FormControl>
           {selectedTypeName === "Single choice" ||
           selectedTypeName === "Multiple choice" ? (
             <ChoiceQuestionInput
@@ -150,6 +153,7 @@ export default function QuestionTypeForm({
             <Button
               visual="ghost"
               onClick={() => addNewAnswer(selectedTypeName)}
+              disabled={!isValid}
             >
               Add answer
             </Button>

@@ -29,7 +29,6 @@ export default function QuizUpdateAnswer({
   );
 
   const changeAnswer = (text: string, a: Answer) =>{
-
     const updatedAnswers = answersArr.map((answer) => {
       if (answer.id === a.id) {
         return { ...answer, answer: text };

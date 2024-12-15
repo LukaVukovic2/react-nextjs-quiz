@@ -36,9 +36,7 @@ export default function QuizForm({
 
   const [questions, setQuestions] = useState<Question[]>([]);
   const [quiz_id] = useState(uuidv4());
-  const methods = useForm({
-    mode: "onChange",
-  });
+  const methods = useForm({ mode: "onChange" });
 
   if (!isClient) return null;
 

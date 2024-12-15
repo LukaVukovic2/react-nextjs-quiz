@@ -6,13 +6,16 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 
 export default function AuthForm() {
   const supabase = createClientComponentClient();
+  const env = process.env.NODE_ENV;
+  const url = env === 'development' ?  process.env.NEXT_PUBLIC_DEV_URL : process.env.NEXT_PUBLIC_PROD_URL;
+
   return (
     <Auth
       supabaseClient={supabase}
       view="magic_link"
       showLinks={false}
       providers={[]}
-      redirectTo="http://localhost:3000/auth/callback"
+      redirectTo={url + '/auth/callback'}
       localization={{
         variables: {
           magic_link: {

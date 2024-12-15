@@ -9,6 +9,7 @@ import QuestionListAccordion from "@/components/shared/QuestionListAccordion/Que
 import QuestionTypeForm from "./QuestionTypeForm";
 import { v4 as uuidv4 } from "uuid";
 import "../QuizForm.css";
+import { Answer } from "@/app/typings/answer";
 
 interface IQuizQuestionFormProps {
   questions: Question[];
@@ -42,39 +43,28 @@ export default function QuizQuestionForm({
 
   const initializeCurrentAnswers = (typeId: string) => {
     const typeName = questTypes.find((type) => type.id === typeId)?.type_name;
-    setCurrentQuestion((prev) => {
-      if (typeName === "Single choice" || typeName === "Multiple choice") {
-        return {
-          ...prev,
-          answers: [
-            {
-              id: uuidv4(),
-              answer: "",
-              correct_answer: true,
-              question_id: prev.id,
-            },
-            {
-              id: uuidv4(),
-              answer: "",
-              correct_answer: false,
-              question_id: prev.id,
-            },
-          ],
-        };
-      } else if (typeName === "Short answer") {
-        return {
-          ...prev,
-          answers: [
-            {
-              id: uuidv4(),
-              answer: "",
-              correct_answer: true,
-              question_id: prev.id,
-            },
-          ],
-        };
+    const blankAnswers: Answer[] = [
+      {
+        id: uuidv4(),
+        answer: "",
+        correct_answer: true,
+        question_id: currentQuestion.id,
       }
-      return { ...prev };
+    ] 
+    if(typeName === "Single choice" || typeName === "Multiple choice") {
+      blankAnswers.push({
+        id: uuidv4(),
+        answer: "",
+        correct_answer: false,
+        question_id: currentQuestion.id,
+      });
+    }
+
+    setCurrentQuestion((prev) => {
+      return {
+        ...prev,
+        answers: blankAnswers
+      };
     });
   };
 
