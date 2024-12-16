@@ -24,6 +24,7 @@ import { calculateScore } from "@/components/shared/utils/calculateScore";
 import renderBullet from "@/components/shared/utils/renderBullet";
 import QuizGameplayFooter from "../QuizGameplayFooter/QuizGameplayFooter";
 import QuizGameplaySwiper from "../QuizGameplaySwiper/QuizGameplaySwiper";
+import QuizPauseModal from "../QuizPauseModal/QuizPauseModal";
 import "swiper/css/pagination";
 import "swiper/css";
 import "./QuizGameplaySection.css";
@@ -50,6 +51,7 @@ export default function QuizGameplaySection({
   const [score, setScore] = useState<number>();
   const [hasStarted, setHasStarted] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const [isTopResult, setIsTopResult] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -168,6 +170,7 @@ export default function QuizGameplaySection({
             hasStarted={hasStarted}
             isFinished={isFinished}
             handleFinishQuiz={handleFinishQuiz}
+            isPaused={isPaused}
           />
         </QuizGameplayHeader>
         {score !== undefined && (
@@ -206,9 +209,11 @@ export default function QuizGameplaySection({
             isFinished={isFinished} 
             setIsFinished={setIsFinished} 
             resetQuiz={resetQuiz} 
+            setIsPaused={setIsPaused}
           />
         </chakra.form>
       )}
+      <QuizPauseModal isPaused={isPaused} setIsPaused={setIsPaused} title={quiz.title} />
     </Flex>
   );
 }

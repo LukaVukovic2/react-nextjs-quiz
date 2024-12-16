@@ -1,13 +1,22 @@
 import { Button } from "@/styles/theme/components/button";
 import { Flex } from "@chakra-ui/react";
+import { Dispatch, SetStateAction } from "react";
+import { FaPause } from "react-icons/fa";
+import { FaRepeat } from "react-icons/fa6";
 
 interface IQuizGameplayFooterProps {
   isFinished: boolean;
   setIsFinished: (isFinished: boolean) => void;
   resetQuiz: () => void;
+  setIsPaused: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function QuizGameplayFooter({isFinished, setIsFinished, resetQuiz}: IQuizGameplayFooterProps) {
+export default function QuizGameplayFooter({
+  isFinished,
+  setIsFinished,
+  resetQuiz,
+  setIsPaused,
+}: IQuizGameplayFooterProps) {
   return (
     <Flex justifyContent="space-between">
       <Button
@@ -16,12 +25,20 @@ export default function QuizGameplayFooter({isFinished, setIsFinished, resetQuiz
       >
         Finish quiz
       </Button>
-      {isFinished && (
+
+      {isFinished ? (
         <Button
           type="reset"
           onClick={resetQuiz}
         >
-          <i className="fa-solid fa-repeat"></i>
+          <FaRepeat />
+        </Button>
+      ) : (
+        <Button
+          type="button"
+          onClick={() => setIsPaused(prev => !prev)}
+        >
+          <FaPause />
         </Button>
       )}
     </Flex>

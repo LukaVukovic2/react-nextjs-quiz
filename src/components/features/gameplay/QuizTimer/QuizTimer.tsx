@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { useTimer } from "react-timer-hook";
 import "./QuizTimer.css";
 import clsx from "clsx";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface IQuizTimerProps {
   quizTime: Date;
   hasStarted: boolean;
   isFinished: boolean;
   handleFinishQuiz: (time: number) => void;
+  isPaused: boolean;
 }
 
 export default function QuizTimer({
@@ -15,14 +17,18 @@ export default function QuizTimer({
   hasStarted,
   isFinished,
   handleFinishQuiz,
+  isPaused,
 }: IQuizTimerProps) {
   const [isTimeUp, setIsTimeUp] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
   
   const {
     totalSeconds,
     seconds,
     minutes,
     start,
+    resume,
     pause,
   } = useTimer({
     expiryTimestamp: quizTime,
@@ -50,6 +56,15 @@ export default function QuizTimer({
       setIsTimeUp(true);
     }
   }, [isFinished, isTimeUp]);
+
+  useEffect(() => {
+    if (hasStarted && isPaused) {
+      pause();
+      router.push(pathname + "?timeLeft=" + totalSeconds);
+    } else if (hasStarted && !isPaused) {
+      resume();
+    }
+  }, [isPaused]);
 
   return (
     <div className={clsx({
