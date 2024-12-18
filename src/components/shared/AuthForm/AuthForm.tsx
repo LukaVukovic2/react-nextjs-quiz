@@ -6,8 +6,7 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 
 export default function AuthForm() {
   const supabase = createClientComponentClient();
-  const env = process.env.NODE_ENV;
-  const url = env === 'development' ?  process.env.NEXT_PUBLIC_DEV_URL : process.env.NEXT_PUBLIC_PROD_URL;
+  const url = process.env.NEXT_PUBLIC_BASE_URL;
 
   return (
     <Auth
