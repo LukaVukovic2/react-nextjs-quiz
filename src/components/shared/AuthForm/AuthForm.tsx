@@ -6,7 +6,8 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 
 export default function AuthForm() {
   const supabase = createClientComponentClient();
-  const url = process.env.NEXT_PUBLIC_BASE_URL;
+  const redirectTo = 
+    typeof window !== "undefined" ? `${window.location.origin}/auth/callback` : "";
 
   return (
     <Auth
@@ -14,7 +15,7 @@ export default function AuthForm() {
       view="magic_link"
       showLinks={false}
       providers={[]}
-      redirectTo={url + '/auth/callback'}
+      redirectTo={redirectTo}
       localization={{
         variables: {
           magic_link: {
