@@ -105,7 +105,7 @@ export default function QuizGameplaySection({
       quiz.average_score,
       totalScore / questions.length
     );
-    const result: Result = {
+    /* const result: Result = {
       id: uuidv4(),
       quiz_id: quiz.id,
       user_id: user.id,
@@ -117,7 +117,7 @@ export default function QuizGameplaySection({
     const timeout = setTimeout(() => {
       setIsTopResult(false);
     }, 10000);
-    return () => clearTimeout(timeout);
+    return () => clearTimeout(timeout); */
   };
 
   const resetQuiz = () => {
