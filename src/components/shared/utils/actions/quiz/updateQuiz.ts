@@ -1,10 +1,9 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import createClient from "../../createClient";
-
-const supabase = createClient();
+import { createClient } from "../../supabase/server";
 
 export const updateQuiz = async (changes: FormData) => {
+  const supabase = await createClient();
   const parseJson = (value: string | null) => {
     if (value === null || value === "undefined" || value === "") {
       return {};

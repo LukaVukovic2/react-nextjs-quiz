@@ -1,10 +1,10 @@
 import MyQuizzes from "@/components/features/quizzes/MyQuizzes/MyQuizzes";
 import { getUser } from "@/components/shared/utils/actions/user/getUser";
-import createClient from "@/components/shared/utils/createClient";
+import { createClient } from "@/components/shared/utils/supabase/server";
 import { notFound } from "next/navigation";
 
 export default async function MyQuizzesPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await getUser();
   if (!user) {
     return null;

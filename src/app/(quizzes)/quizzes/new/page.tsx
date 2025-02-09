@@ -1,8 +1,8 @@
 import QuizForm from "@/components/features/quizzes/QuizForm/QuizForm";
-import createClient from "@/components/shared/utils/createClient";
+import { createClient } from "@/components/shared/utils/supabase/server";
 
 export default async function NewQuizForm() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const [
     { data: quizTypes, error: quizTypesErr },

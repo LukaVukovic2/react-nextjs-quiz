@@ -7,10 +7,18 @@ import { LuLogIn, LuLogOut } from "react-icons/lu";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import "./Navigation.css";
+import { useState } from "react";
+import AuthModal from "../AuthModal/AuthModal";
+import { logout } from "../utils/actions/auth/logout";
+import {
+  getCookie
+} from 'cookies-next';
 
 export default function Navigation() {
   const path = usePathname();
-  const isAnonymous = localStorage.getItem("isAnonymous");
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const isAnonymous = getCookie("isAnonymous") === "true";
+  
   return (
     <Flex
       as="nav"
@@ -54,31 +62,34 @@ export default function Navigation() {
         !isAnonymous ?
         (
           <div>
-            <form
-              action="/auth/logout"
-              method="post"
-            >
-              <Button
-                visual="ghost"
-                type="submit"
-                className="nav-link"
-              >
-                Logout
-                <LuLogOut />
-              </Button>
-            </form>
-          </div>
-        ) : (
-          <Link href="#">
             <Button
               visual="ghost"
-              type="button"
+              type="submit"
               className="nav-link"
+              onClick={() => logout()}
             >
-              Login
-              <LuLogIn />
+              Logout
+              <LuLogOut />
             </Button>
-          </Link>
+          </div>
+        ) : (
+          <Button
+            visual="ghost"
+            type="button"
+            className="nav-link"
+            onClick={() => setDialogVisible(true)}
+          >
+            Login
+            <LuLogIn />
+          </Button>
+        )
+      }
+      {
+        dialogVisible && (
+          <AuthModal
+            dialogVisible={dialogVisible}
+            setDialogVisible={setDialogVisible}
+          />
         )
       }
     </Flex>

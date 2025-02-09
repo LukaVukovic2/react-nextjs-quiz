@@ -1,10 +1,10 @@
-import createClient from "../utils/createClient";
 import { notFound } from "next/navigation";
 import QuizTabsClient from "./components/QuizTabsClient";
 import QuizReviewSection from "@/components/features/reviews/QuizReviewSection/QuizReviewSection";
+import { createClient } from "../utils/supabase/server";
 
 export default async function QuizTabs({ id }: { id: string }) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const [
     { data: quizData, error: quizError },

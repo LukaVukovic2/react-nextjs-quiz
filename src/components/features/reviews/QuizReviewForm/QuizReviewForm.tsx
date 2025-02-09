@@ -8,6 +8,7 @@ import { addReview } from "@/components/shared/utils/actions/review/addReview";
 import { useParams } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { Alert } from "@/components/ui/alert";
+import { getCookie } from "cookies-next";
 
 export default function QuizReviewForm() {
   const {
@@ -19,7 +20,7 @@ export default function QuizReviewForm() {
     getValues,
   } = useForm({ defaultValues: { rating: "3", comment: "" } });
   const id = useParams().id as string;
-  const isAnonymous = localStorage.getItem("isAnonymous");
+  const isAnonymous = getCookie("isAnonymous") === "true";
 
   const addNewReview = async () => {
     const formData = new FormData();

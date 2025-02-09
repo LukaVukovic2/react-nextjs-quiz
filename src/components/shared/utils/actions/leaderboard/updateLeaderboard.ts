@@ -1,10 +1,10 @@
 "use server";
 import { Result } from "@/app/typings/result";
-import createClient from "../../createClient";
 import { revalidatePath } from "next/cache";
+import { createClient } from "../../supabase/server";
 
 export const updateLeaderboard = async (newresult: Result) => {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase.rpc("update_leaderboard", { newresult });
   if (error) {
     console.log(error);
