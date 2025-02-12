@@ -14,7 +14,7 @@ interface IQuestionTypeFormProps {
   currentQuestion: Question;
   setCurrentQuestion: React.Dispatch<React.SetStateAction<Question>>;
   questTypes: QuestionType[];
-  initializeCurrentAnswers: (typeId: string) => void;
+  initializeCurrentAnswers: (typeId: string, questionId: string) => void;
 }
 
 export default function QuestionTypeForm({
@@ -48,15 +48,16 @@ export default function QuestionTypeForm({
   };
 
   const addNewQuestion = () => {
+    const id = uuidv4();
     setQuestions((prev) => [...prev, currentQuestion]);
     setCurrentQuestion((prev) => ({
       ...prev,
-      id: uuidv4(),
+      id,
       title: "",
       answers: [],
     }));
     trigger();
-    initializeCurrentAnswers(currentQuestion.id_quest_type);
+    initializeCurrentAnswers(currentQuestion.id_quest_type, id);
   };
 
   const changeCorrectAnswer = (answerId: string, selectedTypeName: string) => {

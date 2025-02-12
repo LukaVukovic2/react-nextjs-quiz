@@ -7,7 +7,7 @@ import { LuLogIn, LuLogOut } from "react-icons/lu";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import "./Navigation.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AuthModal from "../AuthModal/AuthModal";
 import { logout } from "../utils/actions/auth/logout";
 import {
@@ -17,7 +17,11 @@ import {
 export default function Navigation() {
   const path = usePathname();
   const [dialogVisible, setDialogVisible] = useState(false);
-  const isAnonymous = getCookie("isAnonymous") === "true";
+  const [isAnonymous, setIsAnonymous] = useState(false);
+
+  useEffect(() => {
+    setIsAnonymous(getCookie("isAnonymous") === "true");
+  });
   
   return (
     <Flex

@@ -72,7 +72,7 @@ export default function QuizForm({
     toaster.create({
       title: success ? "Quiz created" : "Error creating quiz",
       type: success ? "success" : "error",
-      duration: 5000,
+      duration: 5000
     });
     push("/quizzes");
   };
@@ -128,7 +128,6 @@ export default function QuizForm({
               <Button onClick={handleCreateQuiz}>Create Quiz</Button>
             )}
           </Flex>
-          <Toaster />
         </chakra.form>
       </FormProvider>
     </Container>

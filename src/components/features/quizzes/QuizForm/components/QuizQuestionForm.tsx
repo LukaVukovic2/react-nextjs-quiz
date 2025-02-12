@@ -41,14 +41,14 @@ export default function QuizQuestionForm({
     })),
   });
 
-  const initializeCurrentAnswers = (typeId: string) => {
+  const initializeCurrentAnswers = (typeId: string, question_id: string) => {
     const typeName = questTypes.find((type) => type.id === typeId)?.type_name;
     const blankAnswers: Answer[] = [
       {
         id: uuidv4(),
         answer: "",
         correct_answer: true,
-        question_id: currentQuestion.id,
+        question_id,
       }
     ] 
     if(typeName === "Single choice" || typeName === "Multiple choice") {
@@ -56,7 +56,7 @@ export default function QuizQuestionForm({
         id: uuidv4(),
         answer: "",
         correct_answer: false,
-        question_id: currentQuestion.id,
+        question_id,
       });
     }
 
@@ -98,7 +98,7 @@ export default function QuizQuestionForm({
                       ...prev,
                       id_quest_type: e[0],
                     }));
-                    initializeCurrentAnswers(e[0]);
+                    initializeCurrentAnswers(e[0], currentQuestion.id);
                   },
                 }}
               />

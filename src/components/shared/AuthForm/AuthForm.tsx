@@ -12,9 +12,9 @@ import zxcvbn from "zxcvbn";
 import { login } from "../utils/actions/auth/login";
 import { register as registerUser } from "../utils/actions/auth/register";
 import { toaster } from "@/components/ui/toaster";
-import { Alert } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { deleteCookie, getCookie } from 'cookies-next';
+import AlertMessage from "@/components/core/AlertMessage/AlertMessage";
 
 interface IAuthFormProps {
   onSuccess?: () => void;
@@ -32,58 +32,55 @@ export default function AuthForm({ onSuccess }: IAuthFormProps) {
   const [responseMessage, setResponseMessage] = useState("");
   const passwordStrengthValue = zxcvbn(watch("password", ""))?.score;
   const isAnonymous = getCookie("isAnonymous") === "true" || false;
+
+  const handleAuthResponse = async (error: string | undefined) => {
+    if (error) {
+      toaster.create({
+        title: `Error: ${error}`,
+        type: "error",
+      });
+      return false;
+    } else {
+      if (onSuccess) onSuccess();
+      deleteCookie("isAnonymous");
+      router.replace("/quizzes?logged_in=true");
+      return true;
+    }
+  };
   
   const onSubmit = handleSubmit(async (d) => {
     const formData = JSON.parse(JSON.stringify(d));
-    if(isLogin) {
+  
+    if (isLogin) {
       const res = await login(formData);
-      console.log(res);
-      if(res.error){
+      await handleAuthResponse(res?.error);
+    } else {
+      const res = await registerUser(formData);
+      
+      if (res === null) {
+        const loginRes = await login(formData);
+        await handleAuthResponse(loginRes?.error);
+      } else if (res.error) {
         toaster.create({
           title: `Error: ${res.error}`,
           type: "error",
-        })
+        });
       } else {
-        if(onSuccess) onSuccess();
-        deleteCookie("isAnonymous");
-        router.replace("/quizzes?logged_in=true");
+        setResponseMessage("Confirmation email sent. Please check your inbox.");
       }
     }
-    else {
-        const res = await registerUser(formData);
-        if(res === null){
-          const res = await login(formData);
-          if(res.error){
-            toaster.create({
-              title: `Error: ${res.error}`,
-              type: "error",
-            })
-          } else {
-            if(onSuccess) onSuccess();
-            router.replace("/quizzes?logged_in=true");
-          }
-        }
-        else if(res.error){
-          toaster.create({
-            title: `Error: ${res.error}`,
-            type: "error",
-          })
-        } else {
-          setResponseMessage("Confirmation email sent. Please check your inbox.");
-        }
-    }
   });
-
+  
   return (
     <>
       <Heading size="h3">{isLogin ? "Login" : "Sign Up"}</Heading>
       {
         responseMessage ? (
           <>
-            <Alert.Root status="info">
-              <Alert.Indicator />
-              <Alert.Title>{responseMessage}</Alert.Title>
-            </Alert.Root>
+            <AlertMessage
+              title={responseMessage}
+              status="info"
+            />
             {!isAnonymous && <Text>Or</Text>}
           </>
         ) : (
