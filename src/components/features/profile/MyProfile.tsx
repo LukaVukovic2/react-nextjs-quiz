@@ -3,7 +3,7 @@ import { Card, Flex, Float, Input, chakra, Image, Container } from "@chakra-ui/r
 import { Button } from "@/styles/theme/components/button";
 import { updateUserData } from "@/components/shared/utils/actions/user/updateUserData";
 import { useEffect, useRef, useState } from "react";
-import { Toaster, toaster } from "@/components/ui/toaster";
+import { toaster } from "@/components/ui/toaster";
 import { FormLabel } from "@chakra-ui/form-control";
 import {
   FileInput,
@@ -140,7 +140,6 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
           </Card.Body>
         </Card.Root>
       </Container>
-      <Toaster />
     </chakra.form>
   );
 }

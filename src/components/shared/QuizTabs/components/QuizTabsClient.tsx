@@ -9,7 +9,6 @@ import QuizGameplaySection from "@/components/features/gameplay/QuizGameplaySect
 import QuizLeaderboard from "@/components/features/leaderboard/QuizLeaderboard/QuizLeaderboard";
 import { Tabs } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { Toaster } from "@/components/ui/toaster";
 import { QuestionType } from "@/app/typings/question_type";
 import "./QuizTabsClient.css"
 
@@ -72,7 +71,6 @@ export default function QuizTabsClient({
         <QuizLeaderboard topResults={topResults} />
       </Tabs.Content>
       <Tabs.Content value="Reviews">{children}</Tabs.Content>
-      <Toaster />
     </Tabs.Root>
   );
 }

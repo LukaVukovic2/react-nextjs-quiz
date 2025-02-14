@@ -40,7 +40,8 @@ export default function SessionResults({ message }: { message: string }) {
 
     toaster.create({
       title: "Results added to leaderboard",
-      type: "success"
+      type: "success",
+      duration: 5000
     });
     sessionStorage.removeItem("results");
   };

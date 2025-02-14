@@ -7,12 +7,11 @@ import { Question } from "@/app/typings/question";
 import { Answer } from "@/app/typings/answer";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
-import { Toaster } from "@/components/ui/toaster";
 import { QuizType } from "@/app/typings/quiz_type";
 import { MyQuizzesContext } from "@/components/shared/utils/contexts/MyQuizzesContext";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { QuestionType } from "@/app/typings/question_type";
 import { formatToMMSS } from "@/components/shared/utils/formatTime";
+import { createClient } from "@/components/shared/utils/supabase/client";
 
 interface MyQuizzesProps {
   quizzes: Array<{
@@ -29,7 +28,7 @@ export default function MyQuizzes({quizzes}: MyQuizzesProps) {
   const [loaded, setLoaded] = useState(false);
   const [quizTypes, setQuizTypes] = useState<ListCollection>({} as ListCollection<QuizType>);
   const [questTypes, setQuestTypes] = useState<ListCollection>({} as ListCollection<QuestionType>);
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
 
   useEffect(() => {
     setLoaded(true);
@@ -96,7 +95,6 @@ export default function MyQuizzes({quizzes}: MyQuizzesProps) {
             </Box>
           ))}
         </Box>
-        <Toaster />
       </Flex>
     </MyQuizzesContext.Provider>
   );

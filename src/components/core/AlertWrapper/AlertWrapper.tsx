@@ -1,12 +1,12 @@
 "use client";
 import { Alert } from "@chakra-ui/react";
 
-interface IAlertMessageProps {
+interface IAlertWrapperProps {
   title: string;
   status: "success" | "error" | "warning" | "info";
 }
 
-export default function AlertMessage({ title, status }: IAlertMessageProps) {
+export default function AlertWrapper({ title, status }: IAlertWrapperProps) {
   return (
     <Alert.Root status={status}>
       <Alert.Indicator />

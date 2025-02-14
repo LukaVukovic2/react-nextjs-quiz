@@ -8,7 +8,7 @@ import { Field } from "@/components/ui/field";
 import QuestionListAccordion from "@/components/shared/QuestionListAccordion/QuestionListAccordion";
 import QuestionTypeForm from "./QuestionTypeForm";
 import { v4 as uuidv4 } from "uuid";
-import "../QuizForm.css";
+import "../NewQuizForm.css";
 import { Answer } from "@/app/typings/answer";
 
 interface IQuizQuestionFormProps {

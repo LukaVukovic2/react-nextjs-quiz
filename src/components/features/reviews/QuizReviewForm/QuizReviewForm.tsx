@@ -2,7 +2,7 @@
 import { Card, chakra, Textarea } from "@chakra-ui/react";
 import { Heading } from "@/styles/theme/components/heading";
 import { Button } from "@/styles/theme/components/button";
-import { Toaster, toaster } from "@/components/ui/toaster";
+import { toaster } from "@/components/ui/toaster";
 import { SliderInput } from "@/components/core/Slider/Slider";
 import { addReview } from "@/components/shared/utils/actions/review/addReview";
 import { useParams } from "next/navigation";
@@ -75,7 +75,6 @@ export default function QuizReviewForm() {
           >
             Submit
           </Button>
-          <Toaster />
         </chakra.form>
       </Card.Body>
     </Card.Root>

@@ -9,7 +9,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Question } from "@/app/typings/question";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/navigation";
-import { Toaster, toaster } from "@/components/ui/toaster";
+import { toaster } from "@/components/ui/toaster";
 import { useStep } from "usehooks-ts";
 import QuizDetailsForm from "./components/QuizDetailsForm";
 import QuizQuestionForm from "./components/QuizQuestionForm";
@@ -18,7 +18,7 @@ import { QuestionType } from "@/app/typings/question_type";
 import QuestionListAccordion from "@/components/shared/QuestionListAccordion/QuestionListAccordion";
 import { StepsContent } from "@/components/ui/steps";
 
-export default function QuizForm({
+export default function NewQuizForm({
   quizTypes,
   questTypes,
 }: {
