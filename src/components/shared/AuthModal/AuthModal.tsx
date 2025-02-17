@@ -8,9 +8,6 @@ interface IAuthModalProps {
 }
 
 export default function AuthModal({ dialogVisible, setDialogVisible, children }: IAuthModalProps) {
-  const onSuccess = () => {
-    setDialogVisible(false);
-  };
   return (
     <DialogRoot
       open={dialogVisible}
@@ -19,7 +16,7 @@ export default function AuthModal({ dialogVisible, setDialogVisible, children }:
       <DialogContent>
         <DialogBody>
           {children}
-          <AuthForm onSuccess={onSuccess}/>
+          <AuthForm closeModal={() => setDialogVisible(false)}/>
         </DialogBody>
         <DialogCloseTrigger />
       </DialogContent>

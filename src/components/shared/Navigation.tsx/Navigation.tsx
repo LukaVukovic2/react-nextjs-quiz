@@ -40,7 +40,6 @@ export default function Navigation() {
       <Flex gap={2}>
         {navItems.map((item) => {
           const activePath = path === item.href;
-          const isDisabled = isAnonymous && item.text !== "Home";
           return (
             <Link
               key={item.href}
@@ -54,7 +53,6 @@ export default function Navigation() {
                 visual="ghost"
                 type="button"
                 color={clsx({ "{colors.tertiary}": activePath })}
-                disabled={!!isDisabled}
               >
                 {item.text}
               </Button>
