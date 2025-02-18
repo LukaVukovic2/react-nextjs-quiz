@@ -29,7 +29,7 @@ import "swiper/css/pagination";
 import "swiper/css";
 import "./QuizGameplaySection.css";
 import AuthModal from "@/components/shared/AuthModal/AuthModal";
-import { getCookie } from "cookies-next";
+import { getCookie, setCookie } from "cookies-next";
 import { topResultCheck } from "@/components/shared/utils/actions/leaderboard/topResultCheck";
 import AlertWrapper from "@/components/core/AlertWrapper/AlertWrapper";
 import { createClient } from "@/components/shared/utils/supabase/client";
@@ -152,10 +152,12 @@ export default function QuizGameplaySection({
       if (!isTopResult) return;
 
       const existingResults = JSON.parse(
-        sessionStorage.getItem("results") || "[]"
+        getCookie("results") || "[]"
       );
       const newResults = [...existingResults, result];
-      sessionStorage.setItem("results", JSON.stringify(newResults));
+      setCookie("results", JSON.stringify(newResults), 
+        { maxAge: 60 * 60 * 24 }
+      );
       setDialogVisible(true);
     } else {
       const success = await updateLeaderboard(result);

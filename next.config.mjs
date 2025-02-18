@@ -17,7 +17,16 @@ const nextConfig = {
         pathname: "**"
       }
     ]
-  }
+  },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/quizzes',
+        permanent: true,
+      },
+    ]
+  },
 };
 
 export default nextConfig;

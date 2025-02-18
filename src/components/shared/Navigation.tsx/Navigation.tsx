@@ -10,18 +10,38 @@ import "./Navigation.css";
 import { useEffect, useState } from "react";
 import AuthModal from "../AuthModal/AuthModal";
 import { logout } from "../utils/actions/auth/logout";
-import {
-  getCookie
-} from 'cookies-next';
+import { toaster } from "@/components/ui/toaster";
+import { createClient } from "../utils/supabase/client";
 
 export default function Navigation() {
   const path = usePathname();
   const [dialogVisible, setDialogVisible] = useState(false);
-  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [isAnonymous, setIsAnonymous] = useState<boolean>();
+
+  const supabase = createClient();
 
   useEffect(() => {
-    setIsAnonymous(getCookie("isAnonymous") === "true");
+    const { data } = supabase.auth.onAuthStateChange((_, session) => {
+      if (session?.user.is_anonymous === false) {
+        setIsAnonymous(false);
+      } else {
+        setIsAnonymous(true);
+      }
+    });
+    return () => data.subscription.unsubscribe();
   });
+
+
+  const handleLogout = async () => {
+    const success = await logout();
+    if (success) {
+      toaster.create({
+        title: "Logged out successfully",
+        type: "info",
+        duration: 5000,
+      })
+    };
+  }
   
   return (
     <Flex
@@ -68,7 +88,7 @@ export default function Navigation() {
               visual="ghost"
               type="submit"
               className="nav-link"
-              onClick={() => logout()}
+              onClick={handleLogout}
             >
               Logout
               <LuLogOut />

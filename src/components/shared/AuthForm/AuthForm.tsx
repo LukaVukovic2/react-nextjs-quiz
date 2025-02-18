@@ -2,7 +2,7 @@
 import { Button } from "@/styles/theme/components/button";
 import { Flex, Input, Stack } from "@chakra-ui/react";
 import { Field } from "@/components/ui/field";
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 import { Heading } from "@/styles/theme/components/heading";
 import { useState } from "react";
 import { PasswordStrengthMeter } from "@/components/ui/password-input";
@@ -12,6 +12,7 @@ import { register as registerUser } from "../utils/actions/auth/register";
 import { toaster } from "@/components/ui/toaster";
 import { deleteCookie } from "cookies-next";
 import { checkSessionItems } from "../utils/checkSessionItems";
+
 
 export default function AuthForm({ closeModal }: { closeModal: () => void }) {
   const {
@@ -23,33 +24,27 @@ export default function AuthForm({ closeModal }: { closeModal: () => void }) {
   const [isLogin, setIsLogin] = useState(true);
   const passwordStrengthValue = zxcvbn(watch("password", ""))?.score;
 
-  const handleLoginResponse = async (error: string | undefined) => {
+  const handleLogin = async (formData: FieldValues) => {
+    const res = await login(formData);
     toaster.create({
-      title: error ? `Error: ${error}` : "Logged in successfully",
-      type: error ? "error" : "success",
+      title: res?.error ? `Error: ${res?.error}` : "Logged in successfully",
+      type: res?.error ? "error" : "success",
       duration: 5000,
     });
-    if (error) return false;
-    closeModal();
+    if(res?.error) return;
+
     deleteCookie("isAnonymous");
-    return true;
-  };
+    closeModal();
+    if(res?.user?.id) checkSessionItems(res?.user?.id);
+  }
 
-  const onSubmit = handleSubmit(async (d) => {
-    const formData = JSON.parse(JSON.stringify(d));
-
+  const onSubmit = handleSubmit(async (formData) => {
     if (isLogin) {
-      const res = await login(formData);
-      const success = await handleLoginResponse(res?.error);
-      if (success && res?.user?.id) {
-        checkSessionItems(res?.user?.id);
-      }
+      await handleLogin(formData);
     } else {
       const res = await registerUser(formData);
-
       if (res === null) {
-        const loginRes = await login(formData);
-        await handleLoginResponse(loginRes?.error);
+        await handleLogin(formData);
       } else {
         toaster.create({
           title: res?.error
