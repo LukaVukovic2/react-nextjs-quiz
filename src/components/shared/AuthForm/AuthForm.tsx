@@ -11,8 +11,7 @@ import { login } from "../utils/actions/auth/login";
 import { register as registerUser } from "../utils/actions/auth/register";
 import { toaster } from "@/components/ui/toaster";
 import { deleteCookie } from "cookies-next";
-import { checkSessionItems } from "../utils/checkSessionItems";
-
+import { checkCookieItems } from "../utils/checkCookieItems";
 
 export default function AuthForm({ closeModal }: { closeModal: () => void }) {
   const {
@@ -31,33 +30,34 @@ export default function AuthForm({ closeModal }: { closeModal: () => void }) {
       type: res?.error ? "error" : "success",
       duration: 5000,
     });
-    if(res?.error) return;
+    if (res?.error) return;
 
     deleteCookie("isAnonymous");
     closeModal();
-    if(res?.user?.id) checkSessionItems(res?.user?.id);
-  }
+    if (res?.user?.id) checkCookieItems(res?.user?.id);
+  };
 
-  const onSubmit = handleSubmit(async (formData) => {
-    if (isLogin) {
+  const handleRegister = async (formData: FieldValues) => {
+    const res = await registerUser(formData);
+    if (res === null) {
       await handleLogin(formData);
     } else {
-      const res = await registerUser(formData);
-      if (res === null) {
-        await handleLogin(formData);
-      } else {
-        toaster.create({
-          title: res?.error
-            ? `Error: ${res.error}`
-            : "Confirmation email sent. Please check your inbox.",
-          type: res?.error ? "error" : "loading",
-          meta: {
-            closable: res.error ? false : true,
-          },
-        });
-        closeModal();
-      }
+      toaster.create({
+        title: res?.error
+          ? `Error: ${res.error}`
+          : "Confirmation email sent. Please check your inbox.",
+        type: res?.error ? "error" : "loading",
+        meta: {
+          closable: res.error ? false : true,
+        },
+      });
+      closeModal();
     }
+  };
+
+  const onSubmit = handleSubmit(async (formData) => {
+    if (isLogin) await handleLogin(formData);
+    else await handleRegister(formData);
   });
 
   return (

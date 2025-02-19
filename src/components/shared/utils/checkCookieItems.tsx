@@ -1,43 +1,30 @@
-"use client";
-
 import { toaster } from "@/components/ui/toaster";
 import { addResultsToLeaderboard } from "./actions/leaderboard/addResultsToLeaderboard";
 import { Result } from "@/app/typings/result";
 import { addMultipleQuizzes } from "./actions/quiz/addMultipleQuizzes";
 import { deleteCookie, getCookie } from "cookies-next";
 
-export const checkSessionItems = async (userId: string) => {
-  const handleAddResults = async (results: Result[]) => {
-    const success = await addResultsToLeaderboard(results);
+export const checkCookieItems = async (userId: string) => {
+  const handleAddData = async (data: FormData, type: string) => {
+    const addDataToDB = type === "results" ? addResultsToLeaderboard : addMultipleQuizzes;
+    const success = await addDataToDB(data, userId);
     if (!success) return;
-  
+    
     toaster.create({
-      title: "Results added to leaderboard",
+      title: type === "results" ? "Results added to leaderboard" : "Your quizzes were saved",
       type: "success",
       duration: 5000
-    });
-    deleteCookie("results");
-  };
-  const handleAddQuizzes = async (quizzes: FormData) => {
-    const success = await addMultipleQuizzes(quizzes, userId);
-    if (!success) return;
-  
-    toaster.create({
-      title: "Quizzes added to leaderboard",
-      type: "success",
-      duration: 5000
-    });
-    deleteCookie("quizzes");
+    })
+    deleteCookie(type);
   };
   
   const res = JSON.parse(getCookie("results") || "[]");
   if (res.length > 0) {
     const updatedResults = res.map((result: Result) => ({ ...result, user_id: userId }));
-    handleAddResults(updatedResults);
+    handleAddData(updatedResults, "results");
   }
   const quizzes = JSON.parse(getCookie("quizzes") || "[]");
   if (quizzes.length > 0) {
-    handleAddQuizzes(quizzes);
+    handleAddData(quizzes, "quizzes");
   }
-
 }

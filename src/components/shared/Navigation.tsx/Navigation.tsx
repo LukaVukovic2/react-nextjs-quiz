@@ -12,11 +12,12 @@ import AuthModal from "../AuthModal/AuthModal";
 import { logout } from "../utils/actions/auth/logout";
 import { toaster } from "@/components/ui/toaster";
 import { createClient } from "../utils/supabase/client";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Navigation() {
   const path = usePathname();
   const [dialogVisible, setDialogVisible] = useState(false);
-  const [isAnonymous, setIsAnonymous] = useState<boolean>();
+  const [isAnonymous, setIsAnonymous] = useState<boolean | null>(null);
 
   const supabase = createClient();
 
@@ -31,7 +32,6 @@ export default function Navigation() {
     return () => data.subscription.unsubscribe();
   });
 
-
   const handleLogout = async () => {
     const success = await logout();
     if (success) {
@@ -39,10 +39,10 @@ export default function Navigation() {
         title: "Logged out successfully",
         type: "info",
         duration: 5000,
-      })
-    };
-  }
-  
+      });
+    }
+  };
+
   return (
     <Flex
       as="nav"
@@ -80,20 +80,23 @@ export default function Navigation() {
           );
         })}
       </Flex>
-      { 
-        !isAnonymous ?
-        (
-          <div>
-            <Button
-              visual="ghost"
-              type="submit"
-              className="nav-link"
-              onClick={handleLogout}
-            >
-              Logout
-              <LuLogOut />
-            </Button>
-          </div>
+      <Skeleton
+        loading={isAnonymous === null}
+        height="30px"
+        as={Flex}
+        justifyContent="center"
+        alignItems="center"
+      >
+        {!isAnonymous ? (
+          <Button
+            visual="ghost"
+            type="submit"
+            className="nav-link"
+            onClick={handleLogout}
+          >
+            Logout
+            <LuLogOut />
+          </Button>
         ) : (
           <Button
             visual="ghost"
@@ -104,16 +107,14 @@ export default function Navigation() {
             Login
             <LuLogIn />
           </Button>
-        )
-      }
-      {
-        dialogVisible && (
-          <AuthModal
-            dialogVisible={dialogVisible}
-            setDialogVisible={setDialogVisible}
-          />
-        )
-      }
+        )}
+      </Skeleton>
+      {dialogVisible && (
+        <AuthModal
+          dialogVisible={dialogVisible}
+          setDialogVisible={setDialogVisible}
+        />
+      )}
     </Flex>
   );
 }

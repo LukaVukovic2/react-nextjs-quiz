@@ -1,8 +1,7 @@
-import SessionResults from "@/components/core/SessionResults/SessionResults";
+import CookieDataChecker from "@/components/core/CookieDataChecker/CookieDataChecker";
 import { ToasterWrapper } from "@/components/core/ToasterWrapper/ToasterWrapper";
 import Homepage from "@/components/shared/Homepage/Homepage";
 import { createClient } from "@/components/shared/utils/supabase/server";
-
 import { notFound } from "next/navigation";
 
 interface IQuizListPageProps {
@@ -26,7 +25,7 @@ export default async function Home({
         title={message}
         type="success"
       />
-      <SessionResults message={message} />
+      <CookieDataChecker />
     </>
   );
 }
