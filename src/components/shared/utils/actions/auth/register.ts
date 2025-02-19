@@ -6,7 +6,12 @@ export const register = async (user: FieldValues) => {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email: user.email,
-    password: user.password
+    password: user.password,
+    options: {
+      data: {
+        username: user.username
+      }
+    }
   });
   if (error) {
     console.error("Error signing up new user:", error.message);

@@ -113,20 +113,37 @@ export default function AuthForm({ closeModal }: { closeModal: () => void }) {
             )}
           </Field>
           {!isLogin && (
-            <Field
-              label="Repeat Password"
-              invalid={!!errors.password2}
-              errorText={errors.password2?.message?.toString()}
-            >
-              <Input
-                type="password"
-                {...register("password2", {
-                  required: "Password is required",
-                  validate: (value) =>
-                    value === watch("password") || "Passwords do not match",
-                })}
-              />
-            </Field>
+            <>
+              <Field
+                label="Repeat Password"
+                invalid={!!errors.password2}
+                errorText={errors.password2?.message?.toString()}
+              >
+                <Input
+                  type="password"
+                  {...register("password2", {
+                    required: "Password is required",
+                    validate: (value) =>
+                      value === watch("password") || "Passwords do not match",
+                  })}
+                />
+              </Field>
+              <Field
+                label="Username"
+                invalid={!!errors.username}
+                errorText={errors.username?.message?.toString()}
+              >
+                <Input
+                  {...register("username", {
+                    required: "Username is required",
+                    minLength: {
+                      value: 3,
+                      message: "Username must have at least 3 characters",
+                    },
+                  })}
+                />
+              </Field>
+            </>
           )}
           <Flex>
             <Button type="submit">{isLogin ? "Login" : "Sign Up"}</Button>
