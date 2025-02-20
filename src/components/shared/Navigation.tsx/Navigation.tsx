@@ -80,6 +80,7 @@ export default function Navigation() {
               href="/my-profile"
               className={clsx({
                 "nav-link": true,
+                active: path === "/my-profile",
               })}
             >
               <Button
@@ -97,7 +98,7 @@ export default function Navigation() {
             </Flex>
           }
         </Skeleton>
-        
+
         {navItems.map((item) => {
           const activePath = path === item.href;
           return (
