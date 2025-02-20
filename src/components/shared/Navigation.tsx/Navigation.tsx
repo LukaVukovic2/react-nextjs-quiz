@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { navItems } from "../utils/navigation-items";
-import { Flex, Image, chakra } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import { Button } from "@/styles/theme/components/button";
 import { LuLogIn, LuLogOut } from "react-icons/lu";
 import { usePathname } from "next/navigation";
@@ -13,20 +13,30 @@ import { logout } from "../utils/actions/auth/logout";
 import { toaster } from "@/components/ui/toaster";
 import { createClient } from "../utils/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { FaUserSecret } from "react-icons/fa";
+import { Logo } from "@/components/core/Logo/Logo";
 
 export default function Navigation() {
   const path = usePathname();
   const [dialogVisible, setDialogVisible] = useState(false);
   const [isAnonymous, setIsAnonymous] = useState<boolean | null>(null);
-
+  const [username, setUsername] = useState<string | null>(null);
   const supabase = createClient();
+  const getUsername = async (userid: string) => {
+    const { data: username } = await supabase.rpc("get_username", { userid });
+    return username;
+  };
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((_, session) => {
       if (session?.user.is_anonymous === false) {
         setIsAnonymous(false);
+        getUsername(session?.user.id).then((username) => {
+          setUsername(username);
+        });
       } else {
         setIsAnonymous(true);
+        setUsername("");
       }
     });
     return () => data.subscription.unsubscribe();
@@ -50,14 +60,44 @@ export default function Navigation() {
       alignItems="center"
       className="navigation"
     >
-      <chakra.div width="100px">
-        <Image
-          src="/logo.svg"
-          alt="logo"
-          height="45px"
-        />
-      </chakra.div>
-      <Flex gap={2}>
+      <Flex
+        alignItems="center"
+        gap={2}
+      >
+        <Link href="/">
+          <Logo height="45px"/>
+        </Link>
+        
+        <Skeleton
+          loading={username === null}
+          height="30px"
+          as={Flex}
+          alignItems="center"
+        >
+          {
+            username ? (
+            <Link
+              href="/my-profile"
+              className={clsx({
+                "nav-link": true,
+              })}
+            >
+              <Button
+                visual="ghost"
+                type="button"
+              >
+                Hello, {username}
+              </Button>
+            </Link>) : 
+            <Flex alignItems="center" gap={2} className="nav-link">
+              <Button visual="ghost" type="button" onClick={() => setDialogVisible(true)}>
+                Anonymous
+                <FaUserSecret size={20} />
+              </Button>
+            </Flex>
+          }
+        </Skeleton>
+        
         {navItems.map((item) => {
           const activePath = path === item.href;
           return (
@@ -72,7 +112,7 @@ export default function Navigation() {
               <Button
                 visual="ghost"
                 type="button"
-                color={clsx({ "{colors.tertiary}": activePath })}
+                color={activePath ? "tertiary" : "inherit"}
               >
                 {item.text}
               </Button>
@@ -80,6 +120,7 @@ export default function Navigation() {
           );
         })}
       </Flex>
+
       <Skeleton
         loading={isAnonymous === null}
         height="30px"
@@ -109,12 +150,8 @@ export default function Navigation() {
           </Button>
         )}
       </Skeleton>
-      {dialogVisible && (
-        <AuthModal
-          dialogVisible={dialogVisible}
-          setDialogVisible={setDialogVisible}
-        />
-      )}
+
+      {dialogVisible && <AuthModal dialogVisible={dialogVisible} setDialogVisible={setDialogVisible} />}
     </Flex>
   );
 }
