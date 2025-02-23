@@ -7,40 +7,19 @@ import { LuLogIn, LuLogOut } from "react-icons/lu";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import "./Navigation.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AuthModal from "../AuthModal/AuthModal";
 import { logout } from "../utils/actions/auth/logout";
 import { toaster } from "@/components/ui/toaster";
-import { createClient } from "../utils/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FaUserSecret } from "react-icons/fa";
 import { Logo } from "@/components/core/Logo/Logo";
+import { useUser } from "../utils/hooks/useUser";
 
 export default function Navigation() {
   const path = usePathname();
   const [dialogVisible, setDialogVisible] = useState(false);
-  const [isAnonymous, setIsAnonymous] = useState<boolean | null>(null);
-  const [username, setUsername] = useState<string | null>(null);
-  const supabase = createClient();
-  const getUsername = async (userid: string) => {
-    const { data: username } = await supabase.rpc("get_username", { userid });
-    return username;
-  };
-
-  useEffect(() => {
-    const { data } = supabase.auth.onAuthStateChange((_, session) => {
-      if (session?.user.is_anonymous === false) {
-        setIsAnonymous(false);
-        getUsername(session?.user.id).then((username) => {
-          setUsername(username);
-        });
-      } else {
-        setIsAnonymous(true);
-        setUsername("");
-      }
-    });
-    return () => data.subscription.unsubscribe();
-  });
+  const { user, username } = useUser();
 
   const handleLogout = async () => {
     const success = await logout();
@@ -52,6 +31,7 @@ export default function Navigation() {
       });
     }
   };
+  const openDialog = () => setDialogVisible(true);
 
   return (
     <Flex
@@ -65,11 +45,11 @@ export default function Navigation() {
         gap={2}
       >
         <Link href="/">
-          <Logo height="45px"/>
+          <Logo height="45px" />
         </Link>
-        
+
         <Skeleton
-          loading={username === null}
+          loading={username === undefined}
           height="30px"
           as={Flex}
           alignItems="center"
@@ -89,14 +69,23 @@ export default function Navigation() {
               >
                 Hello, {username}
               </Button>
-            </Link>) : 
-            <Flex alignItems="center" gap={2} className="nav-link">
-              <Button visual="ghost" type="button" onClick={() => setDialogVisible(true)}>
+            </Link>
+          ) : (
+            <Flex
+              alignItems="center"
+              gap={2}
+              className="nav-link"
+            >
+              <Button
+                visual="ghost"
+                type="button"
+                onClick={() => setDialogVisible(true)}
+              >
                 Anonymous
                 <FaUserSecret size={20} />
               </Button>
             </Flex>
-          }
+          )}
         </Skeleton>
 
         {navItems.map((item) => {
@@ -105,10 +94,7 @@ export default function Navigation() {
             <Link
               key={item.href}
               href={item.href}
-              className={clsx({
-                "nav-link": true,
-                active: activePath,
-              })}
+              className={clsx({ "nav-link": true, active: activePath })}
             >
               <Button
                 visual="ghost"
@@ -123,13 +109,13 @@ export default function Navigation() {
       </Flex>
 
       <Skeleton
-        loading={isAnonymous === null}
+        loading={user === undefined}
         height="30px"
         as={Flex}
         justifyContent="center"
         alignItems="center"
       >
-        {!isAnonymous ? (
+        {user?.is_anonymous === false ? (
           <Button
             visual="ghost"
             type="submit"
@@ -144,7 +130,7 @@ export default function Navigation() {
             visual="ghost"
             type="button"
             className="nav-link"
-            onClick={() => setDialogVisible(true)}
+            onClick={openDialog}
           >
             Login
             <LuLogIn />
@@ -152,7 +138,12 @@ export default function Navigation() {
         )}
       </Skeleton>
 
-      {dialogVisible && <AuthModal dialogVisible={dialogVisible} setDialogVisible={setDialogVisible} />}
+      {dialogVisible && (
+        <AuthModal
+          dialogVisible={dialogVisible}
+          setDialogVisible={setDialogVisible}
+        />
+      )}
     </Flex>
   );
 }

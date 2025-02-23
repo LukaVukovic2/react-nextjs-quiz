@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTimer } from "react-timer-hook";
 import "./QuizTimer.css";
 import clsx from "clsx";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 interface IQuizTimerProps {
   quizTime: Date;
