@@ -5,24 +5,23 @@ import { Field } from "@/components/ui/field";
 import { FieldValues, useForm } from "react-hook-form";
 import { Heading } from "@/styles/theme/components/heading";
 import { useState } from "react";
-import { PasswordStrengthMeter } from "@/components/ui/password-input";
-import zxcvbn from "zxcvbn";
 import { login } from "../utils/actions/auth/login";
 import { register as registerUser } from "../utils/actions/auth/register";
 import { toaster } from "@/components/ui/toaster";
 import { deleteCookie } from "cookies-next";
 import { checkCookieItems } from "../utils/checkCookieItems";
+import { PasswordStrengthWrapper } from "../PasswordStrengthWrapper/PasswordStrengthWrapper";
 
 export default function AuthForm({ closeModal }: { closeModal: () => void }) {
   const {
     register,
     handleSubmit,
     watch,
+    control,
     formState: { errors },
   } = useForm();
   const [isLogin, setIsLogin] = useState(true);
-  const passwordStrengthValue = zxcvbn(watch("password", ""))?.score;
-
+  
   const handleLogin = async (formData: FieldValues) => {
     const res = await login(formData);
     toaster.create({
@@ -60,9 +59,12 @@ export default function AuthForm({ closeModal }: { closeModal: () => void }) {
     else await handleRegister(formData);
   });
 
+  const toggleForm = () => setIsLogin((prev) => !prev);
+
   return (
     <>
       <Heading size="h3">{isLogin ? "Login" : "Sign Up"}</Heading>
+
       <form onSubmit={onSubmit}>
         <Stack
           gap="4"
@@ -84,6 +86,25 @@ export default function AuthForm({ closeModal }: { closeModal: () => void }) {
               })}
             />
           </Field>
+          {
+            !isLogin && (
+              <Field
+                label="Username"
+                invalid={!!errors.username}
+                errorText={errors.username?.message?.toString()}
+              >
+                <Input
+                  {...register("username", {
+                    required: "Username is required",
+                    minLength: {
+                      value: 3,
+                      message: "Username must have at least 3 characters",
+                    },
+                  })}
+                />
+              </Field>
+            )
+          }
           <Field
             label="Password"
             invalid={!!errors.password}
@@ -99,16 +120,12 @@ export default function AuthForm({ closeModal }: { closeModal: () => void }) {
                 },
               })}
             />
-            {!isLogin && watch("password") && (
+            {!isLogin && (
               <Flex
                 width="100%"
                 justifyContent="end"
               >
-                <PasswordStrengthMeter
-                  value={passwordStrengthValue}
-                  maxWidth="200px"
-                  width="100%"
-                />
+                <PasswordStrengthWrapper isLogin={isLogin} control={control}/>
               </Flex>
             )}
           </Field>
@@ -128,28 +145,14 @@ export default function AuthForm({ closeModal }: { closeModal: () => void }) {
                   })}
                 />
               </Field>
-              <Field
-                label="Username"
-                invalid={!!errors.username}
-                errorText={errors.username?.message?.toString()}
-              >
-                <Input
-                  {...register("username", {
-                    required: "Username is required",
-                    minLength: {
-                      value: 3,
-                      message: "Username must have at least 3 characters",
-                    },
-                  })}
-                />
-              </Field>
             </>
           )}
+          
           <Flex>
             <Button type="submit">{isLogin ? "Login" : "Sign Up"}</Button>
             <Button
               type="button"
-              onClick={() => setIsLogin((prev) => !prev)}
+              onClick={toggleForm}
               visual="ghost"
             >
               {isLogin ? "Create new account" : "Already have an account?"}
