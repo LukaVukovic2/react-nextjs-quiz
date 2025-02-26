@@ -1,8 +1,8 @@
-import QuizForm from "@/components/features/quizzes/QuizForm/QuizForm";
-import createClient from "@/components/shared/utils/createClient";
+import NewQuizForm from "@/components/features/quizzes/NewQuizForm/NewQuizForm";
+import { createClient } from "@/components/shared/utils/supabase/server";
 
-export default async function NewQuizForm() {
-  const supabase = createClient();
+export default async function NewQuizPage() {
+  const supabase = await createClient();
 
   const [
     { data: quizTypes, error: quizTypesErr },
@@ -23,7 +23,7 @@ export default async function NewQuizForm() {
     return null;
 
   return (
-    <QuizForm
+    <NewQuizForm
       quizTypes={quizTypes}
       questTypes={questTypes}
     />

@@ -1,9 +1,9 @@
-import Star from "@/components/core/Star/Star";
 import { Flex, Text } from "@chakra-ui/react";
 import { Avatar } from "@/components/ui/avatar";
 import { Review } from "@/app/typings/review";
 import TimeAgo from "@/components/core/TimeAgo/TimeAgo";
 import { User } from "@/app/typings/user";
+import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 
 interface IQuizReviewItemProps {
   review: {
@@ -15,6 +15,7 @@ interface IQuizReviewItemProps {
 export default function QuizReviewItem({review}: IQuizReviewItemProps) {
   const { reviewer, reviewDetails } = review;
   const date = new Date(reviewDetails.created_at || "");
+  const Star = reviewDetails.rating === 5 ? FaStar : reviewDetails.rating >= 2 ? FaStarHalfAlt : FaRegStar;
 
   return (
     <>

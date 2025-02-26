@@ -1,23 +1,20 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest } from "next/server";
+import { updateSession } from "@/components/shared/utils/supabase/middleware";
 
-export async function middleware(req: NextRequest) {
-  const res = NextResponse.next();
-  const supabase = createMiddlewareClient({req, res});
-
-  const {data: {user}} = await supabase.auth.getUser();
-
-  if (user && req.nextUrl.pathname === '/') {
-    return NextResponse.redirect(new URL('/quizzes', req.url));
-  }
-
-  if (!user && req.nextUrl.pathname !== '/') {
-    return NextResponse.redirect(new URL('/', req.url));
-  }
-
-  return res;
+export async function middleware(request: NextRequest) {
+  return await updateSession(request);
 }
 
 export const config = {
-  matcher: ['/', '/quizzes', '/quiz/[id]'],
-}
+  matcher: [
+    /*
+     * Match all request paths except for:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - Image assets (png, jpg, etc.)
+     * - /auth/confirm (auth confirmation should NOT be handled by middleware)
+     */
+    "/((?!_next/static|_next/image|favicon.ico|auth/confirm|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
+};

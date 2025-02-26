@@ -1,10 +1,10 @@
 import MyProfile from "@/components/features/profile/MyProfile";
 import { getUser } from "@/components/shared/utils/actions/user/getUser";
-import createClient from "@/components/shared/utils/createClient";
+import { createClient } from "@/components/shared/utils/supabase/server";
 import { notFound } from "next/navigation";
 
 export default async function MyProfilePage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await getUser();
   const { data: profile } = await supabase.rpc("get_user_data", { userid: user?.id });
 

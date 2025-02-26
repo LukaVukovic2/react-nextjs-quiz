@@ -1,10 +1,9 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import createClient from "../../createClient";
-
-const supabase = createClient();
+import { createClient } from "../../supabase/server";
 
 export const updateUserData = async (changes: FormData) => {
+  const supabase = await createClient();
   const username = changes.get("username") as string;
   const avatar = changes.get("avatar") as File;
   const id = changes.get("id") as string;
@@ -51,6 +50,7 @@ export const updateUserData = async (changes: FormData) => {
 };
 
 const deletePreviousAvatar = async (id: string) => {
+  const supabase = await createClient();
   const { data: files, error: listError } = await supabase.storage
     .from("avatars")
     .list(id);

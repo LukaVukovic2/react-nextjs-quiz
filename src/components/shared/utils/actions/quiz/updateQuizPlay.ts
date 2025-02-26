@@ -1,8 +1,6 @@
 "use server";
-import createClient from "@/components/shared/utils/createClient";
 import { revalidatePath } from "next/cache";
-
-const supabase = createClient();
+import { createClient } from "../../supabase/server";
 
 export const updateQuizPlay = async (
   quiz_id: string,
@@ -10,6 +8,7 @@ export const updateQuizPlay = async (
   average_score: number = 0,
   totalScore: number
 ) => {
+  const supabase = await createClient();
   const updatedPlays = currentPlays + 1;
   const updatedAverageScore =
     (average_score * currentPlays + totalScore) / updatedPlays;

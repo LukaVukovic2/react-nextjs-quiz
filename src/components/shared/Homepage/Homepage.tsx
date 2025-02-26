@@ -1,4 +1,3 @@
-"use client";
 import { QuizType } from "@/app/typings/quiz_type";
 import QuizTypeBox from "../QuizTypeBox/QuizTypeBox";
 import { Container, Flex } from "@chakra-ui/react";

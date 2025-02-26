@@ -17,7 +17,19 @@ const nextConfig = {
         pathname: "**"
       }
     ]
-  }
+  },
+  experimental: {
+    optimizePackageImports: ["@chakra-ui/react"],
+  },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/quizzes',
+        permanent: true,
+      },
+    ]
+  },
 };
 
 export default nextConfig;

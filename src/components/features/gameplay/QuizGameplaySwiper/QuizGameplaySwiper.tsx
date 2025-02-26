@@ -16,7 +16,11 @@ interface IQuizGameplaySwiperProps {
   selectedAnswers: Map<string, string[] | null>;
   groupedAnswers: { [key: string]: Answer[] };
   isFinished: boolean;
-  handleSelectAnswer: (questionId: string, answerId: string[], questionType: string) => void;
+  handleSelectAnswer: (
+    questionId: string,
+    answerId: string[],
+    questionType: string
+  ) => void;
   resetKey: number;
   setIsTransitioning: React.Dispatch<React.SetStateAction<boolean>>;
   pagination: {
@@ -38,9 +42,8 @@ export default function QuizGameplaySwiper({
   setIsTransitioning,
   pagination,
   swiperRef,
-  control
-}: IQuizGameplaySwiperProps
-) {
+  control,
+}: IQuizGameplaySwiperProps) {
   return (
     <Swiper
       pagination={pagination}
@@ -89,34 +92,27 @@ export default function QuizGameplaySwiper({
                   handleSelectAnswer,
                   resetKey,
                 };
-                switch (typeName) {
-                  case "Single choice": {
-                    return (
-                      <RadioGroup
-                        {...commonProps}
-                        selectedAnsId={(selectedAnsId ?? "") as string}
-                        answerOptions={answerOptions}
-                      />
-                    );
-                  }
-                  case "Multiple choice": {
-                    return (
-                      <CheckboxGroup
-                        {...commonProps}
-                        selectedAnsIds={(selectedAnsId ?? []) as string[]}
-                        answerOptions={answerOptions}
-                      />
-                    );
-                  }
-                  default: {
-                    return (
-                      <ShortAnswerInput
-                        {...commonProps}
-                        acceptableAnswers={answerOptions}
-                      />
-                    );
-                  }
-                }
+                return (
+                  (typeName === "Single choice" && (
+                    <RadioGroup
+                      {...commonProps}
+                      answerOptions={answerOptions}
+                      selectedAnsId={(selectedAnsId ?? "") as string}
+                    />
+                  )) ||
+                  (typeName === "Multiple choice" && (
+                    <CheckboxGroup
+                      {...commonProps}
+                      answerOptions={answerOptions}
+                      selectedAnsIds={(selectedAnsId ?? []) as string[]}
+                    />
+                  )) || (
+                    <ShortAnswerInput
+                      {...commonProps}
+                      acceptableAnswers={answerOptions}
+                    />
+                  )
+                );
               }}
             />
             <br />
