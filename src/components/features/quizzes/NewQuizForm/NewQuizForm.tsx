@@ -6,7 +6,6 @@ import StepperProgress from "@/components/shared/StepperProgress/StepperProgress
 import { createQuiz } from "@/components/shared/utils/actions/quiz/createQuiz";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { Question } from "@/app/typings/question";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/navigation";
 import { toaster } from "@/components/ui/toaster";
@@ -20,6 +19,7 @@ import { StepsContent } from "@/components/ui/steps";
 import { getCookie, setCookie } from "cookies-next";
 import AuthModal from "@/components/shared/AuthModal/AuthModal";
 import AlertWrapper from "@/components/core/AlertWrapper/AlertWrapper";
+import { Qa } from "@/app/typings/qa";
 
 export default function NewQuizForm({
   quizTypes,
@@ -37,7 +37,8 @@ export default function NewQuizForm({
   }, []);
   const { setStep, goToNextStep, goToPrevStep } = helpers;
 
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [qaList, setQaList] = useState<Qa[]>([]);
+
   const [quizId, setQuizId] = useState(uuidv4());
   const methods = useForm({ mode: "onChange" });
 
@@ -49,7 +50,7 @@ export default function NewQuizForm({
   const isFormValid =
     currentStep === 1
       ? methods.formState.isValid
-      : questions.length >= minQuizQuestionCount;
+      : qaList.length >= minQuizQuestionCount;
 
   const setStepIfValid = (index: number) => {
     if ((isFormValid && index - currentStep < 2) || index < currentStep) {
@@ -59,52 +60,43 @@ export default function NewQuizForm({
 
   const handleCreateQuiz = async () => {
     const formValues = methods.getValues();
-    const formData = {
-      quiz: {
-        id: quizId,
-        user_id: "",
-        title: formValues.title,
-        time: "" + formValues.time,
-        id_quiz_type: formValues.quiz_type[0],
-      },
-      questions: {
-        questions,
-      },
-    };
+    const quiz = {
+      id: quizId,
+      user_id: "",
+      title: formValues.title,
+      time: "" + formValues.time,
+      id_quiz_type: formValues.quiz_type[0],
+    }
+    const questions = qaList.map(({question}: Qa) => question);
+    const answers = qaList.flatMap(({answers}: Qa) => answers);
+    const formatedData = { quiz, questions, answers };
+    
     if(isAnonymous) {
       const anonCreatedQuizzes = JSON.parse(
         getCookie("quizzes") || "[]"
       );
-      const quiz = { ...formData.quiz };
-      const answers = formData.questions.questions.flatMap((question: Question) => question.answers);
-      const questions = formData.questions.questions.map((question: Question) => {
-        delete question.answers;
-        return question;
-      });
-      const formatedData = { quiz, questions, answers };
-
+      
       const newQuizzes = [...anonCreatedQuizzes, formatedData];
       setCookie("quizzes", JSON.stringify(newQuizzes), {
         maxAge: 60 * 60 * 24,
       });
 
       setDialogVisible(true);
-      resetForm();
     } else {
-      const success = await createQuiz(formData);
-  
+      const success = await createQuiz(formatedData);
+      
       toaster.create({
         title: success ? "Quiz created" : "Error creating quiz",
         type: success ? "success" : "error",
         duration: 5000
       });
-      push("/quizzes");
     }
+    resetForm();
   };
 
   const resetForm = () => {
     methods.reset();
-    setQuestions([]);
+    setQaList([]);
     setStep(1);
     setQuizId(uuidv4());
   }
@@ -149,13 +141,13 @@ export default function NewQuizForm({
             {currentStep === 1 && <QuizDetailsForm quizTypes={quizTypes} />}
             {currentStep === 2 && (
               <QuizQuestionForm
-                questions={questions}
+                qaList={qaList}
                 questTypes={questTypes}
                 quizId={quizId}
-                setQuestions={setQuestions}
+                setQaList={setQaList}
               />
             )}
-            {currentStep === 3 && <QuestionListAccordion questions={questions} />}
+            {currentStep === 3 && <QuestionListAccordion qaList={qaList} />}
             <Flex justifyContent="space-between">
               <Button
                 onClick={goToPrevStep}

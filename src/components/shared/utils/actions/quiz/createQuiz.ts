@@ -1,38 +1,33 @@
 "use server";
 import { getUser } from "@/components/shared/utils/actions/user/getUser";
 import { revalidatePath } from "next/cache";
-import { Question } from "@/app/typings/question";
 import { Quiz } from "@/app/typings/quiz";
 import { createClient } from "../../supabase/server";
+import { Question } from "@/app/typings/question";
+import { Answer } from "@/app/typings/answer";
 
 interface FormData {
   quiz: Quiz;
-  questions: { questions: Question[] };
+  questions: Question[];
+  answers: Answer[];
 }
 
-
-export const createQuiz = async (d: FormData) => {
+export const createQuiz = async ({quiz, questions: new_questions, answers: new_answers}: FormData) => {
   const supabase = await createClient();
   const {
     data: { user },
   } = await getUser();
 
-  const quiz = { ...d.quiz, user_id: user?.id };
+  const new_quiz = {
+    ...quiz,
+    user_id: user?.id,
+  }
+  const { error } = await supabase.rpc("create_quiz", { new_quiz, new_questions, new_answers });
 
-  const answers = d.questions.questions.flatMap((question) => question.answers);
-  const questions = d.questions.questions.map((question) => {
-    delete question.answers;
-    return question;
-  });
-
-  try {
-    const {error} = await supabase.rpc("create_quiz", { newquiz: quiz, newquestions: questions, newanswers: answers });
-    if (error) throw error;
-
-    revalidatePath("/", "layout");
-    return true;
-  } catch (error) {
+  if(error){
     console.error("Error occurred:", error);
     return false;
   }
+  revalidatePath("/", "layout");
+  return true;
 };

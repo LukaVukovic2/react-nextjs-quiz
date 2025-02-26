@@ -5,12 +5,12 @@ import { Input } from "@chakra-ui/react";
 import { useFormContext } from "react-hook-form";
 import debounce from "debounce";
 import { Answer } from "@/app/typings/answer";
-import { Question } from "@/app/typings/question";
 import { FaCheckCircle } from "react-icons/fa";
 import { TbTrash, TbTrashOff } from "react-icons/tb";
+import { Qa } from "@/app/typings/qa";
 
 interface IChoiceQuestionInputProps {
-  currentQuestion: Question;
+  currentQa: Qa;
   updateAnswer: (value: string, id: string) => void;
   changeCorrectAnswer: (id: string, typeName: string) => void;
   selectedTypeName: string;
@@ -18,36 +18,33 @@ interface IChoiceQuestionInputProps {
 }
 
 export default function ChoiceQuestionInput({
-  currentQuestion,
+  currentQa,
   updateAnswer,
   changeCorrectAnswer,
   selectedTypeName,
   deleteAnswer,
 }: IChoiceQuestionInputProps) {
+  const { answers } = currentQa;
   const { register } = useFormContext();
   return (
-    Array.isArray(currentQuestion.answers) &&
-    currentQuestion.answers.map((answer: Answer) => {
-      const disableDelete =
-        (Array.isArray(currentQuestion.answers) &&
-          currentQuestion.answers.length <= 2) ||
-        answer.correct_answer;
+    answers.map((ans: Answer) => {
+      const disableDelete = (answers.length <= 2) || ans.correct_answer;
       return (
-        <FormControl key={answer.id}>
+        <FormControl key={ans.id}>
           <InputGroup
             w="100%"
             startElement={
-              answer.correct_answer && selectedTypeName === "Single choice" ? (
+              ans.correct_answer && selectedTypeName === "Single choice" ? (
                 <FaCheckCircle color="green" size={15} />
               ) : (
                 <input
                   type={
                     selectedTypeName === "Single choice" ? "radio" : "checkbox"
                   }
-                  checked={answer.correct_answer}
-                  name={`correctAnswer_${currentQuestion.id}`}
+                  checked={ans.correct_answer}
+                  name={`correctAnswer_${currentQa.question.id}`}
                   onChange={() =>
-                    changeCorrectAnswer(answer.id, selectedTypeName)
+                    changeCorrectAnswer(ans.id, selectedTypeName)
                   }
                   style={{ cursor: "pointer" }}
                 />
@@ -57,7 +54,7 @@ export default function ChoiceQuestionInput({
               <Button
                 disabled={disableDelete}
                 visual="ghost"
-                onClick={() => deleteAnswer(answer.id)}
+                onClick={() => deleteAnswer(ans.id)}
                 p={0}
               >
                 { disableDelete ? <TbTrashOff size={20} /> : <TbTrash size={20} color="red" /> }
@@ -66,13 +63,13 @@ export default function ChoiceQuestionInput({
           >
             <Input
               placeholder="Answer"
-              defaultValue={answer.answer}
-              {...register(`answer${answer.id}`, {
+              defaultValue={ans.answer}
+              {...register(`answer${ans.id}`, {
                 required: true,
               })}
               onChange={debounce((e) => {
-                register(`answer${answer.id}`).onChange(e);
-                updateAnswer(e.target.value, answer.id);
+                register(`answer${ans.id}`).onChange(e);
+                updateAnswer(e.target.value, ans.id);
               }, 500)}
               autoComplete="off"
             />

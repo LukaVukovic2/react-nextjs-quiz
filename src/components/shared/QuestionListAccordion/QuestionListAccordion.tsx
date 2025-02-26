@@ -1,4 +1,3 @@
-import { Question } from "@/app/typings/question";
 import {
   AccordionItem,
   AccordionItemContent,
@@ -6,15 +5,16 @@ import {
   AccordionRoot,
 } from "@/components/ui/accordion";
 import AnswerGroupBox from "../AnswerGroupBox/AnswerGroupBox";
+import { Qa } from "@/app/typings/qa";
 
 export default function QuestionListAccordion({
-  questions,
+  qaList,
 }: {
-  questions: Question[];
+  qaList: Qa[];
 }) {
   return (
     <AccordionRoot collapsible>
-      {questions.map((question, index) => (
+      {qaList.map(({question, answers}, index) => (
         <AccordionItem
           key={question.id}
           value={question.title}
@@ -23,8 +23,8 @@ export default function QuestionListAccordion({
             {`${index + 1}. ${question.title}`}
           </AccordionItemTrigger>
           <AccordionItemContent>
-            {question.answers &&
-              question.answers.map((answer, index) => (
+            {answers &&
+              answers.map((answer, index) => (
                 <AnswerGroupBox
                   key={answer.id}
                   answer={answer}

@@ -1,5 +1,4 @@
-import { Answer } from "@/app/typings/answer";
-import { Question } from "@/app/typings/question";
+import { Qa } from "@/app/typings/qa";
 import { Field } from "@/components/ui/field";
 import { InputGroup } from "@/components/ui/input-group";
 import { Button } from "@/styles/theme/components/button";
@@ -9,24 +8,24 @@ import { useFormContext } from "react-hook-form";
 import { TbTrash, TbTrashOff } from "react-icons/tb";
 
 interface IShortAnswerOptionInputProps {
-  currentQuestion: Question;
+  currentQa: Qa;
   updateAnswer: (value: string, id: string) => void;
   deleteAnswer: (answerId: string) => void;
 }
 
 export default function ShortAnswerOptionInput({
-  currentQuestion,
+  currentQa,
   updateAnswer,
   deleteAnswer,
 }: IShortAnswerOptionInputProps) {
   const { register } = useFormContext();
+  const { answers } = currentQa;
   return (
-    Array.isArray(currentQuestion.answers) &&
-    currentQuestion.answers.map((answer: Answer) => {
-      const disableDelete = Array.isArray(currentQuestion.answers) && currentQuestion.answers.length <= 1;
+    answers.map((ans) => {
+      const disableDelete = answers.length <= 1;
       return (
         <Field
-          key={answer.id}
+          key={ans.id}
           helperText="Enter the correct answer and acceptable variations"
         >
           <InputGroup
@@ -34,7 +33,7 @@ export default function ShortAnswerOptionInput({
             endElement={
               <Button
                 visual="ghost"
-                onClick={() => deleteAnswer(answer.id)}
+                onClick={() => deleteAnswer(ans.id)}
                 disabled={disableDelete}
                 p={0}
               >
@@ -46,13 +45,13 @@ export default function ShortAnswerOptionInput({
           >
             <Input
               placeholder="Answer"
-              defaultValue={answer.answer}
-              {...register(`answer${answer.id}`, {
+              defaultValue={ans.answer}
+              {...register(`answer${ans.id}`, {
                 required: true,
               })}
               onChange={debounce((e) => {
-                register(`answer${answer.id}`).onChange(e);
-                updateAnswer(e.target.value, answer.id);
+                register(`answer${ans.id}`).onChange(e);
+                updateAnswer(e.target.value, ans.id);
               }, 500)}
               autoComplete="off"
             />
