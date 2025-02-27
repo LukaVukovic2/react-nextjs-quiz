@@ -1,10 +1,8 @@
 "use client";
 import QuizMenuDropdown from "../QuizMenuDropdown/QuizMenuDropdown";
-import { Box, createListCollection, Flex, ListCollection, Text } from "@chakra-ui/react";
+import { Box, Flex, ListCollection, Text } from "@chakra-ui/react";
 import { Heading } from "@/styles/theme/components/heading";
 import { Quiz } from "@/app/typings/quiz";
-import { Question } from "@/app/typings/question";
-import { Answer } from "@/app/typings/answer";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
 import { QuizType } from "@/app/typings/quiz_type";
@@ -12,15 +10,14 @@ import { MyQuizzesContext } from "@/components/shared/utils/contexts/MyQuizzesCo
 import { QuestionType } from "@/app/typings/question_type";
 import { formatToMMSS } from "@/components/shared/utils/formatTime";
 import { createClient } from "@/components/shared/utils/supabase/client";
+import { Qa } from "@/app/typings/qa";
+import { createListCollection } from "@/components/shared/utils/createListCollection";
 
 interface MyQuizzesProps {
   quizzes: Array<{
     quiz: Quiz;
-    quiz_type: QuizType;
-    questions_and_answers: Array<{
-      question: Question;
-      answers: Answer[];
-    }>;
+    quizType: QuizType;
+    qaList: Qa[];
   }>;
 }
 
@@ -37,18 +34,8 @@ export default function MyQuizzes({quizzes}: MyQuizzesProps) {
         supabase.rpc("get_quiz_types"),
         supabase.rpc("get_question_types"),
       ]);
-      const quizTypesCollection: ListCollection<QuizType> = createListCollection({
-        items: quizTypes.map((quizType: QuizType) => ({
-          value: quizType.id,
-          label: quizType.type_name,
-        })),
-      });
-      const questTypesCollection: ListCollection<QuestionType> = createListCollection({
-        items: questTypes.map((questType: QuestionType) => ({
-          value: questType.id,
-          label: questType.type_name,
-        })),
-      });
+      const quizTypesCollection: ListCollection<QuizType> = createListCollection(quizTypes);
+      const questTypesCollection: ListCollection<QuestionType> = createListCollection(questTypes);
       setQuizTypes(quizTypesCollection);
       setQuestTypes(questTypesCollection);
     }
@@ -73,7 +60,7 @@ export default function MyQuizzes({quizzes}: MyQuizzesProps) {
             width: "500px",
           }}
         >
-          {quizzes.length > 0 && quizzes.map(({quiz, quiz_type}: {quiz: Quiz, quiz_type: QuizType}, index) => (
+          {quizzes.length > 0 && quizzes.map(({quiz, quizType}: {quiz: Quiz, quizType: QuizType}, index) => (
             <Box
               as="li"
               key={quiz.id}
@@ -88,10 +75,10 @@ export default function MyQuizzes({quizzes}: MyQuizzesProps) {
             >
               <div>
                 <Heading as="h2" size="h5">{quiz.title}</Heading>
-                <Text>{quiz_type.type_name}</Text>
+                <Text>{quizType.type_name}</Text>
                 <Text>{formatToMMSS(+quiz.time)}</Text>
               </div>
-              <QuizMenuDropdown quiz={quiz} quizType={quiz_type} questions_and_answers={quizzes[index].questions_and_answers} />
+              <QuizMenuDropdown quiz={quiz} quizType={quizType} qaList={quizzes[index].qaList} />
             </Box>
           ))}
         </Box>

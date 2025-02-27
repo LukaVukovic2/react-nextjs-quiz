@@ -9,38 +9,33 @@ import {
 import QuizUpdateForm from "../QuizUpdateForm/QuizUpdateForm";
 import { deleteQuiz } from "@/components/shared/utils/actions/quiz/deleteQuiz";
 import { useState } from "react";
-import { Question } from "@/app/typings/question";
-import { Answer } from "@/app/typings/answer";
 import { Quiz } from "@/app/typings/quiz";
 import {
-  DialogBody,
-  DialogCloseTrigger,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
   DialogRoot,
-  DialogTitle,
 } from "@/components/ui/dialog";
 import { toaster } from "@/components/ui/toaster";
 import { QuizType } from "@/app/typings/quiz_type";
 import "./QuizMenuDropdown.css";
+import { Qa } from "@/app/typings/qa";
+import { DialogContentWrapper } from "@/components/core/DialogContentWrapper/DialogContentWrapper";
+import { Text } from "@chakra-ui/react";
 
 interface QuizMenuDropdownProps {
   quiz: Quiz;
   quizType: QuizType;
-  questions_and_answers: Array<{
-    question: Question;
-    answers: Answer[];
-  }>;
+  qaList: Qa[];
 }
 
 export default function QuizMenuDropdown({
   quiz,
   quizType,
-  questions_and_answers,
+  qaList,
 }: QuizMenuDropdownProps) {
   const [openEdit, setOpenEdit] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+
+  const toggleEditDialog = () => setOpenEdit(!openEdit);
+  const toggleDeleteDialog = () => setOpenDelete(!openDelete);
 
   const handleQuizDelete = async (id: string) => {
     const success = await deleteQuiz(id);
@@ -71,7 +66,7 @@ export default function QuizMenuDropdown({
           className="menu-item"
           value="Edit"
           valueText="Edit"
-          onClick={() => setOpenEdit(true)}
+          onClick={toggleEditDialog}
         >
           Edit
         </MenuItem>
@@ -79,7 +74,7 @@ export default function QuizMenuDropdown({
           className="menu-item"
           value="Delete"
           valueText="Delete"
-          onClick={() => setOpenDelete(true)}
+          onClick={toggleDeleteDialog}
         >
           Delete
         </MenuItem>
@@ -87,51 +82,49 @@ export default function QuizMenuDropdown({
         <DialogRoot
           motionPreset="slide-in-bottom"
           open={openDelete}
-          onOpenChange={(e) => setOpenDelete(e.open)}
-        >
-          <DialogContent>
-            <DialogCloseTrigger />
-            <DialogHeader>
-              <DialogTitle>Delete Quiz</DialogTitle>
-            </DialogHeader>
-            <DialogBody>Are you sure you want to delete this quiz?</DialogBody>
-            <DialogFooter>
-              <Button
-                onClick={() => setOpenDelete(false)}
-                visual="outline"
-                autoFocus
-              >
-                No
-              </Button>
-              <Button
-                visual="danger"
-                ml={3}
-                onClick={() => handleQuizDelete(quiz.id)}
-              >
-                Yes
-              </Button>
-            </DialogFooter>
-          </DialogContent>
+          onOpenChange={toggleDeleteDialog}
+        >   
+          <DialogContentWrapper 
+            title="Delete Quiz" 
+            body={
+              <Text>Are you sure you want to delete this quiz?</Text>
+            }
+            footer={
+              <>
+                <Button
+                  onClick={toggleDeleteDialog}
+                  visual="outline"
+                  autoFocus
+                >
+                  No
+                </Button>
+                <Button
+                  visual="danger"
+                  ml={3}
+                  onClick={() => handleQuizDelete(quiz.id)}
+                >
+                  Yes
+                </Button>
+              </>
+            }
+          />
         </DialogRoot>
 
         <DialogRoot
           open={openEdit}
-          onOpenChange={(e) => setOpenEdit(e.open)}
+          onOpenChange={toggleEditDialog}
         >
-          <DialogContent>
-            <DialogCloseTrigger />
-            <DialogHeader>
-              <DialogTitle>Update Quiz</DialogTitle>
-            </DialogHeader>
-            <DialogBody>
+          <DialogContentWrapper 
+            title="Update Quiz" 
+            body={
               <QuizUpdateForm
                 quiz={quiz}
                 quizType={quizType}
-                questions_and_answers={questions_and_answers}
-                onClose={() => setOpenEdit(false)}
+                qaList={qaList}
+                onClose={toggleEditDialog}
               />
-            </DialogBody>
-          </DialogContent>
+            }
+          />
         </DialogRoot>
       </MenuContent>
     </MenuRoot>

@@ -16,21 +16,19 @@ import QuizUpdateQuestion from "../QuizUpdateQuestion/QuizUpdateQuestion";
 import { QuizUpdateContext } from "@/components/shared/utils/contexts/QuizUpdateContext";
 import QuizUpdateInfo from "../QuizUpdateInfo/QuizUpdateInfo";
 import "./QuizUpdateForm.css";
+import { Qa } from "@/app/typings/qa";
 
 interface QuizUpdateFormProps {
   quiz: Quiz;
   quizType: QuizType;
-  questions_and_answers: Array<{
-    question: Question;
-    answers: Answer[];
-  }>;
+  qaList: Qa[];
   onClose: () => void;
 }
 
 export default function QuizUpdateForm({
   quiz,
   quizType,
-  questions_and_answers,
+  qaList,
   onClose,
 }: QuizUpdateFormProps) {
   const methods = useForm({ mode: "onChange" });
@@ -54,12 +52,9 @@ export default function QuizUpdateForm({
   };
 
   useEffect(() => {
-    const answers: Answer[] = questions_and_answers
-      .map((qa) => qa.answers)
-      .flat();
-    setAnswersArr(answers);
-    setQuestionsArr(questions_and_answers.map((qa) => qa.question));
-  }, [questions_and_answers]);
+    setAnswersArr(qaList.map(({answers}) => answers).flat());
+    setQuestionsArr(qaList.map(({question}) => question));
+  }, [qaList]);
 
   const addNewQuestion = () => {
     const id = uuidv4();
@@ -153,7 +148,7 @@ export default function QuizUpdateForm({
               );
               const isDisableAns =
                 !q.id_quest_type ||
-                answersForQuestion.some((answer) => !answer.answer);
+                answersForQuestion.some((ans) => !ans.answer);
               return (
                 <div key={q.id}>
                   <QuizUpdateQuestion
