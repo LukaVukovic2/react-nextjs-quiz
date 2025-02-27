@@ -9,7 +9,7 @@ import {
 import QuizUpdateForm from "../QuizUpdateForm/QuizUpdateForm";
 import { deleteQuiz } from "@/components/shared/utils/actions/quiz/deleteQuiz";
 import { useState } from "react";
-import { Quiz } from "@/app/typings/quiz";
+import { QuizBasic } from "@/app/typings/quiz";
 import {
   DialogRoot,
 } from "@/components/ui/dialog";
@@ -21,7 +21,7 @@ import { DialogContentWrapper } from "@/components/core/DialogContentWrapper/Dia
 import { Text } from "@chakra-ui/react";
 
 interface QuizMenuDropdownProps {
-  quiz: Quiz;
+  quiz: QuizBasic;
   quizType: QuizType;
   qaList: Qa[];
 }

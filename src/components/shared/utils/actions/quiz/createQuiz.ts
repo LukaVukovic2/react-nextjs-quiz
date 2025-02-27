@@ -1,13 +1,13 @@
 "use server";
 import { getUser } from "@/components/shared/utils/actions/user/getUser";
 import { revalidatePath } from "next/cache";
-import { Quiz } from "@/app/typings/quiz";
+import { QuizBasic } from "@/app/typings/quiz";
 import { createClient } from "../../supabase/server";
 import { Question } from "@/app/typings/question";
 import { Answer } from "@/app/typings/answer";
 
 interface FormData {
-  quiz: Quiz;
+  quiz: QuizBasic;
   questions: Question[];
   answers: Answer[];
 }

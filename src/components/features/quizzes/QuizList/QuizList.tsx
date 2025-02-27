@@ -1,11 +1,11 @@
 "use client";
 import QuizItem from "../QuizItem/QuizItem";
-import { Quiz } from "@/app/typings/quiz";
+import { QuizBasic } from "@/app/typings/quiz";
 import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
 import React, { useState, useEffect } from "react";
 import { Flex } from "@chakra-ui/react";
  
-export default function QuizList({quizzes, children}: {quizzes: Quiz[], children: React.ReactNode}) {
+export default function QuizList({quizzes, children}: {quizzes: QuizBasic[], children: React.ReactNode}) {
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     setLoaded(true);
@@ -19,7 +19,7 @@ export default function QuizList({quizzes, children}: {quizzes: Quiz[], children
       {children}
       <Flex flexWrap="wrap" gap="2rem">
         {quizzes && quizzes?.length > 0 && (
-          quizzes.map((quiz: Quiz) => (
+          quizzes.map((quiz: QuizBasic) => (
             <QuizItem
               key={quiz.id}
               quiz={quiz}

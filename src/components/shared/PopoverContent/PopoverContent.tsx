@@ -1,19 +1,20 @@
-import { Quiz } from "@/app/typings/quiz";
+import { QuizDetails } from "@/app/typings/quiz";
 import { PopoverContent as Content, PopoverArrow, PopoverBody, PopoverTitle } from "@/components/ui/popover";
 import { Rating } from "@/components/ui/rating";
 import { Flex, Text } from "@chakra-ui/react";
+import { getLocaleDateString } from "../utils/getLocaleDateString";
 
-export default function PopoverContent({quiz}: {quiz: Quiz}) {
-  const created_at = new Date(quiz?.created_at || "").toLocaleDateString();
-  const updated_at = new Date(quiz?.updated_at || "").toLocaleDateString();
+export default function PopoverContent({quiz}: {quiz: QuizDetails}) {
+  const created_at = getLocaleDateString(quiz.created_at);
+  const updated_at = getLocaleDateString(quiz.updated_at);
   return (
     <Content>
       <PopoverArrow />
       <PopoverBody>
         <PopoverTitle fontWeight="{fontWeights.bold}">Quiz Details</PopoverTitle>
         <Text>Created: {created_at}</Text>
-        <Text>Last updated: {quiz.updated_at ? updated_at : created_at}</Text>
-        <Text>Plays: {quiz.plays || 0}</Text>
+        <Text>Last updated: {quiz.updated_at ? updated_at : "Never"}</Text>
+        <Text>Plays: {quiz.plays}</Text>
         <Flex alignItems="center" gap={1}>
           Rating: {quiz.number_of_ratings ? (
             <>

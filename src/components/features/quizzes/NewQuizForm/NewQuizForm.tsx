@@ -7,7 +7,6 @@ import { createQuiz } from "@/components/shared/utils/actions/quiz/createQuiz";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
-import { useRouter } from "next/navigation";
 import { toaster } from "@/components/ui/toaster";
 import { useStep } from "usehooks-ts";
 import QuizDetailsForm from "./components/QuizDetailsForm";
@@ -28,7 +27,6 @@ export default function NewQuizForm({
   quizTypes: QuizType[];
   questTypes: QuestionType[];
 }) {
-  const { push } = useRouter();
   const [isClient, setIsClient] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false);
   const [currentStep, helpers] = useStep(3);

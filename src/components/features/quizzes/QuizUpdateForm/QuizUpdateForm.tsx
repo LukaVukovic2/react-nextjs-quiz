@@ -8,7 +8,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 import { Answer } from "@/app/typings/answer";
 import { Question } from "@/app/typings/question";
-import { Quiz } from "@/app/typings/quiz";
+import { QuizBasic } from "@/app/typings/quiz";
 import { QuizType } from "@/app/typings/quiz_type";
 import { MyQuizzesContext } from "@/components/shared/utils/contexts/MyQuizzesContext";
 import QuizUpdateAnswer from "../QuizUpdateAnswer/QuizUpdateAnswer";
@@ -19,7 +19,7 @@ import "./QuizUpdateForm.css";
 import { Qa } from "@/app/typings/qa";
 
 interface QuizUpdateFormProps {
-  quiz: Quiz;
+  quiz: QuizBasic;
   quizType: QuizType;
   qaList: Qa[];
   onClose: () => void;
@@ -41,7 +41,7 @@ export default function QuizUpdateForm({
   const [deletedQuestions, setDeletedQuestions] = useState<string[]>([]);
   const [dirtyAnswers, setDirtyAnswers] = useState<Answer[]>([]);
   const [deletedAnswers, setDeletedAnswers] = useState<string[]>([]);
-  const [dirtyQuizFields, setDirtyQuizFields] = useState<Quiz>();
+  const [dirtyQuizFields, setDirtyQuizFields] = useState<QuizBasic>();
 
   const formDataEntries = {
     quiz: dirtyQuizFields,

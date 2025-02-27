@@ -1,7 +1,7 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
 import { Answer } from '@/app/typings/answer';
 import { Question } from '@/app/typings/question';
-import { Quiz } from '@/app/typings/quiz';
+import { QuizBasic } from '@/app/typings/quiz';
 
 export interface IQuizUpdateContext {
   answersArr: Answer[];
@@ -16,8 +16,8 @@ export interface IQuizUpdateContext {
   setDirtyAnswers: Dispatch<SetStateAction<Answer[]>>;
   deletedAnswers: string[];
   setDeletedAnswers: Dispatch<SetStateAction<string[]>>;
-  dirtyQuizFields: Quiz | undefined;
-  setDirtyQuizFields: Dispatch<SetStateAction<Quiz | undefined>>;
+  dirtyQuizFields: QuizBasic | undefined;
+  setDirtyQuizFields: Dispatch<SetStateAction<QuizBasic | undefined>>;
 }
 
 export const QuizUpdateContext = createContext<IQuizUpdateContext>({
@@ -33,6 +33,6 @@ export const QuizUpdateContext = createContext<IQuizUpdateContext>({
   setDirtyAnswers: () => {},
   deletedAnswers: [] as string[],
   setDeletedAnswers: () => {},
-  dirtyQuizFields: {} as Quiz,
+  dirtyQuizFields: {} as QuizBasic,
   setDirtyQuizFields: () => {},
 });

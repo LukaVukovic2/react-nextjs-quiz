@@ -7,7 +7,7 @@ import { MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Flex, chakra } from "@chakra-ui/react";
 import { Button } from "@/styles/theme/components/button";
-import { Quiz } from "@/app/typings/quiz";
+import { QuizDetails } from "@/app/typings/quiz";
 import { User } from "@/app/typings/user";
 import { Answer } from "@/app/typings/answer";
 import { Question } from "@/app/typings/question";
@@ -35,12 +35,12 @@ import AlertWrapper from "@/components/core/AlertWrapper/AlertWrapper";
 import { createClient } from "@/components/shared/utils/supabase/client";
 
 interface IQuizGameplayProps {
-  quiz: Quiz;
+  quiz: QuizDetails;
   user: User;
   questions: Question[];
   answers: Answer[];
   questTypes: QuestionType[];
-  setActiveTab: (index: number) => void;
+  switchTab: (tab: "Gameplay" | "Leaderboard" | "Reviews") => void;
 }
 
 export default function QuizGameplaySection({
@@ -49,7 +49,7 @@ export default function QuizGameplaySection({
   questions,
   answers,
   questTypes,
-  setActiveTab,
+  switchTab,
 }: IQuizGameplayProps) {
   const [selectedAnswers, setSelectedAnswers] = useState<
     Map<string, string[] | null>
@@ -207,7 +207,7 @@ export default function QuizGameplaySection({
       {isTopResult && (
         <Button
           visual="success"
-          onClick={() => setActiveTab(1)}
+          onClick={() => switchTab("Leaderboard")}
           className="fa-fade"
           position="fixed"
           bottom="50%"
@@ -241,7 +241,7 @@ export default function QuizGameplaySection({
           <QuizResultSection
             score={score}
             questionCount={questions.length}
-            averageScore={quiz.average_score || 0}
+            averageScore={quiz.average_score}
           />
         )}
       </Flex>

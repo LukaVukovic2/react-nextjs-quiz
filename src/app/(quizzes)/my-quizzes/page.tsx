@@ -9,7 +9,7 @@ export default async function MyQuizzesPage() {
   if (!user) {
     return null;
   }  
-  const { data: quizzes, error } = await supabase.rpc("get_quizzes_by_id", {
+  const { data: quizzes , error } = await supabase.rpc("get_quizzes_by_id", {
     iduser: user.id,
   });
   if(!quizzes || !(Array.isArray(quizzes) && quizzes.length > 0) || error) {

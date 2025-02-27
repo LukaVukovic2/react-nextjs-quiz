@@ -2,7 +2,7 @@
 import QuizMenuDropdown from "../QuizMenuDropdown/QuizMenuDropdown";
 import { Box, Flex, ListCollection, Text } from "@chakra-ui/react";
 import { Heading } from "@/styles/theme/components/heading";
-import { Quiz } from "@/app/typings/quiz";
+import { QuizBasic } from "@/app/typings/quiz";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
 import { QuizType } from "@/app/typings/quiz_type";
@@ -15,7 +15,7 @@ import { createListCollection } from "@/components/shared/utils/createListCollec
 
 interface MyQuizzesProps {
   quizzes: Array<{
-    quiz: Quiz;
+    quiz: QuizBasic;
     quizType: QuizType;
     qaList: Qa[];
   }>;
@@ -60,7 +60,7 @@ export default function MyQuizzes({quizzes}: MyQuizzesProps) {
             width: "500px",
           }}
         >
-          {quizzes.length > 0 && quizzes.map(({quiz, quizType}: {quiz: Quiz, quizType: QuizType}, index) => (
+          {quizzes.length > 0 && quizzes.map(({quiz, quizType}: {quiz: QuizBasic, quizType: QuizType}, index) => (
             <Box
               as="li"
               key={quiz.id}

@@ -1,7 +1,7 @@
 "use client";
 import { Answer } from "@/app/typings/answer";
 import { Question } from "@/app/typings/question";
-import { Quiz } from "@/app/typings/quiz";
+import { QuizDetails } from "@/app/typings/quiz";
 import { Result } from "@/app/typings/result";
 import { User } from "@/app/typings/user";
 import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
@@ -13,7 +13,7 @@ import { QuestionType } from "@/app/typings/question_type";
 import "./QuizTabsClient.css"
 
 interface IQuizTabsClientProps {
-  quiz: Quiz;
+  quiz: QuizDetails;
   questions: Question[];
   user: User;
   answers: Answer[];
@@ -33,6 +33,7 @@ export default function QuizTabsClient({
 }: IQuizTabsClientProps) {
   const [loaded, setLoaded] = useState(false);
   const [value, setValue] = useState("Gameplay");
+  const switchTab = (tab: "Gameplay" | "Leaderboard" | "Reviews") => setValue(tab);
 
   useEffect(() => {
     setLoaded(true);
@@ -61,7 +62,7 @@ export default function QuizTabsClient({
             questions={questions}
             answers={answers}
             questTypes={questTypes}
-            setActiveTab={() => setValue("Leaderboard")}
+            switchTab={switchTab}
           />
         ) : (
           "Data not found"

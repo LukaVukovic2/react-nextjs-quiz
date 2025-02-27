@@ -1,4 +1,4 @@
-import { Quiz } from "@/app/typings/quiz";
+import { QuizBasic } from "@/app/typings/quiz";
 import { QuizType } from "@/app/typings/quiz_type";
 import SelectOption from "@/components/core/SelectOption/SelectOption";
 import { QuizUpdateContext } from "@/components/shared/utils/contexts/QuizUpdateContext";
@@ -11,7 +11,7 @@ import { useContext } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
 interface IQuizUpdateInfoProps {
-  quiz: Quiz;
+  quiz: QuizBasic;
   quizType: QuizType;
   quizTypes: ListCollection;
 }
@@ -21,15 +21,15 @@ export default function QuizUpdateInfo({ quiz, quizType, quizTypes }: IQuizUpdat
   const { setDirtyQuizFields } = useContext(QuizUpdateContext);
 
   const updateQuizInfo = (title: string) => {
-    setDirtyQuizFields((prev) => ({...prev, id: quiz.id, title}) as Quiz);
+    setDirtyQuizFields((prev) => ({...prev, id: quiz.id, title}) as QuizBasic);
   };
 
   const changeTime = (time: string) => {
-    setDirtyQuizFields((prev) => ({...prev, id: quiz.id, time}) as Quiz);
+    setDirtyQuizFields((prev) => ({...prev, id: quiz.id, time}) as QuizBasic);
   };
 
   const selectQuizType = (value: string) => {
-    setDirtyQuizFields((prev) => ({...prev, id: quiz.id, id_quiz_type: value}) as Quiz);
+    setDirtyQuizFields((prev) => ({...prev, id: quiz.id, id_quiz_type: value}) as QuizBasic);
   };
 
   return (
