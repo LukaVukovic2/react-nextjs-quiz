@@ -1,37 +1,17 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { createClient } from "../../supabase/server";
+import { FieldValues } from "react-hook-form";
 
-export const updateQuiz = async (changes: FormData) => {
+export const updateQuiz = async ({dirtyQuizFields, dirtyQuestions, dirtyAnswers, deletedQuestions, deletedAnswers}: FieldValues) => {
   const supabase = await createClient();
-  const parseJson = (value: string | null) => {
-    if (value === null || value === "undefined" || value === "") {
-      return {};
-    }
-    try {
-      return JSON.parse(value);
-    } catch (e) {
-      console.error("Failed to parse JSON:", e);
-      return {};
-    }
-  };
-
-  const quizJson = parseJson(changes.get("quiz") as string);
-  const questionJson = parseJson(changes.get("questions") as string);
-  const answerJson = parseJson(changes.get("answers") as string);
-  const deletedQuestionsJson = parseJson(
-    changes.get("deletedQuestions") as string
-  );
-  const deletedAnswersJson = parseJson(
-    changes.get("deletedAnswers") as string
-  );
 
   const { error } = await supabase.rpc("update_quiz", {
-    updated_quiz: quizJson,
-    updated_questions: questionJson,
-    updated_answers: answerJson,
-    deleted_questions: deletedQuestionsJson,
-    deleted_answers: deletedAnswersJson
+    updated_quiz: dirtyQuizFields,
+    updated_questions: dirtyQuestions,
+    updated_answers: dirtyAnswers,
+    deleted_questions: deletedQuestions,
+    deleted_answers: deletedAnswers
   });
   if (error) {
     console.error(error);

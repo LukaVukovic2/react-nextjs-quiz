@@ -1,13 +1,10 @@
 import { QuizBasic } from "@/app/typings/quiz";
 import { QuizType } from "@/app/typings/quiz_type";
 import SelectOption from "@/components/core/SelectOption/SelectOption";
-import { QuizUpdateContext } from "@/components/shared/utils/contexts/QuizUpdateContext";
 import { formatToMMSS } from "@/components/shared/utils/formatTime";
 import { timeOptions } from "@/components/shared/utils/timeOptions";
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input, ListCollection } from "@chakra-ui/react";
-import debounce from "debounce";
-import { useContext } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
 interface IQuizUpdateInfoProps {
@@ -18,20 +15,6 @@ interface IQuizUpdateInfoProps {
 
 export default function QuizUpdateInfo({ quiz, quizType, quizTypes }: IQuizUpdateInfoProps) {
   const { register, control } = useFormContext();
-  const { setDirtyQuizFields } = useContext(QuizUpdateContext);
-
-  const updateQuizInfo = (title: string) => {
-    setDirtyQuizFields((prev) => ({...prev, id: quiz.id, title}) as QuizBasic);
-  };
-
-  const changeTime = (time: string) => {
-    setDirtyQuizFields((prev) => ({...prev, id: quiz.id, time}) as QuizBasic);
-  };
-
-  const selectQuizType = (value: string) => {
-    setDirtyQuizFields((prev) => ({...prev, id: quiz.id, id_quiz_type: value}) as QuizBasic);
-  };
-
   return (
     <>
       <FormControl>
@@ -45,7 +28,6 @@ export default function QuizUpdateInfo({ quiz, quizType, quizTypes }: IQuizUpdat
               value: 3,
               message: "Title must be at least 3 characters long",
             },
-            onChange: debounce((e) => updateQuizInfo(e.target.value), 500),
           })}
         />
       </FormControl>
@@ -62,7 +44,6 @@ export default function QuizUpdateInfo({ quiz, quizType, quizTypes }: IQuizUpdat
                 field={{
                   ...field,
                   value: field.value || quizType.id || "",
-                  onChange: (e) => selectQuizType(e[0]),
                 }}
                 list={quizTypes}
                 defaultMessage={quizType ? quizType.type_name : "Select quiz type"}
@@ -83,7 +64,6 @@ export default function QuizUpdateInfo({ quiz, quizType, quizTypes }: IQuizUpdat
               field={{
                 ...field,
                 value: formatToMMSS(+quiz.time)|| "",
-                onChange: (e) => changeTime(e[0]),
               }}
               list={timeOptions}
               defaultMessage={quiz.time ? formatToMMSS(+quiz.time) : "Timer"}

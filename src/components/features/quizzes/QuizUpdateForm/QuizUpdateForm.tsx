@@ -3,8 +3,8 @@ import { toaster } from "@/components/ui/toaster";
 import { Button } from "@/styles/theme/components/button";
 import { AddIcon } from "@chakra-ui/icons";
 import { updateQuiz } from "@/components/shared/utils/actions/quiz/updateQuiz";
-import { useContext, useEffect, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { useContext, useState } from "react";
+import { FieldValues, FormProvider, useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 import { Answer } from "@/app/typings/answer";
 import { Question } from "@/app/typings/question";
@@ -17,61 +17,44 @@ import { QuizUpdateContext } from "@/components/shared/utils/contexts/QuizUpdate
 import QuizUpdateInfo from "../QuizUpdateInfo/QuizUpdateInfo";
 import "./QuizUpdateForm.css";
 import { Qa } from "@/app/typings/qa";
+import { Button as SubmitButton } from "@chakra-ui/react";
 
 interface QuizUpdateFormProps {
   quiz: QuizBasic;
   quizType: QuizType;
   qaList: Qa[];
-  onClose: () => void;
+  closeDialog: () => void;
 }
 
 export default function QuizUpdateForm({
   quiz,
   quizType,
   qaList,
-  onClose,
+  closeDialog,
 }: QuizUpdateFormProps) {
   const methods = useForm({ mode: "onChange" });
-  const {formState: { isValid }} = methods;
-
+  const {formState: { isValid, isSubmitting }, handleSubmit} = methods;
+  
   const { quizTypes, questTypes } = useContext(MyQuizzesContext);
-  const [answersArr, setAnswersArr] = useState<Answer[]>([]);
-  const [questionsArr, setQuestionsArr] = useState<Question[]>([]);
+  const [questionsArr, setQuestionsArr] = useState<Question[]>(qaList.map(({question}) => question));
+  const [answersArr, setAnswersArr] = useState<Answer[]>(qaList.map(({answers}) => answers).flat());
   const [dirtyQuestions, setDirtyQuestions] = useState<Question[]>([]);
-  const [deletedQuestions, setDeletedQuestions] = useState<string[]>([]);
   const [dirtyAnswers, setDirtyAnswers] = useState<Answer[]>([]);
+  const [deletedQuestions, setDeletedQuestions] = useState<string[]>([]);
   const [deletedAnswers, setDeletedAnswers] = useState<string[]>([]);
-  const [dirtyQuizFields, setDirtyQuizFields] = useState<QuizBasic>();
 
-  const formDataEntries = {
-    quiz: dirtyQuizFields,
-    questions: dirtyQuestions,
-    answers: dirtyAnswers,
-    deletedQuestions: deletedQuestions,
-    deletedAnswers: deletedAnswers,
-  };
-
-  useEffect(() => {
-    setAnswersArr(qaList.map(({answers}) => answers).flat());
-    setQuestionsArr(qaList.map(({question}) => question));
-  }, [qaList]);
+  const questTypeMap = new Map(
+    questTypes.items.map((type) => [type.value, type.label])
+  );
 
   const addNewQuestion = () => {
     const id = uuidv4();
-    const newQuestion: Question = {
-      id,
-      title: "",
-      quiz_id: quiz.id,
-      id_quest_type: "",
-    };
+    const newQuestion = {id, quiz_id: quiz.id} as Question;
     setQuestionsArr([...questionsArr, newQuestion]);
     setDirtyQuestions([...dirtyQuestions, newQuestion]);
   };
 
-  const addNewAnswer = (question: Question) => {
-    const questType = questTypes.items.find(
-      (type) => type.value === question.id_quest_type
-    )?.label;
+  const addNewAnswer = (question: Question, questType: string) => {
     const newAnswer: Answer = {
       id: uuidv4(),
       answer: "",
@@ -82,26 +65,30 @@ export default function QuizUpdateForm({
     setDirtyAnswers([...dirtyAnswers, newAnswer]);
   };
 
-  const handleSubmit = async () => {
-    const formData = new FormData();
-
-    Object.entries(formDataEntries).forEach(([key, value]) => {
-      formData.append(key, JSON.stringify(value));
-    });
-
-    const success = await updateQuiz(formData);
+  const onSubmit = async (data: FieldValues) => {
+    const updatedData = {
+      dirtyQuizFields: {id: quiz.id, id_quiz_type: String(data.id_quiz_type), title: data.title, time: data.time[0]} as QuizBasic,
+      dirtyQuestions,
+      dirtyAnswers,
+      deletedQuestions,
+      deletedAnswers
+    }
+    const success = await updateQuiz(updatedData);
     toaster.create({
       title: success ? "Quiz updated" : "Error updating quiz",
       type: success ? "success" : "error",
       duration: 3000,
     });
-    if (success) {
-      setDirtyQuizFields(undefined);
-      setDirtyQuestions([]);
-      setDirtyAnswers([]);
+    if (success){
+      resetDirtyFields();
+      closeDialog();
     }
-    onClose();
   };
+
+  const resetDirtyFields = () => {
+    setDirtyQuestions([]);
+    setDirtyAnswers([]);
+  }
 
   return (
     <QuizUpdateContext.Provider
@@ -118,14 +105,13 @@ export default function QuizUpdateForm({
         setDirtyAnswers,
         deletedAnswers,
         setDeletedAnswers,
-        dirtyQuizFields,
-        setDirtyQuizFields,
       }}
     >
       <FormProvider {...methods}>
         <chakra.form
           overflowY="scroll"
           height="70vh"
+          onSubmit={handleSubmit(onSubmit)}
         >
           <QuizUpdateInfo
             quiz={quiz}
@@ -140,15 +126,9 @@ export default function QuizUpdateForm({
             my={3}
           >
             {questionsArr.map((q, index) => {
-              const questType = questTypes.items.find(
-                (type) => type.value === q.id_quest_type
-              )?.label;
-              const answersForQuestion = answersArr.filter(
-                (ans) => ans.question_id === q.id
-              );
-              const isDisableAns =
-                !q.id_quest_type ||
-                answersForQuestion.some((ans) => !ans.answer);
+              const questType = questTypeMap.get(q.id_quest_type);
+              const hasEmptyAnswers = answersArr.some((ans) => ans.question_id === q.id && !ans.answer);
+              const isDisableAns = !q.id_quest_type || hasEmptyAnswers;
               return (
                 <div key={q.id}>
                   <QuizUpdateQuestion
@@ -162,7 +142,7 @@ export default function QuizUpdateForm({
                     questType={questType}
                   />
                   <Button
-                    onClick={() => addNewAnswer(q)}
+                    onClick={() => addNewAnswer(q, questType)}
                     disabled={isDisableAns}
                     visual="ghost"
                   >
@@ -184,13 +164,14 @@ export default function QuizUpdateForm({
             </Flex>
           </Flex>
 
-          <Button
-            disabled={!isValid}
-            onClick={handleSubmit}
-            type="button"
+          <SubmitButton
+            disabled={!isValid || isSubmitting}
+            loadingText="Updating..."
+            loading={isSubmitting}
+            type="submit"
           >
             Update Quiz
-          </Button>
+          </SubmitButton>
         </chakra.form>
       </FormProvider>
     </QuizUpdateContext.Provider>

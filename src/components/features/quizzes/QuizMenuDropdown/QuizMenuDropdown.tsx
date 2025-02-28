@@ -121,7 +121,7 @@ export default function QuizMenuDropdown({
                 quiz={quiz}
                 quizType={quizType}
                 qaList={qaList}
-                onClose={toggleEditDialog}
+                closeDialog={toggleEditDialog}
               />
             }
           />
