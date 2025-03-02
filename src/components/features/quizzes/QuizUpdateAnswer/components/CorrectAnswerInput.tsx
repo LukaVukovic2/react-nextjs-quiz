@@ -11,8 +11,7 @@ interface IQuestionStartElementProps {
   correctCount: number;
   changeCorrectAnswer: (
     questionId: string,
-    answerId: string,
-    questionType: string
+    answer: Answer
   ) => void;
 }
 
@@ -43,7 +42,7 @@ export default function CorrectAnswerInput({
       {...register(`correctAnswer${answer.id}`)}
       onChange={(e) => {
         if (!e.target.checked && correctCount === 1) return;
-        changeCorrectAnswer(question.id, answer.id, questType);
+        changeCorrectAnswer(question.id, answer);
       }}
       className={clsx({
         checkbox: questType === "Multiple choice",
