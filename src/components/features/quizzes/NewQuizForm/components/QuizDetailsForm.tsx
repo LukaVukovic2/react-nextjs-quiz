@@ -30,7 +30,10 @@ export default function QuizDetailsForm({ quizTypes }: IQuizDetailsFormProps) {
         <Input
           placeholder="Title"
           {...register("title", { required: true })}
-          onChange={debounce(() => trigger("title"), 500)}
+          onChange={debounce((e) =>{
+            register("title").onChange(e);
+            trigger("title");
+          }, 500)}
         />
       </FormControl>
       <FormControl>

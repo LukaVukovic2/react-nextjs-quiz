@@ -6,6 +6,7 @@ import { Field } from "@/components/ui/field";
 import { Button } from "@/styles/theme/components/button";
 import { FormControl } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/react";
+import debounce from "debounce";
 import { useFormContext } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 
@@ -43,8 +44,7 @@ export default function QuestionTypeForm({
         answers: [...(prev.answers || []), currentAnswer],
       };
     });
-    trigger(`correctAnswer_${currentQa.question.id}`);
-    trigger(`answer${currentAnswer.id}`);
+    trigger([`answer${currentAnswer.id}`, `correctAnswer_${currentQa.question.id}`]);
   };
 
   const addNewQuestion = () => {
@@ -86,7 +86,7 @@ export default function QuestionTypeForm({
         title
       }
     }));
-    trigger("questionTitle");
+    trigger(`q_title${currentQa.question.id}`);
   };
 
   const updateAnswer = (
@@ -135,10 +135,14 @@ export default function QuestionTypeForm({
           <FormControl>
             <Field>
               <Input
+                key={currentQa.question.id}
                 placeholder="Question title"
-                value={currentQa.question.title}
-                {...register("questionTitle", { required: true })}
-                onChange={(e) => changeQuestionTitle(e.target.value)}
+                defaultValue={currentQa.question.title}
+                {...register(`q_title${currentQa.question.id}`, { required: true })}
+                onChange={debounce((e) => {
+                  register(`q_title${currentQa.question.id}`).onChange(e);
+                  changeQuestionTitle(e.target.value);
+                }, 500)}
                 autoComplete="off"
               />
             </Field>

@@ -17,7 +17,7 @@ import { QuizUpdateContext } from "@/components/shared/utils/contexts/QuizUpdate
 import QuizUpdateInfo from "../QuizUpdateInfo/QuizUpdateInfo";
 import "./QuizUpdateForm.css";
 import { Qa } from "@/app/typings/qa";
-import { Button as SubmitButton } from "@chakra-ui/react";
+import { SubmitButton } from "@/components/core/SubmitButton/SubmitButton";
 
 interface QuizUpdateFormProps {
   quiz: QuizBasic;
@@ -163,12 +163,11 @@ export default function QuizUpdateForm({
               </Button>
             </Flex>
           </Flex>
-
+          
           <SubmitButton
             disabled={!isValid || isSubmitting}
             loadingText="Updating..."
             loading={isSubmitting}
-            type="submit"
           >
             Update Quiz
           </SubmitButton>
