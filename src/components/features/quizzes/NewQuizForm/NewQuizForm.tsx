@@ -31,13 +31,13 @@ export default function NewQuizForm({
 
   const [dialogVisible, setDialogVisible] = useState(false);
   const [qaList, setQaList] = useState<Qa[]>([]);
-  const [quizId, setQuizId] = useState(uuidv4());
+  const [quizId, setQuizId] = useState(() => uuidv4());
   const methods = useForm({ mode: "onChange" });
   const { handleSubmit, formState: {isSubmitting, isValid}, getValues, reset } = methods;
   const [currentStep, helpers] = useStep(3);
   const { setStep, goToNextStep, goToPrevStep } = helpers;
   
-  const isAnonymous = getCookie("isAnonymous") === "true" || false;
+  const isAnonymous = getCookie("isAnonymous") === "true";
   const minQuizQuestionCount =
     Number(process.env.NEXT_PUBLIC_MIN_QUIZ_QUESTION_COUNT) ?? 0;
   const isFormValid =
@@ -45,7 +45,7 @@ export default function NewQuizForm({
       ? isValid
       : qaList.length >= minQuizQuestionCount;
 
-  const setStepIfValid = (index: number) => {
+  const changeStep = (index: number) => {
     if ((isFormValid && index - currentStep < 2) || index < currentStep) {
       setStep(index);
     }
@@ -117,7 +117,7 @@ export default function NewQuizForm({
         <FormProvider {...methods}>
           <StepperProgress
             currentStep={currentStep}
-            setStep={setStepIfValid}
+            setStep={changeStep}
           >
             <StepsContent index={2}>This is your Quiz!</StepsContent>
           </StepperProgress>
