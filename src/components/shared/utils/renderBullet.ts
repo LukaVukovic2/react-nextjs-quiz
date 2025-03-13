@@ -1,6 +1,5 @@
 import { Answer } from "@/app/typings/answer";
-import { Question } from "@/app/typings/question";
-import { QuestionType } from "@/app/typings/question_type";
+import { Question, QuestionType } from "@/app/typings/question";
 import clsx from "clsx";
 
 interface IPaginationBulletsProps {

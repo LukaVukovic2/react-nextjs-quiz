@@ -14,7 +14,7 @@ import {
   DialogRoot,
 } from "@/components/ui/dialog";
 import { toaster } from "@/components/ui/toaster";
-import { QuizType } from "@/app/typings/quiz_type";
+import { QuizType } from "@/app/typings/quiz";
 import "./QuizMenuDropdown.css";
 import { Qa } from "@/app/typings/qa";
 import { DialogContentWrapper } from "@/components/core/DialogContentWrapper/DialogContentWrapper";

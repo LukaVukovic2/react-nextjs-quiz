@@ -1,4 +1,4 @@
-import { QuizType } from "@/app/typings/quiz_type";
+import { QuizType } from "@/app/typings/quiz";
 import SelectOption from "@/components/core/SelectOption/SelectOption";
 import { formatToMMSS } from "@/components/shared/utils/formatTime";
 import { timeOptions } from "@/components/shared/utils/timeOptions";

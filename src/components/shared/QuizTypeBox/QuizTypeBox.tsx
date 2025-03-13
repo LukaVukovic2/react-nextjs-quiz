@@ -1,6 +1,6 @@
 "use client";
 import { Flex, Text } from "@chakra-ui/react";
-import { QuizType } from "@/app/typings/quiz_type";
+import { QuizType } from "@/app/typings/quiz";
 import Link from "next/link";
 
 export default function QuizTypeBox({ type }: { type: QuizType }) {

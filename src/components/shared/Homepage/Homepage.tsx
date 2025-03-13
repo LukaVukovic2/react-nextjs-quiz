@@ -1,4 +1,4 @@
-import { QuizType } from "@/app/typings/quiz_type";
+import { QuizType } from "@/app/typings/quiz";
 import QuizTypeBox from "../QuizTypeBox/QuizTypeBox";
 import { Container, Flex } from "@chakra-ui/react";
 

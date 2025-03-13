@@ -15,10 +15,10 @@ export default async function NewQuizPage() {
   if (
     quizTypesErr ||
     !quizTypes ||
-    !quizTypes.length ||
+    !quizTypes?.length ||
     questTypesErr ||
     !questTypes ||
-    !questTypes.length
+    !questTypes?.length
   )
     return null;
 

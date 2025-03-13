@@ -1,19 +1,9 @@
-"use client";
 import QuizItem from "../QuizItem/QuizItem";
 import { QuizBasic } from "@/app/typings/quiz";
-import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Flex } from "@chakra-ui/react";
  
 export default function QuizList({quizzes, children}: {quizzes: QuizBasic[], children: React.ReactNode}) {
-  const [loaded, setLoaded] = useState(false);
-  useEffect(() => {
-    setLoaded(true);
-  }, []);
-
-  if (!loaded) {
-    return <LoadingSpinner text="Loading quizzes..." />;
-  }
   return (
     <>
       {children}

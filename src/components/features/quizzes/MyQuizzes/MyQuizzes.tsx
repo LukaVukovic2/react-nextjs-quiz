@@ -4,10 +4,9 @@ import { Box, Flex, ListCollection, Text } from "@chakra-ui/react";
 import { Heading } from "@/styles/theme/components/heading";
 import { QuizBasic } from "@/app/typings/quiz";
 import { useEffect, useState } from "react";
-import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
-import { QuizType } from "@/app/typings/quiz_type";
+import { QuizType } from "@/app/typings/quiz";
 import { MyQuizzesContext } from "@/components/shared/utils/contexts/MyQuizzesContext";
-import { QuestionType } from "@/app/typings/question_type";
+import { QuestionType } from "@/app/typings/question";
 import { formatToMMSS } from "@/components/shared/utils/formatTime";
 import { createClient } from "@/components/shared/utils/supabase/client";
 import { Qa } from "@/app/typings/qa";
@@ -22,13 +21,11 @@ interface MyQuizzesProps {
 }
 
 export default function MyQuizzes({quizzes}: MyQuizzesProps) {
-  const [loaded, setLoaded] = useState(false);
   const [quizTypes, setQuizTypes] = useState<ListCollection>({} as ListCollection<QuizType>);
   const [questTypes, setQuestTypes] = useState<ListCollection>({} as ListCollection<QuestionType>);
   const supabase = createClient();
 
   useEffect(() => {
-    setLoaded(true);
     const fetchTypes = async () => {
       const [{data: quizTypes}, {data: questTypes}] = await Promise.all([
         supabase.rpc("get_quiz_types"),
@@ -42,9 +39,6 @@ export default function MyQuizzes({quizzes}: MyQuizzesProps) {
     fetchTypes();
   }, []);
 
-  if (!loaded) {
-    return <LoadingSpinner text="Loading your quizzes..." />;
-  }
   return (
     <MyQuizzesContext.Provider value={{ quizTypes, questTypes }}>
       <Flex

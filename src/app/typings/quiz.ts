@@ -14,3 +14,9 @@ export interface QuizDetails extends QuizBasic {
   number_of_ratings: number;
   average_score: number;
 }
+
+export interface QuizType {
+  id: string;
+  type_name: string;
+  icon: string;
+}

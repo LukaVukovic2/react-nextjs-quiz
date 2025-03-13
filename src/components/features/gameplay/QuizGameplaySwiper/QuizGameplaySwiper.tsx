@@ -5,8 +5,7 @@ import { Swiper as SwiperCore } from "swiper";
 import CheckboxGroup from "./components/CheckboxGroup";
 import RadioGroup from "./components/RadioGroup";
 import ShortAnswerInput from "./components/ShortAnswerInput";
-import { Question } from "@/app/typings/question";
-import { QuestionType } from "@/app/typings/question_type";
+import { Question, QuestionType } from "@/app/typings/question";
 import { Answer } from "@/app/typings/answer";
 import { Keyboard, Pagination } from "swiper/modules";
 

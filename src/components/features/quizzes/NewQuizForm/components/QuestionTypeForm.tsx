@@ -1,5 +1,5 @@
 import { Qa } from "@/app/typings/qa";
-import { QuestionType } from "@/app/typings/question_type";
+import { QuestionType } from "@/app/typings/question";
 import ChoiceQuestionInput from "@/components/shared/ChoiceQuestionInput/ChoiceQuestionInput";
 import ShortAnswerOptionInput from "@/components/shared/ShortAnswerOptionInput/ShortAnswerOptionInput";
 import { Field } from "@/components/ui/field";

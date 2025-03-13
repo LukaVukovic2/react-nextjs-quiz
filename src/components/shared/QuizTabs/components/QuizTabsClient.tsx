@@ -1,6 +1,6 @@
 "use client";
 import { Answer } from "@/app/typings/answer";
-import { Question } from "@/app/typings/question";
+import { Question, QuestionType } from "@/app/typings/question";
 import { QuizDetails } from "@/app/typings/quiz";
 import { Result } from "@/app/typings/result";
 import { User } from "@/app/typings/user";
@@ -9,7 +9,6 @@ import QuizGameplaySection from "@/components/features/gameplay/QuizGameplaySect
 import QuizLeaderboard from "@/components/features/leaderboard/QuizLeaderboard/QuizLeaderboard";
 import { Tabs } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { QuestionType } from "@/app/typings/question_type";
 import "./QuizTabsClient.css"
 
 interface IQuizTabsClientProps {

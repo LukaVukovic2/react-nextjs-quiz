@@ -6,9 +6,8 @@ import { notFound } from "next/navigation";
 export default async function MyQuizzesPage() {
   const supabase = await createClient();
   const { data: { user } } = await getUser();
-  if (!user) {
-    return null;
-  }  
+  if (!user) return null;
+  
   const { data: quizzes , error } = await supabase.rpc("get_quizzes_by_id", {
     iduser: user.id,
   });

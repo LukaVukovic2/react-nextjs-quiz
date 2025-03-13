@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { QuestionType } from "@/app/typings/question_type";
+import { QuestionType } from "@/app/typings/question";
 import SelectOption from "@/components/core/SelectOption/SelectOption";
 import { chakra, createListCollection, Flex } from "@chakra-ui/react";
 import { Field } from "@/components/ui/field";
