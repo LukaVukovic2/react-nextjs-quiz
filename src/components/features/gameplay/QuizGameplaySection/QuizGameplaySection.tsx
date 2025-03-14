@@ -3,7 +3,7 @@ import QuizGameplayHeader from "../QuizGameplayHeader/QuizGameplayHeader";
 import QuizResultSection from "../QuizResultSection/QuizResultSection";
 import QuizTimer from "../QuizTimer/QuizTimer";
 import { updateQuizPlay } from "../../../shared/utils/actions/quiz/updateQuizPlay";
-import { MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
+import { MutableRefObject, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Flex, chakra } from "@chakra-ui/react";
 import { Button } from "@/styles/theme/components/button";
@@ -31,7 +31,7 @@ import AuthModal from "@/components/shared/AuthModal/AuthModal";
 import { getCookie, setCookie } from "cookies-next";
 import { topResultCheck } from "@/components/shared/utils/actions/leaderboard/topResultCheck";
 import AlertWrapper from "@/components/core/AlertWrapper/AlertWrapper";
-import { createClient } from "@/components/shared/utils/supabase/client";
+import { useUser } from "@/components/shared/utils/hooks/useUser";
 
 interface IQuizGameplayProps {
   quiz: QuizDetails;
@@ -65,16 +65,8 @@ export default function QuizGameplaySection({
   const swiperRef = useRef<SwiperCore | null>(
     null
   ) as MutableRefObject<SwiperCore | null>;
-  const [userId, setUserId] = useState<string>("");
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  useEffect(() => {
-    const supabase = createClient();
-    const getUser = async () => {
-      const {data: {user}} = await supabase.auth.getUser();
-      if (user) setUserId(user?.id);
-    };
-    getUser();
-  }, []);
+  const { user: player } = useUser();
   const isAnonymous = getCookie("isAnonymous") === "true" || false;
 
   const correctAnswers = useMemo(
@@ -141,7 +133,7 @@ export default function QuizGameplaySection({
     const result: Result = {
       id: uuidv4(),
       quiz_id: quiz.id,
-      user_id: userId,
+      user_id: player?.id ?? "",
       score: totalScore,
       time: totalSeconds || 0,
     };

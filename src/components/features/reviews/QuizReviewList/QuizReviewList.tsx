@@ -15,6 +15,8 @@ interface IQuizReviewListProps {
 
 export default function QuizReviewList({id, reviews}: IQuizReviewListProps) {
   const searchParams = useSearchParams();
+  
+  if (!reviews.length) return <div>No reviews found</div>;
   const offset = 5;
 
   const page = searchParams.get("page");
@@ -24,7 +26,7 @@ export default function QuizReviewList({id, reviews}: IQuizReviewListProps) {
   const to = from + offset - 1;
   const reviewsByPage = reviews?.slice(from - 1, to);
 
-  return reviews && reviewsByPage && reviewsByPage.length ? (
+  return (
     <>
       {reviewsByPage.map((review) => (
         <QuizReviewItem
@@ -34,7 +36,5 @@ export default function QuizReviewList({id, reviews}: IQuizReviewListProps) {
       ))}
       <Pagination id={id} currentPage={currentPage} totalPages={Math.ceil(reviews.length / offset)}/>
     </>
-  ) : (
-    <div>No reviews found</div>
-  );
+  )
 }

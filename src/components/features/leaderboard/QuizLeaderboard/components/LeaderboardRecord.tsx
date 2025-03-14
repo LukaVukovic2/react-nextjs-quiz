@@ -1,17 +1,17 @@
 import { Result } from "@/app/typings/result";
+import { User } from "@/app/typings/user";
 import { formatToMMSS } from "@/components/shared/utils/formatTime";
 import { Tag } from "@/components/ui/tag";
 import { Flex, Float, Text, chakra } from "@chakra-ui/react";
-import { User } from "@supabase/supabase-js";
 
 export default function LeaderboardRecord({
   result,
   index,
-  user
+  activeUser
 }: {
   index: number;
   result: Result | null;
-  user: User | null;
+  activeUser: User | null;
 }) {
   const recentResultCheck = (created_at: Date) => {
     const created_at_date = new Date(created_at);
@@ -46,7 +46,7 @@ export default function LeaderboardRecord({
                 </Float>
               }
               {result.username}
-              {user?.id == result.user_id && recentResultCheck(result.created_at ?? new Date()) && (
+              {activeUser?.id == result.user_id && recentResultCheck(result.created_at ?? new Date()) && (
                 <Tag colorPalette="orange" variant="solid" ml={2}>NEW!</Tag>
               )}
             </Flex>

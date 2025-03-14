@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createClient } from "../supabase/client";
 import { User } from "@supabase/supabase-js";
 
@@ -7,8 +7,12 @@ export const useUser = () => {
   const [user, setUser] = useState<User | null | undefined>();
   const [username, setUsername] = useState<string | null | undefined>();
   const supabase = createClient();
+  const hasRun = useRef(false);
 
   useEffect(() => {
+    if (hasRun.current) return;
+    hasRun.current = true;
+
     const fetchUsername = async (sessionUser: User) => {
       const { data: usernameData, error } = await supabase.rpc("get_username", { user_id: sessionUser.id });
       if (error) {
