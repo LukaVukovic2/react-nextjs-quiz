@@ -1,34 +1,41 @@
-import {
-  Box,
-  Input,
-} from "@chakra-ui/react";
-import { Slider } from "@/components/ui/slider";
-import { forwardRef } from "react";
+import { Flex, Slider } from "@chakra-ui/react";
+import { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 interface ISliderInputProps {
-  value: string;
-  onChange: (value: number) => void;
-  name: string;
+  field: ControllerRenderProps<FieldValues, string>;
+  thumbIcon: JSX.Element;
 }
 
-export const SliderInput = forwardRef<HTMLInputElement, ISliderInputProps>((props, ref) => {
+export default function SliderInput({field, thumbIcon}: ISliderInputProps) {
   return (
-    <Box py={4}>
-      <Input name={props.name} type="hidden" value={props.value} ref={ref} />
-      <Slider
-        variant="outline"
-        cursor="grab"
-        colorPalette="cyan"
-        label="Rating"
-        value={[Number(props.value) || 0]}
-        defaultValue={[3]}
-        min={1}
-        max={5}
-        onValueChange={({value}) => props.onChange(value[0])}
-      >
-      </Slider>
-    </Box>
-  )
-});
-
-SliderInput.displayName = "SliderInput";
+    <Slider.Root
+      width="200px"
+      colorPalette="blue"
+      defaultValue={[3]}
+      min={1}
+      max={5}
+      step={1}
+      onValueChange={({ value }) => field.onChange(value[0])}
+      my={5}
+    >
+      <Slider.Control>
+        <Slider.Track>
+          <Slider.Range />
+        </Slider.Track>
+        <Slider.Thumb
+          index={0}
+          boxSize={8}
+          as={Flex}
+          gap="2px"
+        >
+          <div>
+            {field.value} 
+          </div>
+          <div>
+            {thumbIcon}
+          </div>
+        </Slider.Thumb>
+      </Slider.Control>
+    </Slider.Root>
+  );
+};

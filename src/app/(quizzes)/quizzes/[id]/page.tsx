@@ -17,7 +17,7 @@ export default async function QuizPage({params}: {params: { id: string };}) {
     supabase.rpc("get_question_types"),
     supabase.rpc("get_reviews_and_reviewers", { quizid }),
   ]);
-  if (quizError || !quizContent.quiz || !questTypes || questTypesError) notFound();
+  if (quizError || !quizContent || !questTypes || questTypesError) notFound();
 
   return (
     <QuizTabs

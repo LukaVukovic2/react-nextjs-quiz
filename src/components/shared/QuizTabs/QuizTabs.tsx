@@ -5,7 +5,7 @@ import { Result } from "@/app/typings/result";
 import { User } from "@/app/typings/user";
 import QuizGameplaySection from "@/components/features/gameplay/QuizGameplaySection/QuizGameplaySection";
 import QuizLeaderboard from "@/components/features/leaderboard/QuizLeaderboard/QuizLeaderboard";
-import { Flex, Tabs } from "@chakra-ui/react";
+import { chakra, Tabs } from "@chakra-ui/react";
 import { useState } from "react";
 import "./QuizTabs.css"
 import QuizReviewForm from "@/components/features/reviews/QuizReviewForm/QuizReviewForm";
@@ -68,13 +68,13 @@ export default function QuizTabs({
         />
       </Tabs.Content>
       <Tabs.Content value="Reviews">
-        <Flex width="600px" flexDirection="column">
+        <chakra.div width="600px">
           <QuizReviewForm />
           <QuizReviewList 
-            id={quizContent.user.id} 
+            id={quizContent.quiz.id} 
             reviews={reviews}
           />
-        </Flex>
+        </chakra.div>
       </Tabs.Content>
     </Tabs.Root>
   );

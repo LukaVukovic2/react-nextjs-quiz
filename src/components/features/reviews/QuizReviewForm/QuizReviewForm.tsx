@@ -1,14 +1,15 @@
 "use client";
 import { Card, chakra, Textarea } from "@chakra-ui/react";
 import { Heading } from "@/styles/theme/components/heading";
-import { Button } from "@/styles/theme/components/button";
 import { toaster } from "@/components/ui/toaster";
-import { SliderInput } from "@/components/core/Slider/Slider";
+import SliderInput from "@/components/core/Slider/Slider";
 import { addReview } from "@/components/shared/utils/actions/review/addReview";
 import { useParams } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, FieldValues, useForm } from "react-hook-form";
 import { Alert } from "@/components/ui/alert";
-import { getCookie } from "cookies-next";
+import { useUser } from "@/components/shared/utils/hooks/useUser";
+import { SubmitButton } from "@/components/core/SubmitButton/SubmitButton";
+import { FaStar } from "react-icons/fa";
 
 export default function QuizReviewForm() {
   const {
@@ -17,17 +18,12 @@ export default function QuizReviewForm() {
     control,
     formState: { isValid, isSubmitting },
     reset,
-    getValues,
   } = useForm({ defaultValues: { rating: "3", comment: "" } });
   const id = useParams().id as string;
-  const isAnonymous = getCookie("isAnonymous") === "true";
+  const { user } = useUser();
 
-  const addNewReview = async () => {
-    const formData = new FormData();
-    formData.append("comment", getValues("comment"));
-    formData.append("rating", getValues("rating"));
-
-    const success = await addReview(formData, id);
+  const addNewReview = async (formData: FieldValues) => {
+    const success = await addReview(formData, id, user?.id || "");
     toaster.create({
       title: success ? "Review added" : "Failed to add review",
       type: success ? "success" : "error",
@@ -36,7 +32,7 @@ export default function QuizReviewForm() {
     reset();
   };
 
-  return isAnonymous ? (
+  return user?.is_anonymous ? (
     <Alert
       status="warning"
       title="You can't add a review as a guest"
@@ -66,15 +62,15 @@ export default function QuizReviewForm() {
               min: { value: 1, message: "Rating must be between 1 and 5" },
               max: { value: 5, message: "Rating must be between 1 and 5" },
             }}
-            render={({ field }) => <SliderInput {...field} />}
+            render={({ field }) => <SliderInput field={{...field}} thumbIcon={<FaStar size={12}/>} />}
           />
-          <Button
-            visual="outline"
-            disabled={!isValid || isSubmitting || !!isAnonymous}
-            type="submit"
+          <SubmitButton
+            disabled={!isValid || isSubmitting || !!user?.is_anonymous}
+            loading={isSubmitting}
+            loadingText="Posting..."
           >
-            Submit
-          </Button>
+            Post
+          </SubmitButton>
         </chakra.form>
       </Card.Body>
     </Card.Root>
