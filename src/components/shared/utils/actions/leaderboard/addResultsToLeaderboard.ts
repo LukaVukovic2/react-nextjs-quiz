@@ -1,4 +1,5 @@
 "use server";
+import { revalidatePath } from "next/cache";
 import { createClient } from "../../supabase/server";
 
 export const addResultsToLeaderboard = async (newresults: FormData) => {
@@ -7,5 +8,7 @@ export const addResultsToLeaderboard = async (newresults: FormData) => {
   if (error) {
     console.log(error);
   }
+  revalidatePath("/", "layout");
+  
   return data;
 }

@@ -7,10 +7,8 @@ import { MutableRefObject, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Flex, chakra } from "@chakra-ui/react";
 import { Button } from "@/styles/theme/components/button";
-import { QuizDetails } from "@/app/typings/quiz";
-import { User } from "@/app/typings/user";
-import { Answer } from "@/app/typings/answer";
-import { Question, QuestionType } from "@/app/typings/question";
+import { QuizContent } from "@/app/typings/quiz";
+import { QuestionType } from "@/app/typings/question";
 import { Result } from "@/app/typings/result";
 import { v4 as uuidv4 } from "uuid";
 import { updateLeaderboard } from "@/components/shared/utils/actions/leaderboard/updateLeaderboard";
@@ -32,33 +30,29 @@ import { getCookie, setCookie } from "cookies-next";
 import { topResultCheck } from "@/components/shared/utils/actions/leaderboard/topResultCheck";
 import AlertWrapper from "@/components/core/AlertWrapper/AlertWrapper";
 import { useUser } from "@/components/shared/utils/hooks/useUser";
+import { addToCookieList } from "@/components/shared/utils/addToCookieList";
 
 interface IQuizGameplayProps {
-  quiz: QuizDetails;
-  user: User;
-  questions: Question[];
-  answers: Answer[];
+  quizContent: QuizContent;
   questTypes: QuestionType[];
-  switchTab: (tab: "Gameplay" | "Leaderboard" | "Reviews") => void;
+  highlightTab: (value: boolean) => void;
+  isTopResult: boolean;
 }
 
 export default function QuizGameplaySection({
-  quiz,
-  user,
-  questions,
-  answers,
+  quizContent: { quiz, questions, answers, user },
   questTypes,
-  switchTab,
+  highlightTab,
+  isTopResult
 }: IQuizGameplayProps) {
   const [selectedAnswers, setSelectedAnswers] = useState<
     Map<string, string[] | null>
   >(initializeSelectedAnswers(questions));
-  const [score, setScore] = useState<number>();
+  const [score, setScore] = useState<number | null>(null);
   const [hasStarted, setHasStarted] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [resetKey, setResetKey] = useState(0);
-  const [isTopResult, setIsTopResult] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false);
   const { control, reset, setValue } = useForm();
@@ -67,8 +61,6 @@ export default function QuizGameplaySection({
   ) as MutableRefObject<SwiperCore | null>;
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { user: player } = useUser();
-  const isAnonymous = getCookie("isAnonymous") === "true" || false;
-
   const correctAnswers = useMemo(
     () => answers?.filter((answer) => answer.correct_answer),
     [answers]
@@ -138,23 +130,16 @@ export default function QuizGameplaySection({
       time: totalSeconds || 0,
     };
 
-    if (isAnonymous) {
+    if (player?.is_anonymous) {
       const isTopResult = await topResultCheck(result);
       if (!isTopResult) return;
-
-      const existingResults = JSON.parse(
-        getCookie("results") || "[]"
-      );
-      const newResults = [...existingResults, result];
-      setCookie("results", JSON.stringify(newResults), 
-        { maxAge: 60 * 60 * 24 }
-      );
+      addToCookieList("results", result);
       setDialogVisible(true);
     } else {
       const success = await updateLeaderboard(result);
-      setIsTopResult(success);
+      highlightTab(success);
       const timeout = setTimeout(() => {
-        setIsTopResult(false);
+        highlightTab(false);
       }, 10000);
       return () => clearTimeout(timeout);
     }
@@ -162,11 +147,11 @@ export default function QuizGameplaySection({
 
   const resetQuiz = () => {
     setSelectedAnswers(initializeSelectedAnswers(questions));
-    setScore(undefined);
+    setScore(null);
     setIsFinished(false);
     setHasStarted(true);
     setResetKey((prev) => prev + 1);
-    setIsTopResult(false);
+    highlightTab(false);
     reset();
     setTimeout(() => {
       if (swiperRef.current) {
@@ -183,6 +168,8 @@ export default function QuizGameplaySection({
       flexDirection="column"
       width="600px"
     >
+      <Confetti isShown={isTopResult} />
+      
       {dialogVisible && (
         <AuthModal
           dialogVisible={dialogVisible}
@@ -194,22 +181,6 @@ export default function QuizGameplaySection({
           />
         </AuthModal>
       )}
-
-      {isTopResult && (
-        <Button
-          visual="success"
-          onClick={() => switchTab("Leaderboard")}
-          className="fa-fade"
-          position="fixed"
-          bottom="50%"
-          right="20px"
-          w="150px"
-        >
-          High Score! Go to leaderboard
-          <i className="fa-solid fa-arrow-right"></i>
-        </Button>
-      )}
-      <Confetti isShown={isTopResult} />
 
       <Flex
         justifyContent="space-between"
@@ -228,7 +199,7 @@ export default function QuizGameplaySection({
             isPaused={isPaused}
           />
         </QuizGameplayHeader>
-        {score !== undefined && (
+        {score !== null && (
           <QuizResultSection
             score={score}
             questionCount={questions.length}
