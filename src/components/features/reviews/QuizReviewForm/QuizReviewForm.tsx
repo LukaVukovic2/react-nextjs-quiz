@@ -19,11 +19,11 @@ export default function QuizReviewForm() {
     formState: { isValid, isSubmitting },
     reset,
   } = useForm({ defaultValues: { rating: "3", comment: "" } });
-  const id = useParams().id as string;
+  const quizId = useParams().id as string;
   const { user } = useUser();
 
   const addNewReview = async (formData: FieldValues) => {
-    const success = await addReview(formData, id, user?.id || "");
+    const success = await addReview(formData, quizId, user?.id || "");
     toaster.create({
       title: success ? "Review added" : "Failed to add review",
       type: success ? "success" : "error",

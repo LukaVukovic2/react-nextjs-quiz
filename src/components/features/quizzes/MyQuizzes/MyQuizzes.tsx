@@ -1,14 +1,12 @@
 "use client";
 import QuizMenuDropdown from "../QuizMenuDropdown/QuizMenuDropdown";
-import { Box, Flex, ListCollection, Text } from "@chakra-ui/react";
+import { Box, Flex, Text } from "@chakra-ui/react";
 import { Heading } from "@/styles/theme/components/heading";
 import { QuizBasic } from "@/app/typings/quiz";
-import { useEffect, useState } from "react";
 import { QuizType } from "@/app/typings/quiz";
 import { MyQuizzesContext } from "@/components/shared/utils/contexts/MyQuizzesContext";
 import { QuestionType } from "@/app/typings/question";
 import { formatToMMSS } from "@/components/shared/utils/formatTime";
-import { createClient } from "@/components/shared/utils/supabase/client";
 import { Qa } from "@/app/typings/qa";
 import { createListCollection } from "@/components/shared/utils/createListCollection";
 
@@ -18,26 +16,13 @@ interface MyQuizzesProps {
     quizType: QuizType;
     qaList: Qa[];
   }>;
+  questTypesArr: QuestionType[];
+  quizTypesArr: QuizType[];
 }
 
-export default function MyQuizzes({quizzes}: MyQuizzesProps) {
-  const [quizTypes, setQuizTypes] = useState<ListCollection>({} as ListCollection<QuizType>);
-  const [questTypes, setQuestTypes] = useState<ListCollection>({} as ListCollection<QuestionType>);
-  const supabase = createClient();
-
-  useEffect(() => {
-    const fetchTypes = async () => {
-      const [{data: quizTypes}, {data: questTypes}] = await Promise.all([
-        supabase.rpc("get_quiz_types"),
-        supabase.rpc("get_question_types"),
-      ]);
-      const quizTypesCollection: ListCollection<QuizType> = createListCollection(quizTypes);
-      const questTypesCollection: ListCollection<QuestionType> = createListCollection(questTypes);
-      setQuizTypes(quizTypesCollection);
-      setQuestTypes(questTypesCollection);
-    }
-    fetchTypes();
-  }, []);
+export default function MyQuizzes({quizzes, questTypesArr, quizTypesArr}: MyQuizzesProps) {
+  const questTypes = createListCollection(questTypesArr);
+  const quizTypes = createListCollection(quizTypesArr);
 
   return (
     <MyQuizzesContext.Provider value={{ quizTypes, questTypes }}>
@@ -54,7 +39,7 @@ export default function MyQuizzes({quizzes}: MyQuizzesProps) {
             width: "500px",
           }}
         >
-          {quizzes.length > 0 && quizzes.map(({quiz, quizType}: {quiz: QuizBasic, quizType: QuizType}, index) => (
+          {quizzes.map(({quiz, quizType}: {quiz: QuizBasic, quizType: QuizType}, index) => (
             <Box
               as="li"
               key={quiz.id}

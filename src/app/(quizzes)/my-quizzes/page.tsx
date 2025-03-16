@@ -8,11 +8,15 @@ export default async function MyQuizzesPage() {
   const { data: { user } } = await getUser();
   if (!user) return null;
   
-  const { data: quizzes , error } = await supabase.rpc("get_quizzes_by_id", {
-    iduser: user.id,
-  });
+  const [{data: quizTypesArr}, {data: questTypesArr}, {data: quizzes, error}] = await Promise.all([
+    supabase.rpc("get_quiz_types"),
+    supabase.rpc("get_question_types"),
+    supabase.rpc("get_quizzes_by_id", {
+      iduser: user.id
+    })
+  ]);
   if(!quizzes || !(Array.isArray(quizzes) && quizzes.length > 0) || error) {
     notFound();
   }
-  return <MyQuizzes quizzes={quizzes} />;
+  return <MyQuizzes quizzes={quizzes} quizTypesArr={quizTypesArr} questTypesArr={questTypesArr} />;
 }

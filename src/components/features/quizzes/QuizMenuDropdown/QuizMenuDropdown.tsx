@@ -1,24 +1,17 @@
 "use client";
 import { Button } from "@/styles/theme/components/button";
-import {
-  MenuRoot,
-  MenuItem,
-  MenuContent,
-  MenuTrigger,
-} from "@/components/ui/menu";
-import QuizUpdateForm from "../QuizUpdateForm/QuizUpdateForm";
 import { deleteQuiz } from "@/components/shared/utils/actions/quiz/deleteQuiz";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { QuizBasic } from "@/app/typings/quiz";
-import {
-  DialogRoot,
-} from "@/components/ui/dialog";
 import { toaster } from "@/components/ui/toaster";
 import { QuizType } from "@/app/typings/quiz";
-import "./QuizMenuDropdown.css";
 import { Qa } from "@/app/typings/qa";
 import { DialogContentWrapper } from "@/components/core/DialogContentWrapper/DialogContentWrapper";
-import { Text } from "@chakra-ui/react";
+import { Dialog, Text, Menu } from "@chakra-ui/react";
+import { FaEllipsisV } from "react-icons/fa";
+import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
+
+const QuizUpdateForm = lazy(() => import("../QuizUpdateForm/QuizUpdateForm"));
 
 interface QuizMenuDropdownProps {
   quiz: QuizBasic;
@@ -47,86 +40,92 @@ export default function QuizMenuDropdown({
   };
 
   return (
-    <MenuRoot>
-      <MenuTrigger
-        px={4}
-        py={2}
-        transition="all 0.2s"
-        borderRadius="md"
-        borderWidth="1px"
-        _hover={{ bg: "gray.400" }}
-        _expanded={{ bg: "blue.400" }}
-        _focus={{ boxShadow: "outline" }}
-        cursor="pointer"
+    <>
+      <Menu.Root>
+        <Menu.Trigger
+          px={4}
+          py={2}
+          transition="all 0.2s"
+          borderRadius="md"
+          borderWidth="1px"
+          _hover={{ bg: "gray.400" }}
+          _expanded={{ bg: "blue.400" }}
+          _focus={{ boxShadow: "outline" }}
+          cursor="pointer"
+        >
+          <FaEllipsisV />
+        </Menu.Trigger>
+        <Menu.Positioner>
+          <Menu.Content>
+            <Menu.Item
+              value="Edit"
+              valueText="Edit"
+              onClick={toggleEditDialog}
+            >
+              Edit
+            </Menu.Item>
+            <Menu.Item
+              value="Delete"
+              valueText="Delete"
+              onClick={toggleDeleteDialog}
+              color="fg.error"
+              _hover={{ bg: "bg.error", color: "fg.error" }}
+            >
+              Delete
+            </Menu.Item>
+          </Menu.Content>
+        </Menu.Positioner>
+      </Menu.Root>
+      <Dialog.Root
+        lazyMount
+        open={openDelete}
+        onOpenChange={toggleDeleteDialog}
+      >   
+        <DialogContentWrapper 
+          title="Delete Quiz" 
+          body={
+            <Text>Are you sure you want to delete this quiz?</Text>
+          }
+          footer={
+            <>
+              <Button
+                onClick={toggleDeleteDialog}
+                visual="outline"
+                autoFocus
+              >
+                No
+              </Button>
+              <Button
+                visual="danger"
+                ml={3}
+                onClick={() => handleQuizDelete(quiz.id)}
+              >
+                Yes
+              </Button>
+            </>
+          }
+        />
+      </Dialog.Root>
+
+      <Dialog.Root
+        lazyMount
+        open={openEdit}
+        onOpenChange={toggleEditDialog}
       >
-        <i className="fa-solid fa-ellipsis-vertical"></i>
-      </MenuTrigger>
-      <MenuContent>
-        <MenuItem
-          className="menu-item"
-          value="Edit"
-          valueText="Edit"
-          onClick={toggleEditDialog}
-        >
-          Edit
-        </MenuItem>
-        <MenuItem
-          className="menu-item"
-          value="Delete"
-          valueText="Delete"
-          onClick={toggleDeleteDialog}
-        >
-          Delete
-        </MenuItem>
-
-        <DialogRoot
-          motionPreset="slide-in-bottom"
-          open={openDelete}
-          onOpenChange={toggleDeleteDialog}
-        >   
-          <DialogContentWrapper 
-            title="Delete Quiz" 
-            body={
-              <Text>Are you sure you want to delete this quiz?</Text>
-            }
-            footer={
-              <>
-                <Button
-                  onClick={toggleDeleteDialog}
-                  visual="outline"
-                  autoFocus
-                >
-                  No
-                </Button>
-                <Button
-                  visual="danger"
-                  ml={3}
-                  onClick={() => handleQuizDelete(quiz.id)}
-                >
-                  Yes
-                </Button>
-              </>
-            }
-          />
-        </DialogRoot>
-
-        <DialogRoot
-          open={openEdit}
-          onOpenChange={toggleEditDialog}
-        >
-          <DialogContentWrapper 
-            title="Update Quiz" 
-            body={
+        <DialogContentWrapper 
+          title="Update Quiz" 
+          body={
+            <Suspense fallback={<LoadingSpinner text="Setting quiz form..." scale={0.85}/>}>
               <QuizUpdateForm
                 quiz={quiz}
                 quizType={quizType}
                 qaList={qaList}
                 closeDialog={toggleEditDialog}
               />
-            }
-          />
-        </DialogRoot>
-      </MenuContent>
-    </MenuRoot>
+            </Suspense>
+          }
+        />
+      </Dialog.Root>
+    </>
   );
 }
