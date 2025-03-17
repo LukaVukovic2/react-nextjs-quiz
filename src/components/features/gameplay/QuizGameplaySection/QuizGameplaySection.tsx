@@ -18,7 +18,6 @@ import { Swiper as SwiperCore } from "swiper";
 import { initializeSelectedAnswers } from "@/components/shared/utils/initializeSelectedAnswers";
 import { groupAnswersByQuestion } from "@/components/shared/utils/groupAnswersByQuestion";
 import { calculateScore } from "@/components/shared/utils/calculateScore";
-import renderBullet from "@/components/shared/utils/renderBullet";
 import QuizGameplayFooter from "../QuizGameplayFooter/QuizGameplayFooter";
 import QuizGameplaySwiper from "../QuizGameplaySwiper/QuizGameplaySwiper";
 import QuizPauseModal from "../QuizPauseModal/QuizPauseModal";
@@ -26,7 +25,6 @@ import "swiper/css/pagination";
 import "swiper/css";
 import "./QuizGameplaySection.css";
 import AuthModal from "@/components/shared/AuthModal/AuthModal";
-import { getCookie, setCookie } from "cookies-next";
 import { topResultCheck } from "@/components/shared/utils/actions/leaderboard/topResultCheck";
 import AlertWrapper from "@/components/core/AlertWrapper/AlertWrapper";
 import { useUser } from "@/components/shared/utils/hooks/useUser";
@@ -69,21 +67,6 @@ export default function QuizGameplaySection({
     () => groupAnswersByQuestion(answers),
     [answers]
   );
-
-  const pagination = {
-    clickable: true,
-    renderBullet: function (index: number, className: string) {
-      return renderBullet({
-        index,
-        className,
-        selectedAnswers,
-        questions,
-        correctAnswers,
-        questTypes,
-        isFinished,
-      });
-    },
-  };
 
   const handleSelectAnswer = (
     questionId: string,
@@ -235,8 +218,8 @@ export default function QuizGameplaySection({
             handleSelectAnswer={handleSelectAnswer}
             resetKey={resetKey}
             setIsTransitioning={setIsTransitioning}
-            pagination={pagination}
             swiperRef={swiperRef}
+            correctAnswers={correctAnswers}
             control={control}
           />
           <QuizGameplayFooter

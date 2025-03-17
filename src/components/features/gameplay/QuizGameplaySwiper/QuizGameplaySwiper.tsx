@@ -8,6 +8,8 @@ import ShortAnswerInput from "./components/ShortAnswerInput";
 import { Question, QuestionType } from "@/app/typings/question";
 import { Answer } from "@/app/typings/answer";
 import { Keyboard, Pagination } from "swiper/modules";
+import { renderToStaticMarkup } from "react-dom/server";
+import RenderBullet from "./components/RenderBullet";
 
 interface IQuizGameplaySwiperProps {
   questions: Question[];
@@ -22,11 +24,8 @@ interface IQuizGameplaySwiperProps {
   ) => void;
   resetKey: number;
   setIsTransitioning: React.Dispatch<React.SetStateAction<boolean>>;
-  pagination: {
-    clickable: boolean;
-    renderBullet: (index: number, className: string) => string;
-  };
   swiperRef: React.MutableRefObject<SwiperCore | null>;
+  correctAnswers: Answer[];
   control: Control<FieldValues>;
 }
 
@@ -39,10 +38,26 @@ export default function QuizGameplaySwiper({
   handleSelectAnswer,
   resetKey,
   setIsTransitioning,
-  pagination,
   swiperRef,
+  correctAnswers,
   control,
 }: IQuizGameplaySwiperProps) {
+  const pagination = {
+    clickable: true,
+    renderBullet: function (index: number, className: string) {
+      
+    return renderToStaticMarkup(
+      <RenderBullet
+        index={index}
+        className={className}
+        selectedAnswers={selectedAnswers}
+        questions={questions}
+        correctAnswers={correctAnswers}
+        questTypes={questTypes}
+        isFinished={isFinished}
+      />
+    )}
+  };
   return (
     <Swiper
       pagination={pagination}

@@ -4,14 +4,15 @@ import { QuizContent } from "@/app/typings/quiz";
 import { Result } from "@/app/typings/result";
 import { User } from "@/app/typings/user";
 import QuizGameplaySection from "@/components/features/gameplay/QuizGameplaySection/QuizGameplaySection";
-import QuizLeaderboard from "@/components/features/leaderboard/QuizLeaderboard/QuizLeaderboard";
-import { chakra, Tabs } from "@chakra-ui/react";
-import { useState } from "react";
+import { Flex, Tabs } from "@chakra-ui/react";
+import { lazy, Suspense, useState } from "react";
 import "./QuizTabs.css"
-import QuizReviewForm from "@/components/features/reviews/QuizReviewForm/QuizReviewForm";
-import QuizReviewList from "@/components/features/reviews/QuizReviewList/QuizReviewList";
 import { Review } from "@/app/typings/review";
 import { useUser } from "../utils/hooks/useUser";
+import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
+const QuizLeaderboard = lazy(() => import("@/components/features/leaderboard/QuizLeaderboard/QuizLeaderboard"));
+const QuizReviewForm = lazy(() => import("@/components/features/reviews/QuizReviewForm/QuizReviewForm"));
+const QuizReviewList = lazy(() => import("@/components/features/reviews/QuizReviewList/QuizReviewList"));
 
 interface IQuizTabsProps {
   quizContent: QuizContent,
@@ -35,11 +36,12 @@ export default function QuizTabs({
 
   return (
     <Tabs.Root
+      lazyMount
       fitted
-      variant="enclosed"
+      variant="plain"
       defaultValue="Gameplay"
     >
-      <Tabs.List mb="1em">
+      <Tabs.List bg="bg.muted" rounded="l3" p="1" mb="1em">
         <Tabs.Trigger value="Gameplay">Gameplay</Tabs.Trigger>
         <Tabs.Trigger 
           value="Leaderboard"
@@ -48,34 +50,37 @@ export default function QuizTabs({
           Leaderboard
         </Tabs.Trigger>
         <Tabs.Trigger value="Reviews">Reviews</Tabs.Trigger>
+        <Tabs.Indicator rounded="l2" />
       </Tabs.List>
-      <Tabs.Content value="Gameplay" p={0}>
-        {quizContent.questions && quizContent.answers ? (
+      <Flex justify="center" flex={1}>
+        <Tabs.Content value="Gameplay">
           <QuizGameplaySection
             quizContent={quizContent}
             questTypes={questTypes}
             highlightTab={highlightTab}
             isTopResult={isHighlightedTab}
           />
-        ) : (
-          "Data not found"
-        )}
-      </Tabs.Content>
-      <Tabs.Content value="Leaderboard">
-        <QuizLeaderboard 
-          topResults={topResults} 
-          activeUser={activeUser as User | null} 
-        />
-      </Tabs.Content>
-      <Tabs.Content value="Reviews">
-        <chakra.div width="600px">
-          <QuizReviewForm />
-          <QuizReviewList 
-            id={quizContent.quiz.id} 
-            reviews={reviews}
-          />
-        </chakra.div>
-      </Tabs.Content>
+        </Tabs.Content>
+        <Tabs.Content value="Leaderboard">
+          <Suspense fallback={<LoadingSpinner text="Loading leaderboard stats..." />}>
+            <QuizLeaderboard 
+              topResults={topResults} 
+              activeUser={activeUser as User | null} 
+            />
+          </Suspense>
+        </Tabs.Content>
+        <Tabs.Content value="Reviews">
+          <Suspense fallback={<LoadingSpinner text="Loading reviews..." />}>
+            <Flex width="600px" direction="column">
+              <QuizReviewForm />
+              <QuizReviewList 
+                id={quizContent.quiz.id} 
+                reviews={reviews}
+              />
+            </Flex>
+          </Suspense>
+        </Tabs.Content>
+      </Flex>
     </Tabs.Root>
   );
 }

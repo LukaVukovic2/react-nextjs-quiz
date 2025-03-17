@@ -13,11 +13,12 @@ export const updateQuizPlay = async (
   const updatedAverageScore =
     (average_score * currentPlays + totalScore) / updatedPlays;
 
-  const { error } = await supabase.rpc("update_quiz_plays", { updatedplays: updatedPlays, updatedavgscore: updatedAverageScore, quizid: quiz_id });
-  if (error) {
-    console.error(error);
-    return false;
-  }
+  const { error } = await supabase.rpc("update_quiz_plays", {
+    updatedplays: updatedPlays,
+    updatedavgscore: updatedAverageScore,
+    quizid: quiz_id,
+  });
+  if (error) return false;
 
   revalidatePath(`/quizzes/${quiz_id}`);
 };

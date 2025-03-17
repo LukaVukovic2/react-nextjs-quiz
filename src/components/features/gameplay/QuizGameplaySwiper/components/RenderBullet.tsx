@@ -12,7 +12,7 @@ interface IPaginationBulletsProps {
   isFinished: boolean;
 }
 
-export default function renderBullet({
+export default function RenderBullet({
   index,
   className,
   selectedAnswers,
@@ -59,9 +59,9 @@ export default function renderBullet({
     );
   }
 
-  return `
+  return (
     <span 
-      class="${clsx({
+      className={clsx({
         [className]: true,
         selectedAnswer: !isFinished && isSelected,
         correctAnswer:
@@ -75,8 +75,9 @@ export default function renderBullet({
           hasCorrectAnswers &&
           (hasIncorrectAnswers || hasCorrectAnswerNotSelected),
         wrongAnswer: isFinished && !isCorrect,
-      })}"
-      >${index + 1}  
+      })
+    }>
+      {index + 1}  
     </span>
-  `;
+  );
 }
