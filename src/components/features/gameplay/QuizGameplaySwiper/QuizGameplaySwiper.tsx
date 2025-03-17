@@ -10,13 +10,14 @@ import { Answer } from "@/app/typings/answer";
 import { Keyboard, Pagination } from "swiper/modules";
 import { renderToStaticMarkup } from "react-dom/server";
 import RenderBullet from "./components/RenderBullet";
+import { PlayStatus } from "@/app/typings/playStatus";
 
 interface IQuizGameplaySwiperProps {
   questions: Question[];
   questTypes: QuestionType[];
   selectedAnswers: Map<string, string[] | null>;
   groupedAnswers: { [key: string]: Answer[] };
-  isFinished: boolean;
+  playStatus: PlayStatus;
   handleSelectAnswer: (
     questionId: string,
     answerId: string[],
@@ -34,7 +35,7 @@ export default function QuizGameplaySwiper({
   questTypes,
   selectedAnswers,
   groupedAnswers,
-  isFinished,
+  playStatus,
   handleSelectAnswer,
   resetKey,
   setIsTransitioning,
@@ -42,21 +43,22 @@ export default function QuizGameplaySwiper({
   correctAnswers,
   control,
 }: IQuizGameplaySwiperProps) {
+  const isFinished = playStatus === "finished";
   const pagination = {
     clickable: true,
     renderBullet: function (index: number, className: string) {
-      
-    return renderToStaticMarkup(
-      <RenderBullet
-        index={index}
-        className={className}
-        selectedAnswers={selectedAnswers}
-        questions={questions}
-        correctAnswers={correctAnswers}
-        questTypes={questTypes}
-        isFinished={isFinished}
-      />
-    )}
+      return renderToStaticMarkup(
+        <RenderBullet
+          index={index}
+          className={className}
+          selectedAnswers={selectedAnswers}
+          questions={questions}
+          correctAnswers={correctAnswers}
+          questTypes={questTypes}
+          isFinished={isFinished}
+        />
+      )
+    }
   };
   return (
     <Swiper

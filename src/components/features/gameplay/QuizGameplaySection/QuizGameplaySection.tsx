@@ -13,7 +13,6 @@ import { Result } from "@/app/typings/result";
 import { v4 as uuidv4 } from "uuid";
 import { updateLeaderboard } from "@/components/shared/utils/actions/leaderboard/updateLeaderboard";
 import { ConfettiComponent as Confetti } from "@/components/core/Confetti/Confetti";
-import { formatToSeconds } from "@/components/shared/utils/formatTime";
 import { Swiper as SwiperCore } from "swiper";
 import { initializeSelectedAnswers } from "@/components/shared/utils/initializeSelectedAnswers";
 import { groupAnswersByQuestion } from "@/components/shared/utils/groupAnswersByQuestion";
@@ -29,6 +28,7 @@ import { topResultCheck } from "@/components/shared/utils/actions/leaderboard/to
 import AlertWrapper from "@/components/core/AlertWrapper/AlertWrapper";
 import { useUser } from "@/components/shared/utils/hooks/useUser";
 import { addToCookieList } from "@/components/shared/utils/addToCookieList";
+import { PlayStatus } from "@/app/typings/playStatus";
 
 interface IQuizGameplayProps {
   quizContent: QuizContent;
@@ -47,9 +47,7 @@ export default function QuizGameplaySection({
     Map<string, string[] | null>
   >(initializeSelectedAnswers(questions));
   const [score, setScore] = useState<number | null>(null);
-  const [hasStarted, setHasStarted] = useState(false);
-  const [isFinished, setIsFinished] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
+  const [playStatus, setPlayStatus] = useState<PlayStatus>("playing"); 
   const [resetKey, setResetKey] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false);
@@ -89,8 +87,10 @@ export default function QuizGameplaySection({
     }
   };
 
+  const startQuiz = () => setPlayStatus("playing");
+
   const handleFinishQuiz = async (totalSeconds: number) => {
-    setIsFinished(true);
+    setPlayStatus("finished");
     const totalScore = calculateScore(
       selectedAnswers,
       correctAnswers,
@@ -129,10 +129,9 @@ export default function QuizGameplaySection({
   };
 
   const resetQuiz = () => {
+    setPlayStatus("playing");
     setSelectedAnswers(initializeSelectedAnswers(questions));
     setScore(null);
-    setIsFinished(false);
-    setHasStarted(true);
     setResetKey((prev) => prev + 1);
     highlightTab(false);
     reset();
@@ -175,11 +174,9 @@ export default function QuizGameplaySection({
         >
           <QuizTimer
             key={resetKey}
-            quizTime={formatToSeconds(+quiz.time)}
-            hasStarted={hasStarted}
-            isFinished={isFinished}
+            quizTime={+quiz.time}
             handleFinishQuiz={handleFinishQuiz}
-            isPaused={isPaused}
+            playStatus={playStatus}
           />
         </QuizGameplayHeader>
         {score !== null && (
@@ -191,7 +188,7 @@ export default function QuizGameplaySection({
         )}
       </Flex>
 
-      {!hasStarted ? (
+      {playStatus === "uninitiated" ? (
         <Flex
           flex={1}
           justifyContent="center"
@@ -203,7 +200,7 @@ export default function QuizGameplaySection({
             alignItems="center"
             flex={1}
           >
-            <Button onClick={() => setHasStarted(true)}>Start quiz</Button>
+            <Button onClick={startQuiz}>Start quiz</Button>
           </Flex>
           <chakra.div flex={1}></chakra.div>
         </Flex>
@@ -214,7 +211,7 @@ export default function QuizGameplaySection({
             questTypes={questTypes}
             selectedAnswers={selectedAnswers}
             groupedAnswers={groupedAnswers}
-            isFinished={isFinished}
+            playStatus={playStatus}
             handleSelectAnswer={handleSelectAnswer}
             resetKey={resetKey}
             setIsTransitioning={setIsTransitioning}
@@ -223,16 +220,15 @@ export default function QuizGameplaySection({
             control={control}
           />
           <QuizGameplayFooter
-            isFinished={isFinished}
-            setIsFinished={setIsFinished}
+            playStatus={playStatus}
+            setPlayStatus={setPlayStatus}
             resetQuiz={resetQuiz}
-            setIsPaused={setIsPaused}
           />
         </chakra.form>
       )}
       <QuizPauseModal
-        isPaused={isPaused}
-        setIsPaused={setIsPaused}
+        playStatus={playStatus}
+        setPlayStatus={setPlayStatus}
         title={quiz.title}
       />
     </Flex>

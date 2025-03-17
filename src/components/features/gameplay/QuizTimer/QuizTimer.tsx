@@ -1,27 +1,25 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useTimer } from "react-timer-hook";
 import "./QuizTimer.css";
 import clsx from "clsx";
 import { usePathname, useRouter } from "next/navigation";
+import { formatToSeconds } from "@/components/shared/utils/formatTime";
+import { PlayStatus } from "@/app/typings/playStatus";
 
 interface IQuizTimerProps {
-  quizTime: Date;
-  hasStarted: boolean;
-  isFinished: boolean;
+  quizTime: number;
   handleFinishQuiz: (time: number) => void;
-  isPaused: boolean;
+  playStatus: PlayStatus;
 }
 
 export default function QuizTimer({
   quizTime,
-  hasStarted,
-  isFinished,
   handleFinishQuiz,
-  isPaused,
+  playStatus,
 }: IQuizTimerProps) {
-  const [isTimeUp, setIsTimeUp] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const previousPlayStatus = useRef(playStatus);
   
   const {
     totalSeconds,
@@ -30,46 +28,44 @@ export default function QuizTimer({
     start,
     resume,
     pause,
+    restart,
   } = useTimer({
-    expiryTimestamp: quizTime,
+    expiryTimestamp: formatToSeconds(+quizTime),
     autoStart: false,
     onExpire: () => {
-      if (!isTimeUp) {
-        handleFinishQuiz(totalSeconds);
-        setIsTimeUp(true);
-      }
+      if (playStatus === "playing") handleFinishQuiz(totalSeconds);
     },
   });
-
+  
   useEffect(() => {
-    if (hasStarted && !isFinished) {
-      start();
-      setIsTimeUp(false); 
-    } else {
-      pause();
+    switch (playStatus) {
+      case "playing":
+        if (previousPlayStatus.current === "uninitiated") {
+          start();
+        } else if (previousPlayStatus.current === "paused") {
+          resume();
+        } else {
+          restart(formatToSeconds(+quizTime));
+        }
+        break;
+      case "finished":
+        handleFinishQuiz(totalSeconds);
+        pause();
+        break;
+      case "paused":
+        pause();
+        router.push(`${pathname}?timeLeft=${totalSeconds}`);
+        break;
+      default:
+        break;
     }
-  }, [hasStarted, isFinished]);
-
-  useEffect(() => {
-    if (isFinished && !isTimeUp) {
-      handleFinishQuiz(totalSeconds);
-      setIsTimeUp(true);
-    }
-  }, [isFinished, isTimeUp]);
-
-  useEffect(() => {
-    if (hasStarted && isPaused) {
-      pause();
-      router.push(pathname + "?timeLeft=" + totalSeconds);
-    } else if (hasStarted && !isPaused) {
-      resume();
-    }
-  }, [isPaused]);
+    previousPlayStatus.current = playStatus;
+  }, [playStatus]);
 
   return (
     <div className={clsx({
       "timer": true,
-      "fa-bounce": totalSeconds < 10 && !isTimeUp,
+      "fa-bounce": totalSeconds < 10 && playStatus === "playing",
     })}>
       {String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0")}
     </div>

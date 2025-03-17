@@ -1,3 +1,4 @@
+import { PlayStatus } from "@/app/typings/playStatus";
 import { formatToMMSS } from "@/components/shared/utils/formatTime";
 import { DialogBody, DialogContent, DialogRoot } from "@/components/ui/dialog";
 import { Button } from "@/styles/theme/components/button";
@@ -6,22 +7,31 @@ import { useSearchParams } from "next/navigation";
 import { Dispatch, SetStateAction } from "react";
 
 interface IQuizPauseModalProps {
-  isPaused: boolean;
-  setIsPaused: Dispatch<SetStateAction<boolean>>;
   title: string;
+  playStatus: PlayStatus;
+  setPlayStatus: Dispatch<SetStateAction<PlayStatus>>;
 }
 
 export default function QuizPauseModal({
-  isPaused,
-  setIsPaused,
   title,
+  playStatus,
+  setPlayStatus
 }: IQuizPauseModalProps) {
   const params = useSearchParams();
   const timeLeft = params.get("timeLeft");
+  const isPaused = playStatus === "paused";
+  const handleOpenChange = (e: { open: boolean }) => {
+    if (e.open) {
+      setPlayStatus("paused");
+    } else {
+      resumeQuiz();
+    }
+  }
+  const resumeQuiz = () => setPlayStatus("playing");
   return (
     <DialogRoot
       open={isPaused}
-      onOpenChange={(e) => setIsPaused(e.open)}
+      onOpenChange={handleOpenChange}
       size="full"
       placement="center"
       motionPreset="slide-in-bottom"
@@ -50,7 +60,7 @@ export default function QuizPauseModal({
             </Text>
           </HStack>
           <Button
-            onClick={() => setIsPaused(false)}
+            onClick={resumeQuiz}
             type="button"
           >
             Resume

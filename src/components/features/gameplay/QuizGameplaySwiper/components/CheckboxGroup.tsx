@@ -66,9 +66,9 @@ export default function CheckboxGroup(props: ICheckboxGroupProps) {
                 cursor={isFinished ? "not-allowed" : "pointer"}
                 className={clsx({
                   default: true,
-                  selected: isChecked && !props.isFinished,
+                  selected: isChecked && !isFinished,
                   correct: isFinished && answer.correct_answer,
-                  incorrect: isChecked && props.isFinished && !isCorrect,
+                  incorrect: isChecked && isFinished && !isCorrect,
                 })}
               >
                 <Flex
