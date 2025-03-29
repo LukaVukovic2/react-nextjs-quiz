@@ -3,7 +3,7 @@ import QuizGameplayHeader from "../QuizGameplayHeader/QuizGameplayHeader";
 import QuizResultSection from "../QuizResultSection/QuizResultSection";
 import QuizTimer from "../QuizTimer/QuizTimer";
 import { updateQuizPlay } from "../../../shared/utils/actions/quiz/updateQuizPlay";
-import { MutableRefObject, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Flex, chakra } from "@chakra-ui/react";
 import { Button } from "@/styles/theme/components/button";
@@ -12,8 +12,7 @@ import { QuestionType } from "@/app/typings/question";
 import { Result } from "@/app/typings/result";
 import { v4 as uuidv4 } from "uuid";
 import { updateLeaderboard } from "@/components/shared/utils/actions/leaderboard/updateLeaderboard";
-import { ConfettiComponent as Confetti } from "@/components/core/Confetti/Confetti";
-import { Swiper as SwiperCore } from "swiper";
+import { Swiper } from "swiper";
 import { initializeSelectedAnswers } from "@/components/shared/utils/initializeSelectedAnswers";
 import { groupAnswersByQuestion } from "@/components/shared/utils/groupAnswersByQuestion";
 import { calculateScore } from "@/components/shared/utils/calculateScore";
@@ -29,42 +28,48 @@ import AlertWrapper from "@/components/core/AlertWrapper/AlertWrapper";
 import { useUser } from "@/components/shared/utils/hooks/useUser";
 import { addToCookieList } from "@/components/shared/utils/addToCookieList";
 import { PlayStatus } from "@/app/typings/playStatus";
+import { manageSlideTransition } from "@/components/shared/utils/manageSlideTransition";
 
 interface IQuizGameplayProps {
   quizContent: QuizContent;
   questTypes: QuestionType[];
   highlightTab: (value: boolean) => void;
-  isTopResult: boolean;
 }
 
 export default function QuizGameplaySection({
   quizContent: { quiz, questions, answers, user },
   questTypes,
-  highlightTab,
-  isTopResult
+  highlightTab
 }: IQuizGameplayProps) {
   const [selectedAnswers, setSelectedAnswers] = useState<
     Map<string, string[] | null>
   >(initializeSelectedAnswers(questions));
   const [score, setScore] = useState<number | null>(null);
-  const [playStatus, setPlayStatus] = useState<PlayStatus>("playing"); 
+  const [playStatus, setPlayStatus] = useState<PlayStatus>("uninitiated"); 
   const [resetKey, setResetKey] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false);
   const { control, reset, setValue } = useForm();
-  const swiperRef = useRef<SwiperCore | null>(
-    null
-  ) as MutableRefObject<SwiperCore | null>;
+  const swiperRef = useRef<Swiper | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { user: player } = useUser();
-  const correctAnswers = useMemo(
-    () => answers?.filter((answer) => answer.correct_answer),
+  const correctAnswers = useMemo(() => 
+    answers?.filter(answer => answer.correct_answer),
     [answers]
   );
   const groupedAnswers = useMemo(
     () => groupAnswersByQuestion(answers),
     [answers]
   );
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+  }, []);
 
   const handleSelectAnswer = (
     questionId: string,
@@ -73,18 +78,7 @@ export default function QuizGameplaySection({
   ) => {
     setSelectedAnswers((prev) => new Map(prev.set(questionId, answerId)));
     setValue(questionId, answerId);
-
-    if (!isTransitioning && swiperRef.current !== null) {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-
-      timeoutRef.current = setTimeout(() => {
-        if (!swiperRef.current || !swiperRef.current.pagination) return;
-
-        swiperRef.current.pagination.render();
-        if (questionType === "Single choice") swiperRef.current.slideNext();
-        timeoutRef.current = null;
-      }, 500);
-    }
+    manageSlideTransition(questionType, isTransitioning, swiperRef, timeoutRef);
   };
 
   const startQuiz = () => setPlayStatus("playing");
@@ -121,10 +115,9 @@ export default function QuizGameplaySection({
     } else {
       const success = await updateLeaderboard(result);
       highlightTab(success);
-      const timeout = setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         highlightTab(false);
       }, 10000);
-      return () => clearTimeout(timeout);
     }
   };
 
@@ -149,9 +142,7 @@ export default function QuizGameplaySection({
       wrap="wrap"
       flexDirection="column"
       width="600px"
-    >
-      <Confetti isShown={isTopResult} />
-      
+    >      
       {dialogVisible && (
         <AuthModal
           dialogVisible={dialogVisible}

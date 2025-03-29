@@ -16,6 +16,7 @@ export default function QuizGameplayHeader({children, quiz, user}: {children: Re
       >
         {quiz.title}
       </Heading>
+
       <Flex
         align="center"
         gap={2}
@@ -23,6 +24,7 @@ export default function QuizGameplayHeader({children, quiz, user}: {children: Re
         <Avatar src={user.avatar} width="30px" height="30px" />
         <Text fontSize="13px">{user.username}</Text>
       </Flex>
+
       <PopoverRoot modal={true} positioning={{placement: "left-start"}}>
         <PopoverTrigger asChild cursor="pointer">
           <MdExpandMore size={32} />
@@ -30,6 +32,7 @@ export default function QuizGameplayHeader({children, quiz, user}: {children: Re
         <PopoverContent quiz={quiz} />
       </PopoverRoot>
       {children}
+      
     </Flex>
   )
 }

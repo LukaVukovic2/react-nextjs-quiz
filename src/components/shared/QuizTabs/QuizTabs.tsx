@@ -10,6 +10,7 @@ import "./QuizTabs.css"
 import { Review } from "@/app/typings/review";
 import { useUser } from "../utils/hooks/useUser";
 import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
+import { ConfettiComponent as Confetti } from "@/components/core/Confetti/Confetti";
 const QuizLeaderboard = lazy(() => import("@/components/features/leaderboard/QuizLeaderboard/QuizLeaderboard"));
 const QuizReviewForm = lazy(() => import("@/components/features/reviews/QuizReviewForm/QuizReviewForm"));
 const QuizReviewList = lazy(() => import("@/components/features/reviews/QuizReviewList/QuizReviewList"));
@@ -30,8 +31,8 @@ export default function QuizTabs({
   questTypes,
   reviews
 }: IQuizTabsProps) {
-  const [isHighlightedTab, setIsHighlightTab] = useState(false);
-  const highlightTab = (value: boolean) => setIsHighlightTab(value);
+  const [isTopResult, setIsTopResult] = useState(false);
+  const highlightTab = (value: boolean) => setIsTopResult(value);
   const { user: activeUser } = useUser();
 
   return (
@@ -45,7 +46,7 @@ export default function QuizTabs({
         <Tabs.Trigger value="Gameplay">Gameplay</Tabs.Trigger>
         <Tabs.Trigger 
           value="Leaderboard"
-          className={`tab ${isHighlightedTab ? 'highlighted fa-fade' : ''}`}
+          className={`tab ${isTopResult ? 'highlighted fa-fade' : ''}`}
         >
           Leaderboard
         </Tabs.Trigger>
@@ -58,7 +59,6 @@ export default function QuizTabs({
             quizContent={quizContent}
             questTypes={questTypes}
             highlightTab={highlightTab}
-            isTopResult={isHighlightedTab}
           />
         </Tabs.Content>
         <Tabs.Content value="Leaderboard">
@@ -81,6 +81,7 @@ export default function QuizTabs({
           </Suspense>
         </Tabs.Content>
       </Flex>
+      <Confetti isShown={isTopResult} />
     </Tabs.Root>
   );
 }
