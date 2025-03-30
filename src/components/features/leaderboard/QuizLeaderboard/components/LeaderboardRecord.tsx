@@ -17,9 +17,8 @@ export default function LeaderboardRecord({
     const created_at_date = new Date(created_at);
     const now = new Date();
     const diff = now.getTime() - created_at_date.getTime();
-    if (diff < 5 * 60 * 1000) {
-      return true;
-    }
+    if (diff < 5 * 60 * 1000) return true;
+
     return false;
   };
 
@@ -39,6 +38,7 @@ export default function LeaderboardRecord({
                 {index + 1 + "."}
               </Text>
             )}
+
             <Flex position="relative" alignItems="center" justifyContent="center" flexWrap="wrap" px={3}>
               {index === 3 && 
                 <Float placement="top-start" offsetY={-5} offsetX={10}>
@@ -46,11 +46,13 @@ export default function LeaderboardRecord({
                 </Float>
               }
               {result.username}
+              
               {activeUser?.id == result.user_id && recentResultCheck(result.created_at ?? new Date()) && (
                 <Tag colorPalette="orange" variant="solid" ml={2}>NEW!</Tag>
               )}
             </Flex>
           </Flex>
+
           <Flex
             flex={1}
             fontWeight="bolder"
@@ -60,10 +62,12 @@ export default function LeaderboardRecord({
               {index === 3 && 
                 <Float placement="top-center" offsetY={-5}>
                   <Text fontSize="xs" fontWeight="normal">Score</Text>
-                </Float>}
+                </Float>
+              }
               {result.score}
             </chakra.div>
           </Flex>
+
           <chakra.div position="relative">
             {index === 3 && 
               <Float placement="top-center" offsetY={-5}>

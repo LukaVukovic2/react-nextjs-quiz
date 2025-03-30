@@ -1,37 +1,27 @@
 import { Answer } from "@/app/typings/answer";
-import { Question, QuestionType } from "@/app/typings/question";
 import clsx from "clsx";
 
 interface IPaginationBulletsProps {
   index: number;
   className: string;
-  selectedAnswers: Map<string, string[] | null>;
-  questions: Question[];
+  selectedAns: string[] | null | undefined;
   correctAnswers: Answer[];
-  questTypes: QuestionType[];
+  typeName: string | undefined;
   isFinished: boolean;
 }
 
 export default function RenderBullet({
   index,
   className,
-  selectedAnswers,
-  questions,
+  selectedAns,
   correctAnswers,
-  questTypes,
+  typeName,
   isFinished,
 }: IPaginationBulletsProps) {
-  const selectedQuestionAns = selectedAnswers.get(questions[index].id);
-  const correctAnswersForQuestion = correctAnswers.filter(
-    (answer) => answer.question_id === questions[index].id
-  );
-  const isSelected = !!selectedQuestionAns;
-  const selectedAnswersArr = Array.isArray(selectedQuestionAns)
-    ? selectedQuestionAns
+  const isSelected = !!selectedAns;
+  const selectedAnswersArr = Array.isArray(selectedAns)
+    ? selectedAns
     : [];
-  const typeName = questTypes.find(
-    (type) => type.id === questions[index].id_quest_type
-  )?.type_name;
 
   let isCorrect = false;
   let hasIncorrectAnswers = false;
@@ -39,22 +29,18 @@ export default function RenderBullet({
   let hasCorrectAnswerNotSelected = false;
 
   if (typeName === "Short answer") {
-    const acceptableAnswers = correctAnswersForQuestion.map((answer) =>
-      answer.answer.toLowerCase()
-    );
-    const userInput = String(selectedQuestionAns).toLowerCase().trim();
-    isCorrect = acceptableAnswers.some((answer) => answer === userInput);
+    const userInput = String(selectedAns).toLowerCase().trim();
+    isCorrect = correctAnswers.some(({ answer }) => answer.toLowerCase() === userInput);
   } else if (typeName === "Single choice") {
-    isCorrect =
-      String(selectedQuestionAns) === correctAnswersForQuestion[0]?.id;
+    isCorrect = String(selectedAns) === correctAnswers[0]?.id;
   } else if (typeName === "Multiple choice") {
     hasIncorrectAnswers = selectedAnswersArr.some(
-      (id) => !correctAnswersForQuestion.some((ans) => ans.id === id)
+      (id) => !correctAnswers.some((ans) => ans.id === id)
     );
-    hasCorrectAnswers = correctAnswersForQuestion.some((answer) =>
+    hasCorrectAnswers = correctAnswers.some((answer) =>
       selectedAnswersArr.includes(answer.id)
     );
-    hasCorrectAnswerNotSelected = correctAnswersForQuestion.some(
+    hasCorrectAnswerNotSelected = correctAnswers.some(
       (answer) => !selectedAnswersArr.includes(answer.id)
     );
   }
@@ -67,12 +53,8 @@ export default function RenderBullet({
         correctAnswer:
           isFinished &&
           (isCorrect ||
-            (!hasIncorrectAnswers &&
-              hasCorrectAnswers &&
-              !hasCorrectAnswerNotSelected)),
-        partiallyCorrect:
-          isFinished &&
-          hasCorrectAnswers &&
+            (!hasIncorrectAnswers && hasCorrectAnswers && !hasCorrectAnswerNotSelected)),
+        partiallyCorrect: isFinished && hasCorrectAnswers &&
           (hasIncorrectAnswers || hasCorrectAnswerNotSelected),
         wrongAnswer: isFinished && !isCorrect,
       })

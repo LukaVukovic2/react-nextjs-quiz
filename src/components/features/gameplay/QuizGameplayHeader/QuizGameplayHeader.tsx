@@ -6,8 +6,19 @@ import { Heading } from "@/styles/theme/components/heading";
 import { Avatar } from "@/components/ui/avatar";
 import { QuizDetails } from "@/app/typings/quiz";
 import { MdExpandMore } from "react-icons/md";
+import QuizTimer from "../QuizTimer/QuizTimer";
+import { PlayStatus } from "@/app/typings/playStatus";
 
-export default function QuizGameplayHeader({children, quiz, user}: {children: React.ReactNode, quiz: QuizDetails, user: User}) {
+interface IQuizGameplayHeaderProps {
+  quiz: QuizDetails;
+  user: User;
+  resetKey: number;
+  quizTime: number;
+  handleFinishQuiz: (seconds: number) => void;
+  playStatus: PlayStatus;
+}
+
+export default function QuizGameplayHeader({quiz, user, resetKey, quizTime, handleFinishQuiz, playStatus}: IQuizGameplayHeaderProps) {
   return (
     <Flex flexDirection="column" alignItems="start">
       <Heading
@@ -31,7 +42,13 @@ export default function QuizGameplayHeader({children, quiz, user}: {children: Re
         </PopoverTrigger>
         <PopoverContent quiz={quiz} />
       </PopoverRoot>
-      {children}
+      
+      <QuizTimer
+        key={resetKey}
+        quizTime={+quizTime}
+        handleFinishQuiz={handleFinishQuiz}
+        playStatus={playStatus}
+      />
       
     </Flex>
   )

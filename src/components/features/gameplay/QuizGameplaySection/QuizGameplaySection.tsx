@@ -1,7 +1,6 @@
 "use client";
 import QuizGameplayHeader from "../QuizGameplayHeader/QuizGameplayHeader";
 import QuizResultSection from "../QuizResultSection/QuizResultSection";
-import QuizTimer from "../QuizTimer/QuizTimer";
 import { updateQuizPlay } from "../../../shared/utils/actions/quiz/updateQuizPlay";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -107,6 +106,8 @@ export default function QuizGameplaySection({
       time: totalSeconds || 0,
     };
 
+    if (totalScore === 0) return;
+
     if (player?.is_anonymous) {
       const isTopResult = await topResultCheck(result);
       if (!isTopResult) return;
@@ -162,14 +163,12 @@ export default function QuizGameplaySection({
         <QuizGameplayHeader
           quiz={quiz}
           user={user}
-        >
-          <QuizTimer
-            key={resetKey}
-            quizTime={+quiz.time}
-            handleFinishQuiz={handleFinishQuiz}
-            playStatus={playStatus}
-          />
-        </QuizGameplayHeader>
+          resetKey={resetKey}
+          quizTime={+quiz.time}
+          handleFinishQuiz={handleFinishQuiz}
+          playStatus={playStatus}
+        />
+
         {score !== null && (
           <QuizResultSection
             score={score}
@@ -210,6 +209,7 @@ export default function QuizGameplaySection({
             correctAnswers={correctAnswers}
             control={control}
           />
+
           <QuizGameplayFooter
             playStatus={playStatus}
             setPlayStatus={setPlayStatus}
@@ -217,6 +217,7 @@ export default function QuizGameplaySection({
           />
         </chakra.form>
       )}
+
       <QuizPauseModal
         playStatus={playStatus}
         setPlayStatus={setPlayStatus}

@@ -25,16 +25,15 @@ interface IRadioGroupProps {
   resetKey: number;
 }
 
-export default function RadioGroup(props: IRadioGroupProps) {
-  const {
-    isFinished,
-    selectedAnsId,
-    answerOptions,
-    handleSelectAnswer,
-    question,
-    field,
-    resetKey,
-  } = props;
+export default function RadioGroup({
+  isFinished,
+  selectedAnsId,
+  answerOptions,
+  handleSelectAnswer,
+  question,
+  field,
+  resetKey,
+}: IRadioGroupProps) {
   return (
     <RadioGroupComponent
       disabled={isFinished}
@@ -59,6 +58,7 @@ export default function RadioGroup(props: IRadioGroupProps) {
           const isCorrect =
             answer?.correct_answer && selectedAnsId === answer.id;
           const isChecked = selectedAnsId === answer.id;
+          
           return (
             <Radio
               m={1}

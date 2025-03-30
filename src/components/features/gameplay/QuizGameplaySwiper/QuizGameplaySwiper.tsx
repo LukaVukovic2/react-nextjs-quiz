@@ -11,6 +11,7 @@ import { Keyboard, Pagination } from "swiper/modules";
 import { renderToStaticMarkup } from "react-dom/server";
 import RenderBullet from "./components/RenderBullet";
 import { PlayStatus } from "@/app/typings/playStatus";
+import { chakra } from "@chakra-ui/react";
 
 interface IQuizGameplaySwiperProps {
   questions: Question[];
@@ -47,14 +48,18 @@ export default function QuizGameplaySwiper({
   const pagination = {
     clickable: true,
     renderBullet: function (index: number, className: string) {
+      const typeName = questTypes.find(
+        (type) => type.id === questions[index].id_quest_type
+      )?.type_name;
+      const question = questions[index];
+
       return renderToStaticMarkup(
         <RenderBullet
           index={index}
           className={className}
-          selectedAnswers={selectedAnswers}
-          questions={questions}
-          correctAnswers={correctAnswers}
-          questTypes={questTypes}
+          selectedAns={selectedAnswers.get(question.id)}
+          correctAnswers={correctAnswers.filter((answer) => answer.question_id === question.id)}
+          typeName={typeName}
           isFinished={isFinished}
         />
       )
@@ -109,29 +114,32 @@ export default function QuizGameplaySwiper({
                   resetKey,
                 };
                 return (
-                  (typeName === "Single choice" && (
-                    <RadioGroup
-                      {...commonProps}
-                      answerOptions={answerOptions}
-                      selectedAnsId={(selectedAnsId ?? "") as string}
-                    />
-                  )) ||
-                  (typeName === "Multiple choice" && (
-                    <CheckboxGroup
-                      {...commonProps}
-                      answerOptions={answerOptions}
-                      selectedAnsIds={(selectedAnsId ?? []) as string[]}
-                    />
-                  )) || (
-                    <ShortAnswerInput
-                      {...commonProps}
-                      acceptableAnswers={answerOptions}
-                    />
-                  )
+                  <chakra.div mb={7}>
+                    {
+                      (typeName === "Single choice" && (
+                        <RadioGroup
+                          {...commonProps}
+                          answerOptions={answerOptions}
+                          selectedAnsId={(selectedAnsId ?? "") as string}
+                        />
+                      )) ||
+                      (typeName === "Multiple choice" && (
+                        <CheckboxGroup
+                          {...commonProps}
+                          answerOptions={answerOptions}
+                          selectedAnsIds={(selectedAnsId ?? []) as string[]}
+                        />
+                      )) || (
+                        <ShortAnswerInput
+                          {...commonProps}
+                          acceptableAnswers={answerOptions}
+                        />
+                      )  
+                    }
+                  </chakra.div>
                 );
               }}
             />
-            <br />
           </SwiperSlide>
         );
       })}
