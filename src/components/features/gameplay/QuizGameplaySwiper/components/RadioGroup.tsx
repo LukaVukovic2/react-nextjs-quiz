@@ -1,5 +1,5 @@
-import { Answer } from "@/app/typings/answer";
-import { Question } from "@/app/typings/question";
+import { Answer } from "@/typings/answer";
+import { Question } from "@/typings/question";
 import {
   Radio,
   RadioGroup as RadioGroupComponent,
@@ -58,7 +58,7 @@ export default function RadioGroup({
           const isCorrect =
             answer?.correct_answer && selectedAnsId === answer.id;
           const isChecked = selectedAnsId === answer.id;
-          
+
           return (
             <Radio
               m={1}

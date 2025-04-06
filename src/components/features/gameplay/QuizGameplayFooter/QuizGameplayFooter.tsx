@@ -1,4 +1,4 @@
-import { PlayStatus } from "@/app/typings/playStatus";
+import { PlayStatus } from "@/typings/playStatus";
 import { Button } from "@/styles/theme/components/button";
 import { Flex } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";

@@ -1,6 +1,6 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Providers } from "./providers";
-import Navigation from "@/components/shared/Navigation.tsx/Navigation";
+import MainNavigation from "@/components/shared/MainNavigation.tsx/MainNavigation";
 
 export default function RootLayout({
   children,
@@ -21,7 +21,7 @@ export default function RootLayout({
       </head>
       <body>
         <Providers>
-          <Navigation />
+          <MainNavigation />
           {children}
           <Toaster />
         </Providers>

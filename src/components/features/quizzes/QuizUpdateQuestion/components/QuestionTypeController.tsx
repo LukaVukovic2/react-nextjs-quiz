@@ -1,6 +1,6 @@
-import { Question } from "@/app/typings/question";
+import { Question } from "@/typings/question";
 import SelectOption from "@/components/core/SelectOption/SelectOption";
-import { MyQuizzesContext } from "@/components/shared/utils/contexts/MyQuizzesContext";
+import { TypeContext } from "@/utils/contexts/TypeContext";
 import { Field } from "@/components/ui/field";
 import { FormControl } from "@chakra-ui/form-control";
 import { useContext } from "react";
@@ -11,9 +11,12 @@ interface IQuestionTypeControllerProps {
   selectQuestionType: (value: string, question: Question) => void;
 }
 
-export default function QuestionTypeController({ question, selectQuestionType }: IQuestionTypeControllerProps) {
+export default function QuestionTypeController({
+  question,
+  selectQuestionType,
+}: IQuestionTypeControllerProps) {
   const { control } = useFormContext();
-  const { questTypes } = useContext(MyQuizzesContext);
+  const { questTypes } = useContext(TypeContext);
   return (
     <FormControl>
       <Field label="Question type">

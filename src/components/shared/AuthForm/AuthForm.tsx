@@ -5,12 +5,12 @@ import { Field } from "@/components/ui/field";
 import { FieldValues, useForm } from "react-hook-form";
 import { Heading } from "@/styles/theme/components/heading";
 import { useState } from "react";
-import { login } from "../utils/actions/auth/login";
-import { register as registerUser } from "../utils/actions/auth/register";
+import { login } from "@/utils/actions/auth/login";
+import { register as registerUser } from "@/utils/actions/auth/register";
 import { toaster } from "@/components/ui/toaster";
 import { deleteCookie } from "cookies-next";
-import { checkCookieItems } from "../utils/checkCookieItems";
-import { PasswordStrengthWrapper } from "../PasswordStrengthWrapper/PasswordStrengthWrapper";
+import { checkCookieItems } from "@/utils/functions/checkCookieItems";
+import { PasswordStrengthWrapper } from "../../core/PasswordStrengthWrapper/PasswordStrengthWrapper";
 
 export default function AuthForm({ closeModal }: { closeModal: () => void }) {
   const {
@@ -125,7 +125,7 @@ export default function AuthForm({ closeModal }: { closeModal: () => void }) {
                 width="100%"
                 justifyContent="end"
               >
-                <PasswordStrengthWrapper isLogin={isLogin} control={control}/>
+                <PasswordStrengthWrapper isShown={isLogin} control={control}/>
               </Flex>
             )}
           </Field>

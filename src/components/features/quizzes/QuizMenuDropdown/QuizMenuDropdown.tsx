@@ -1,11 +1,11 @@
 "use client";
 import { Button } from "@/styles/theme/components/button";
-import { deleteQuiz } from "@/components/shared/utils/actions/quiz/deleteQuiz";
+import { deleteQuiz } from "@/utils/actions/quiz/deleteQuiz";
 import { lazy, Suspense, useState } from "react";
-import { QuizBasic } from "@/app/typings/quiz";
+import { QuizBasic } from "@/typings/quiz";
 import { toaster } from "@/components/ui/toaster";
-import { QuizType } from "@/app/typings/quiz";
-import { Qa } from "@/app/typings/qa";
+import { QuizType } from "@/typings/quiz";
+import { Qa } from "@/typings/qa";
 import { DialogContentWrapper } from "@/components/core/DialogContentWrapper/DialogContentWrapper";
 import { Dialog, Text, Menu } from "@chakra-ui/react";
 import { FaEllipsisV } from "react-icons/fa";
@@ -80,12 +80,10 @@ export default function QuizMenuDropdown({
         lazyMount
         open={openDelete}
         onOpenChange={toggleDeleteDialog}
-      >   
-        <DialogContentWrapper 
-          title="Delete Quiz" 
-          body={
-            <Text>Are you sure you want to delete this quiz?</Text>
-          }
+      >
+        <DialogContentWrapper
+          title="Delete Quiz"
+          body={<Text>Are you sure you want to delete this quiz?</Text>}
           footer={
             <>
               <Button
@@ -112,10 +110,17 @@ export default function QuizMenuDropdown({
         open={openEdit}
         onOpenChange={toggleEditDialog}
       >
-        <DialogContentWrapper 
-          title="Update Quiz" 
+        <DialogContentWrapper
+          title="Update Quiz"
           body={
-            <Suspense fallback={<LoadingSpinner text="Setting quiz form..." scale={0.85}/>}>
+            <Suspense
+              fallback={
+                <LoadingSpinner
+                  text="Setting quiz form..."
+                  scale={0.85}
+                />
+              }
+            >
               <QuizUpdateForm
                 quiz={quiz}
                 quizType={quizType}

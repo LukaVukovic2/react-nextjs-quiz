@@ -1,16 +1,19 @@
-import { Result } from "@/app/typings/result";
+import { Result } from "@/typings/result";
 import { Box, Flex } from "@chakra-ui/react";
 import "./QuizLeaderboard.css";
 import clsx from "clsx";
-import LeaderboardRecord from "./components/LeaderboardRecord";
-import { User } from "@/app/typings/user";
+import LeaderboardRecord from "../LeaderboardRecord.tsx/LeaderboardRecord";
+import { User } from "@/typings/user";
 
 interface ILeaderboardProps {
   topResults: Result[];
   activeUser: User | null;
 }
 
-export default function Leaderboard({ topResults = [], activeUser }: ILeaderboardProps) {
+export default function Leaderboard({
+  topResults = [],
+  activeUser,
+}: ILeaderboardProps) {
   return (
     <Flex
       flexDirection="column"
@@ -52,7 +55,7 @@ export default function Leaderboard({ topResults = [], activeUser }: ILeaderboar
             key={topResults[index + 3]?.id || index}
             justifyContent="space-between"
             className={clsx({
-              'leaderboard-record': true,
+              "leaderboard-record": true,
               highlight: activeUser?.id === topResults[index + 3]?.user_id,
             })}
           >

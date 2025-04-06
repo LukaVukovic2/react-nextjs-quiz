@@ -1,7 +1,7 @@
-import { Qa } from "@/app/typings/qa";
-import { QuestionType } from "@/app/typings/question";
-import ChoiceQuestionInput from "@/components/shared/ChoiceQuestionInput/ChoiceQuestionInput";
-import ShortAnswerOptionInput from "@/components/shared/ShortAnswerOptionInput/ShortAnswerOptionInput";
+import { Qa } from "@/typings/qa";
+import { QuestionType } from "@/typings/question";
+import ChoiceQuestionInput from "@/components/features/quizzes/NewQuizForm/components/ChoiceQuestionInput";
+import ShortAnswerOptionInput from "@/components/features/quizzes/NewQuizForm/components/ShortAnswerOptionInput";
 import { Field } from "@/components/ui/field";
 import { Button } from "@/styles/theme/components/button";
 import { FormControl } from "@chakra-ui/form-control";
@@ -44,7 +44,10 @@ export default function QuestionTypeForm({
         answers: [...(prev.answers || []), currentAnswer],
       };
     });
-    trigger([`answer${currentAnswer.id}`, `correctAnswer_${currentQa.question.id}`]);
+    trigger([
+      `answer${currentAnswer.id}`,
+      `correctAnswer_${currentQa.question.id}`,
+    ]);
   };
 
   const addNewQuestion = () => {
@@ -54,7 +57,7 @@ export default function QuestionTypeForm({
       question: {
         ...prev.question,
         id,
-        title: "", 
+        title: "",
       },
       answers: [],
     }));
@@ -83,16 +86,13 @@ export default function QuestionTypeForm({
       ...prev,
       question: {
         ...prev.question,
-        title
-      }
+        title,
+      },
     }));
     trigger(`q_title${currentQa.question.id}`);
   };
 
-  const updateAnswer = (
-    value: string,
-    answerId: string
-  ) => {
+  const updateAnswer = (value: string, answerId: string) => {
     setCurrentQa((prev) => {
       return {
         ...prev,
@@ -138,7 +138,9 @@ export default function QuestionTypeForm({
                 key={currentQa.question.id}
                 placeholder="Question title"
                 defaultValue={currentQa.question.title}
-                {...register(`q_title${currentQa.question.id}`, { required: true })}
+                {...register(`q_title${currentQa.question.id}`, {
+                  required: true,
+                })}
                 onChange={debounce((e) => {
                   register(`q_title${currentQa.question.id}`).onChange(e);
                   changeQuestionTitle(e.target.value);

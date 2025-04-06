@@ -1,5 +1,5 @@
-import { PlayStatus } from "@/app/typings/playStatus";
-import { formatToMMSS } from "@/components/shared/utils/formatTime";
+import { PlayStatus } from "@/typings/playStatus";
+import { formatToMMSS } from "@/utils/functions/formatTime";
 import { DialogBody, DialogContent, DialogRoot } from "@/components/ui/dialog";
 import { Button } from "@/styles/theme/components/button";
 import { Flex, HStack, StackSeparator, Text } from "@chakra-ui/react";
@@ -15,7 +15,7 @@ interface IQuizPauseModalProps {
 export default function QuizPauseModal({
   title,
   playStatus,
-  setPlayStatus
+  setPlayStatus,
 }: IQuizPauseModalProps) {
   const params = useSearchParams();
   const timeLeft = params.get("timeLeft");
@@ -26,7 +26,7 @@ export default function QuizPauseModal({
     } else {
       resumeQuiz();
     }
-  }
+  };
   const resumeQuiz = () => setPlayStatus("playing");
   return (
     <DialogRoot
@@ -53,7 +53,12 @@ export default function QuizPauseModal({
             fontWeight="bold"
             border={1}
           >
-            <Text textTransform="uppercase" color="danger.400">Quiz paused</Text>
+            <Text
+              textTransform="uppercase"
+              color="danger.400"
+            >
+              Quiz paused
+            </Text>
             <Text>{title}</Text>
             <Text textTransform="uppercase">
               {timeLeft ? formatToMMSS(+timeLeft) + " remaining" : ""}

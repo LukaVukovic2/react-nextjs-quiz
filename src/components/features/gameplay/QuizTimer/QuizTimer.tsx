@@ -3,8 +3,8 @@ import { useTimer } from "react-timer-hook";
 import "./QuizTimer.css";
 import clsx from "clsx";
 import { usePathname, useRouter } from "next/navigation";
-import { formatToSeconds } from "@/components/shared/utils/formatTime";
-import { PlayStatus } from "@/app/typings/playStatus";
+import { formatToSeconds } from "@/utils/functions/formatTime";
+import { PlayStatus } from "@/typings/playStatus";
 
 interface IQuizTimerProps {
   quizTime: number;
@@ -20,23 +20,16 @@ export default function QuizTimer({
   const router = useRouter();
   const pathname = usePathname();
   const previousPlayStatus = useRef(playStatus);
-  
-  const {
-    totalSeconds,
-    seconds,
-    minutes,
-    start,
-    resume,
-    pause,
-    restart,
-  } = useTimer({
-    expiryTimestamp: formatToSeconds(+quizTime),
-    autoStart: false,
-    onExpire: () => {
-      if (playStatus === "playing") handleFinishQuiz(totalSeconds);
-    },
-  });
-  
+
+  const { totalSeconds, seconds, minutes, start, resume, pause, restart } =
+    useTimer({
+      expiryTimestamp: formatToSeconds(+quizTime),
+      autoStart: false,
+      onExpire: () => {
+        if (playStatus === "playing") handleFinishQuiz(totalSeconds);
+      },
+    });
+
   useEffect(() => {
     switch (playStatus) {
       case "playing":
@@ -63,11 +56,15 @@ export default function QuizTimer({
   }, [playStatus]);
 
   return (
-    <div className={clsx({
-      "timer": true,
-      "fa-bounce": totalSeconds < 10 && playStatus === "playing",
-    })}>
-      {String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0")}
+    <div
+      className={clsx({
+        timer: true,
+        "fa-bounce": totalSeconds < 10 && playStatus === "playing",
+      })}
+    >
+      {String(minutes).padStart(2, "0") +
+        ":" +
+        String(seconds).padStart(2, "0")}
     </div>
   );
 }

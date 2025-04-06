@@ -1,4 +1,3 @@
-import { steps } from "../utils/steps";
 import {
   StepsItem,
   StepsList,
@@ -8,10 +7,11 @@ import {
 interface IStepperProgressProps {
   currentStep: number;
   setStep: (index: number) => void;
+  steps: { title: string }[];
   children?: React.ReactNode;
 }
 
-export default function StepperProgress({currentStep, setStep, children}: IStepperProgressProps) {
+export default function StepperProgress({currentStep, setStep, steps, children}: IStepperProgressProps) {
   return (
     <StepsRoot
       size="lg"

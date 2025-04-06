@@ -1,20 +1,17 @@
 "use client";
 import QuizGameplayHeader from "../QuizGameplayHeader/QuizGameplayHeader";
 import QuizResultSection from "../QuizResultSection/QuizResultSection";
-import { updateQuizPlay } from "../../../shared/utils/actions/quiz/updateQuizPlay";
+import { updateQuizPlay } from "@/utils/actions/quiz/updateQuizPlay";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Flex, chakra } from "@chakra-ui/react";
 import { Button } from "@/styles/theme/components/button";
-import { QuizContent } from "@/app/typings/quiz";
-import { QuestionType } from "@/app/typings/question";
-import { Result } from "@/app/typings/result";
+import { QuizContent } from "@/typings/quiz";
+import { QuestionType } from "@/typings/question";
+import { Result } from "@/typings/result";
 import { v4 as uuidv4 } from "uuid";
-import { updateLeaderboard } from "@/components/shared/utils/actions/leaderboard/updateLeaderboard";
+import { updateLeaderboard } from "@/utils/actions/leaderboard/updateLeaderboard";
 import { Swiper } from "swiper";
-import { initializeSelectedAnswers } from "@/components/shared/utils/initializeSelectedAnswers";
-import { groupAnswersByQuestion } from "@/components/shared/utils/groupAnswersByQuestion";
-import { calculateScore } from "@/components/shared/utils/calculateScore";
 import QuizGameplayFooter from "../QuizGameplayFooter/QuizGameplayFooter";
 import QuizGameplaySwiper from "../QuizGameplaySwiper/QuizGameplaySwiper";
 import QuizPauseModal from "../QuizPauseModal/QuizPauseModal";
@@ -22,12 +19,17 @@ import "swiper/css/pagination";
 import "swiper/css";
 import "./QuizGameplaySection.css";
 import AuthModal from "@/components/shared/AuthModal/AuthModal";
-import { topResultCheck } from "@/components/shared/utils/actions/leaderboard/topResultCheck";
+import { topResultCheck } from "@/utils/actions/leaderboard/topResultCheck";
 import AlertWrapper from "@/components/core/AlertWrapper/AlertWrapper";
-import { useUser } from "@/components/shared/utils/hooks/useUser";
-import { addToCookieList } from "@/components/shared/utils/addToCookieList";
-import { PlayStatus } from "@/app/typings/playStatus";
-import { manageSlideTransition } from "@/components/shared/utils/manageSlideTransition";
+import { useUser } from "@/utils/hooks/useUser";
+import { PlayStatus } from "@/typings/playStatus";
+import {
+  manageSlideTransition,
+  addToCookieList,
+  calculateScore,
+  groupAnswersByQuestion,
+  initializeSelectedAnswers,
+} from "./QuizGameplaySection.utils";
 
 interface IQuizGameplayProps {
   quizContent: QuizContent;
@@ -38,13 +40,13 @@ interface IQuizGameplayProps {
 export default function QuizGameplaySection({
   quizContent: { quiz, questions, answers, user },
   questTypes,
-  highlightTab
+  highlightTab,
 }: IQuizGameplayProps) {
   const [selectedAnswers, setSelectedAnswers] = useState<
     Map<string, string[] | null>
   >(initializeSelectedAnswers(questions));
   const [score, setScore] = useState<number | null>(null);
-  const [playStatus, setPlayStatus] = useState<PlayStatus>("uninitiated"); 
+  const [playStatus, setPlayStatus] = useState<PlayStatus>("uninitiated");
   const [resetKey, setResetKey] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false);
@@ -52,8 +54,8 @@ export default function QuizGameplaySection({
   const swiperRef = useRef<Swiper | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { user: player } = useUser();
-  const correctAnswers = useMemo(() => 
-    answers?.filter(answer => answer.correct_answer),
+  const correctAnswers = useMemo(
+    () => answers?.filter((answer) => answer.correct_answer),
     [answers]
   );
   const groupedAnswers = useMemo(
@@ -143,7 +145,7 @@ export default function QuizGameplaySection({
       wrap="wrap"
       flexDirection="column"
       width="600px"
-    >      
+    >
       {dialogVisible && (
         <AuthModal
           dialogVisible={dialogVisible}

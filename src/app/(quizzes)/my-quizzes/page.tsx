@@ -1,6 +1,6 @@
 import MyQuizzes from "@/components/features/quizzes/MyQuizzes/MyQuizzes";
-import { getUser } from "@/components/shared/utils/actions/user/getUser";
-import { createClient } from "@/components/shared/utils/supabase/server";
+import { getUser } from "@/utils/actions/user/getUser";
+import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
 
 export default async function MyQuizzesPage() {

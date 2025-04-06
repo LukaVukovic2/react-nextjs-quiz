@@ -5,12 +5,12 @@ import { Swiper as SwiperCore } from "swiper";
 import CheckboxGroup from "./components/CheckboxGroup";
 import RadioGroup from "./components/RadioGroup";
 import ShortAnswerInput from "./components/ShortAnswerInput";
-import { Question, QuestionType } from "@/app/typings/question";
-import { Answer } from "@/app/typings/answer";
+import { Question, QuestionType } from "@/typings/question";
+import { Answer } from "@/typings/answer";
 import { Keyboard, Pagination } from "swiper/modules";
 import { renderToStaticMarkup } from "react-dom/server";
 import RenderBullet from "./components/RenderBullet";
-import { PlayStatus } from "@/app/typings/playStatus";
+import { PlayStatus } from "@/typings/playStatus";
 import { chakra } from "@chakra-ui/react";
 
 interface IQuizGameplaySwiperProps {
@@ -58,12 +58,14 @@ export default function QuizGameplaySwiper({
           index={index}
           className={className}
           selectedAns={selectedAnswers.get(question.id)}
-          correctAnswers={correctAnswers.filter((answer) => answer.question_id === question.id)}
+          correctAnswers={correctAnswers.filter(
+            (answer) => answer.question_id === question.id
+          )}
           typeName={typeName}
           isFinished={isFinished}
         />
-      )
-    }
+      );
+    },
   };
   return (
     <Swiper
@@ -115,14 +117,13 @@ export default function QuizGameplaySwiper({
                 };
                 return (
                   <chakra.div mb={7}>
-                    {
-                      (typeName === "Single choice" && (
-                        <RadioGroup
-                          {...commonProps}
-                          answerOptions={answerOptions}
-                          selectedAnsId={(selectedAnsId ?? "") as string}
-                        />
-                      )) ||
+                    {(typeName === "Single choice" && (
+                      <RadioGroup
+                        {...commonProps}
+                        answerOptions={answerOptions}
+                        selectedAnsId={(selectedAnsId ?? "") as string}
+                      />
+                    )) ||
                       (typeName === "Multiple choice" && (
                         <CheckboxGroup
                           {...commonProps}
@@ -134,8 +135,7 @@ export default function QuizGameplaySwiper({
                           {...commonProps}
                           acceptableAnswers={answerOptions}
                         />
-                      )  
-                    }
+                      )}
                   </chakra.div>
                 );
               }}

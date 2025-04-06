@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { QuestionType } from "@/app/typings/question";
+import { QuestionType } from "@/typings/question";
 import SelectOption from "@/components/core/SelectOption/SelectOption";
 import { chakra, createListCollection, Flex } from "@chakra-ui/react";
 import { Field } from "@/components/ui/field";
@@ -8,8 +8,8 @@ import QuestionListAccordion from "@/components/shared/QuestionListAccordion/Que
 import QuestionTypeForm from "./QuestionTypeForm";
 import { v4 as uuidv4 } from "uuid";
 import "../NewQuizForm.css";
-import { Answer } from "@/app/typings/answer";
-import { Qa } from "@/app/typings/qa";
+import { Answer } from "@/typings/answer";
+import { Qa } from "@/typings/qa";
 
 interface IQuizQuestionFormProps {
   qaList: Qa[];
@@ -29,9 +29,9 @@ export default function QuizQuestionForm({
       id: uuidv4(),
       title: "",
       quiz_id: quizId,
-      id_quest_type: ""
+      id_quest_type: "",
     },
-    answers: []
+    answers: [],
   });
 
   const { control } = useFormContext();
@@ -51,9 +51,9 @@ export default function QuizQuestionForm({
         answer: "",
         correct_answer: true,
         question_id,
-      }
-    ] 
-    if(typeName === "Single choice" || typeName === "Multiple choice") {
+      },
+    ];
+    if (typeName === "Single choice" || typeName === "Multiple choice") {
       blankAnswers.push({
         id: uuidv4(),
         answer: "",
@@ -65,7 +65,7 @@ export default function QuizQuestionForm({
     setCurrentQa((prev) => {
       return {
         ...prev,
-        answers: blankAnswers
+        answers: blankAnswers,
       };
     });
   };
@@ -101,7 +101,7 @@ export default function QuizQuestionForm({
                       question: {
                         ...prev.question,
                         id_quest_type: e[0],
-                      }
+                      },
                     }));
                     initializeCurrentAnswers(e[0], currentQa.question.id);
                   },

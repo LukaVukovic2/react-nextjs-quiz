@@ -1,7 +1,7 @@
-import { Answer } from "@/app/typings/answer";
-import { Question } from "@/app/typings/question";
-import { MyQuizzesContext } from "@/components/shared/utils/contexts/MyQuizzesContext";
-import { QuizUpdateContext } from "@/components/shared/utils/contexts/QuizUpdateContext";
+import { Answer } from "@/typings/answer";
+import { Question } from "@/typings/question";
+import { TypeContext } from "@/utils/contexts/TypeContext";
+import { QuizUpdateContext } from "@/utils/contexts/QuizUpdateContext";
 import { InputGroup } from "@/components/ui/input-group";
 import { Button } from "@/styles/theme/components/button";
 import { FormControl } from "@chakra-ui/form-control";
@@ -26,7 +26,7 @@ export default function QuizUpdateQuestion({
 }: IQuizUpdateQuestionProps) {
   const { register, trigger } = useFormContext();
 
-  const { questTypes } = useContext(MyQuizzesContext);
+  const { questTypes } = useContext(TypeContext);
 
   const {
     questionsArr,
@@ -37,12 +37,11 @@ export default function QuizUpdateQuestion({
     setDirtyAnswers,
   } = useContext(QuizUpdateContext);
 
-  const updateQuestionArr = (
-    questions: Question[],
-    updatedItem: Question
-  ) => {
+  const updateQuestionArr = (questions: Question[], updatedItem: Question) => {
     const index = questions.findIndex((item) => item.id === updatedItem.id);
-    return index === -1 ? [...questions, updatedItem] : questions.map((q) => (q.id === updatedItem.id ? updatedItem : q));
+    return index === -1
+      ? [...questions, updatedItem]
+      : questions.map((q) => (q.id === updatedItem.id ? updatedItem : q));
   };
 
   const changeQuestionTitle = (title: string, q: Question) => {
@@ -53,10 +52,10 @@ export default function QuizUpdateQuestion({
   const selectQuestionType = (value: string, question: Question) => {
     const questType = questTypes.items.find((qt) => qt.value === value)?.label;
     const newQuestion: Question = { ...question, id_quest_type: value };
-  
+
     setDirtyQuestions((prev) => updateQuestionArr(prev, newQuestion));
     setQuestionsArr((prev) => updateQuestionArr(prev, newQuestion));
-  
+
     const defaultCorrectAns: Answer = {
       id: uuidv4(),
       answer: "",
@@ -79,12 +78,14 @@ export default function QuizUpdateQuestion({
   };
 
   const deleteQuestion = (deletedId: string) => {
-    setQuestionsArr((prev) => prev.filter(({id}) => id !== deletedId));
-    setDirtyQuestions((prev) => prev.filter(({id}) => id !== deletedId));
+    setQuestionsArr((prev) => prev.filter(({ id }) => id !== deletedId));
+    setDirtyQuestions((prev) => prev.filter(({ id }) => id !== deletedId));
     setDeletedQuestions((prev) => [...prev, deletedId]);
-    setAnswersArr((prev) => prev.filter(({question_id}) => question_id !== deletedId));
+    setAnswersArr((prev) =>
+      prev.filter(({ question_id }) => question_id !== deletedId)
+    );
     setDirtyAnswers((prev) =>
-      prev.filter(({question_id}) => question_id !== deletedId)
+      prev.filter(({ question_id }) => question_id !== deletedId)
     );
     trigger();
   };
@@ -123,7 +124,14 @@ export default function QuizUpdateQuestion({
               onClick={() => deleteQuestion(question.id)}
               disabled={isDisabled}
             >
-              {isDisabled ? <TbTrashOff size={20} /> : <TbTrash color="red" size={20} />}
+              {isDisabled ? (
+                <TbTrashOff size={20} />
+              ) : (
+                <TbTrash
+                  color="red"
+                  size={20}
+                />
+              )}
             </Button>
           }
         >
@@ -135,7 +143,7 @@ export default function QuizUpdateQuestion({
               onChange: debounce(
                 (e) => changeQuestionTitle(e.target.value, question),
                 500
-              )
+              ),
             })}
           />
         </InputGroup>

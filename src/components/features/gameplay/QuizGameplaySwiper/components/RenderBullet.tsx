@@ -1,4 +1,4 @@
-import { Answer } from "@/app/typings/answer";
+import { Answer } from "@/typings/answer";
 import clsx from "clsx";
 
 interface IPaginationBulletsProps {
@@ -19,9 +19,7 @@ export default function RenderBullet({
   isFinished,
 }: IPaginationBulletsProps) {
   const isSelected = !!selectedAns;
-  const selectedAnswersArr = Array.isArray(selectedAns)
-    ? selectedAns
-    : [];
+  const selectedAnswersArr = Array.isArray(selectedAns) ? selectedAns : [];
 
   let isCorrect = false;
   let hasIncorrectAnswers = false;
@@ -30,7 +28,9 @@ export default function RenderBullet({
 
   if (typeName === "Short answer") {
     const userInput = String(selectedAns).toLowerCase().trim();
-    isCorrect = correctAnswers.some(({ answer }) => answer.toLowerCase() === userInput);
+    isCorrect = correctAnswers.some(
+      ({ answer }) => answer.toLowerCase() === userInput
+    );
   } else if (typeName === "Single choice") {
     isCorrect = String(selectedAns) === correctAnswers[0]?.id;
   } else if (typeName === "Multiple choice") {
@@ -46,20 +46,24 @@ export default function RenderBullet({
   }
 
   return (
-    <span 
+    <span
       className={clsx({
         [className]: true,
         selectedAnswer: !isFinished && isSelected,
         correctAnswer:
           isFinished &&
           (isCorrect ||
-            (!hasIncorrectAnswers && hasCorrectAnswers && !hasCorrectAnswerNotSelected)),
-        partiallyCorrect: isFinished && hasCorrectAnswers &&
+            (!hasIncorrectAnswers &&
+              hasCorrectAnswers &&
+              !hasCorrectAnswerNotSelected)),
+        partiallyCorrect:
+          isFinished &&
+          hasCorrectAnswers &&
           (hasIncorrectAnswers || hasCorrectAnswerNotSelected),
         wrongAnswer: isFinished && !isCorrect,
-      })
-    }>
-      {index + 1}  
+      })}
+    >
+      {index + 1}
     </span>
   );
 }

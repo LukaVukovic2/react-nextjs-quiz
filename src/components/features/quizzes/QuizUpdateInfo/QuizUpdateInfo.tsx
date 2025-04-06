@@ -1,7 +1,7 @@
-import { QuizBasic, QuizType } from "@/app/typings/quiz";
+import { QuizBasic, QuizType } from "@/typings/quiz";
 import SelectOption from "@/components/core/SelectOption/SelectOption";
-import { formatToMMSS } from "@/components/shared/utils/formatTime";
-import { timeOptions } from "@/components/shared/utils/timeOptions";
+import { formatToMMSS } from "@/utils/functions/formatTime";
+import { timeOptions } from "@/utils/timeOptions";
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input, ListCollection } from "@chakra-ui/react";
 import { Controller, useFormContext } from "react-hook-form";
@@ -12,7 +12,11 @@ interface IQuizUpdateInfoProps {
   quizTypes: ListCollection;
 }
 
-export default function QuizUpdateInfo({ quiz, quizType, quizTypes }: IQuizUpdateInfoProps) {
+export default function QuizUpdateInfo({
+  quiz,
+  quizType,
+  quizTypes,
+}: IQuizUpdateInfoProps) {
   const { register, control } = useFormContext();
   return (
     <>
@@ -21,7 +25,7 @@ export default function QuizUpdateInfo({ quiz, quizType, quizTypes }: IQuizUpdat
         <Input
           placeholder="Quiz Title"
           defaultValue={quiz.title}
-          {...register("title", { 
+          {...register("title", {
             required: true,
             minLength: {
               value: 3,
@@ -45,7 +49,9 @@ export default function QuizUpdateInfo({ quiz, quizType, quizTypes }: IQuizUpdat
                   value: field.value || quizType.id || "",
                 }}
                 list={quizTypes}
-                defaultMessage={quizType ? quizType.type_name : "Select quiz type"}
+                defaultMessage={
+                  quizType ? quizType.type_name : "Select quiz type"
+                }
               />
             )}
           />
@@ -62,7 +68,7 @@ export default function QuizUpdateInfo({ quiz, quizType, quizTypes }: IQuizUpdat
             <SelectOption
               field={{
                 ...field,
-                value: formatToMMSS(+quiz.time)|| "",
+                value: formatToMMSS(+quiz.time) || "",
               }}
               list={timeOptions}
               defaultMessage={quiz.time ? formatToMMSS(+quiz.time) : "Timer"}

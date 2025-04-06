@@ -1,5 +1,5 @@
-import { Answer } from "@/app/typings/answer";
-import { Question } from "@/app/typings/question";
+import { Answer } from "@/typings/answer";
+import { Question } from "@/typings/question";
 import { getLetterByIndex } from "@/components/shared/utils/getLetterByIndex";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CheckCircleIcon, SmallCloseIcon } from "@chakra-ui/icons";
@@ -48,7 +48,10 @@ export default function CheckboxGroup(props: ICheckboxGroupProps) {
         }}
         key={resetKey}
       >
-        <Fieldset.Legend fontSize="xs" ml={2}>
+        <Fieldset.Legend
+          fontSize="xs"
+          ml={2}
+        >
           You can select multiple answers
         </Fieldset.Legend>
         <Fieldset.Content gap={0}>

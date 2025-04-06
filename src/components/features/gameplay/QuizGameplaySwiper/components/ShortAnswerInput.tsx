@@ -1,5 +1,5 @@
-import { Answer } from "@/app/typings/answer";
-import { Question } from "@/app/typings/question";
+import { Answer } from "@/typings/answer";
+import { Question } from "@/typings/question";
 import { Box, Input, Stack, Text } from "@chakra-ui/react";
 import { ControllerRenderProps, FieldValues } from "react-hook-form";
 
@@ -8,7 +8,11 @@ interface IShortAnswerInputProps {
   isFinished: boolean;
   acceptableAnswers: Answer[];
   question: Question;
-  handleSelectAnswer: (questionId: string, answerId: string[], questionType: string) => void;
+  handleSelectAnswer: (
+    questionId: string,
+    answerId: string[],
+    questionType: string
+  ) => void;
   resetKey: number;
 }
 

@@ -1,6 +1,6 @@
 import { useFormContext } from "react-hook-form";
-import { Answer } from "@/app/typings/answer";
-import { Question } from "@/app/typings/question";
+import { Answer } from "@/typings/answer";
+import { Question } from "@/typings/question";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import clsx from "clsx";
 
@@ -9,10 +9,7 @@ interface IQuestionStartElementProps {
   question: Question;
   questType: string;
   correctCount: number;
-  changeCorrectAnswer: (
-    questionId: string,
-    answer: Answer
-  ) => void;
+  changeCorrectAnswer: (questionId: string, answer: Answer) => void;
 }
 
 export default function CorrectAnswerInput({

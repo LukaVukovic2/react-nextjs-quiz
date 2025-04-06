@@ -1,4 +1,4 @@
-import { QuizBasic } from "@/app/typings/quiz";
+import { QuizBasic } from "@/typings/quiz";
 import { Card, Text } from "@chakra-ui/react";
 import Link from "next/link";
 

@@ -1,5 +1,5 @@
 import QuizList from "@/components/features/quizzes/QuizList/QuizList";
-import { createClient } from "@/components/shared/utils/supabase/server";
+import { createClient } from "@/utils/supabase/server";
 import { Heading } from "@chakra-ui/react";
 import { notFound } from "next/navigation";
 

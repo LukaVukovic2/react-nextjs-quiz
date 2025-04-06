@@ -1,5 +1,5 @@
 import QuizTabs from "@/components/shared/QuizTabs/QuizTabs";
-import { createClient } from "@/components/shared/utils/supabase/server";
+import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
 
 export default async function QuizPage({ params }: { params: { id: string } }) {

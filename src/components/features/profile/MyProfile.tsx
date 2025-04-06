@@ -1,6 +1,6 @@
 "use client";
 import { Card, Flex, Float, Input, chakra, Image, Container } from "@chakra-ui/react";
-import { updateUserData } from "@/components/shared/utils/actions/user/updateUserData";
+import { updateUserData } from "@/utils/actions/user/updateUserData";
 import { toaster } from "@/components/ui/toaster";
 import { FormLabel } from "@chakra-ui/form-control";
 import {

@@ -4,17 +4,13 @@ import {
   AccordionItemTrigger,
   AccordionRoot,
 } from "@/components/ui/accordion";
-import AnswerGroupBox from "../AnswerGroupBox/AnswerGroupBox";
-import { Qa } from "@/app/typings/qa";
+import AnswerGroupBox from "../../core/AnswerGroupBox/AnswerGroupBox";
+import { Qa } from "@/typings/qa";
 
-export default function QuestionListAccordion({
-  qaList,
-}: {
-  qaList: Qa[];
-}) {
+export default function QuestionListAccordion({ qaList }: { qaList: Qa[] }) {
   return (
     <AccordionRoot collapsible>
-      {qaList.map(({question, answers}, index) => (
+      {qaList.map(({ question, answers }, index) => (
         <AccordionItem
           key={question.id}
           value={question.title}
