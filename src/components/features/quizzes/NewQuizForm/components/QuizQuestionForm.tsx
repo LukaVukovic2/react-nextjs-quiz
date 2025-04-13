@@ -4,7 +4,7 @@ import { QuestionType } from "@/typings/question";
 import SelectOption from "@/components/core/SelectOption/SelectOption";
 import { chakra, createListCollection, Flex } from "@chakra-ui/react";
 import { Field } from "@/components/ui/field";
-import QuestionListAccordion from "@/components/shared/QuestionListAccordion/QuestionListAccordion";
+import QuestionListAccordion from "@/components/shared/lists/QuestionListAccordion/QuestionListAccordion";
 import QuestionTypeForm from "./QuestionTypeForm";
 import { v4 as uuidv4 } from "uuid";
 import "../NewQuizForm.css";

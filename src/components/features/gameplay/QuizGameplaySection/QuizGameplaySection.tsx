@@ -18,7 +18,7 @@ import QuizPauseModal from "../QuizPauseModal/QuizPauseModal";
 import "swiper/css/pagination";
 import "swiper/css";
 import "./QuizGameplaySection.css";
-import AuthModal from "@/components/shared/AuthModal/AuthModal";
+import AuthModal from "@/components/shared/auth/AuthModal/AuthModal";
 import { topResultCheck } from "@/utils/actions/leaderboard/topResultCheck";
 import AlertWrapper from "@/components/core/AlertWrapper/AlertWrapper";
 import { useUser } from "@/utils/hooks/useUser";

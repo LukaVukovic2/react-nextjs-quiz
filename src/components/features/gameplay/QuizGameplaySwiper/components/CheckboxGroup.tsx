@@ -1,6 +1,6 @@
 import { Answer } from "@/typings/answer";
 import { Question } from "@/typings/question";
-import { getLetterByIndex } from "@/components/shared/utils/getLetterByIndex";
+import { getLetterByIndex } from "@/utils/functions/getLetterByIndex";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CheckCircleIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import {

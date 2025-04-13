@@ -1,5 +1,5 @@
 import { QuizType } from "@/typings/quiz";
-import QuizTypeBox from "../../core/QuizTypeBox/QuizTypeBox";
+import QuizTypeBox from "../../../core/QuizTypeBox/QuizTypeBox";
 import { Container, Flex } from "@chakra-ui/react";
 
 export default function HomeLayout({ types }: { types: QuizType[] }) {

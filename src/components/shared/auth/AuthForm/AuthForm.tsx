@@ -10,7 +10,7 @@ import { register as registerUser } from "@/utils/actions/auth/register";
 import { toaster } from "@/components/ui/toaster";
 import { deleteCookie } from "cookies-next";
 import { checkCookieItems } from "@/utils/functions/checkCookieItems";
-import { PasswordStrengthWrapper } from "../../core/PasswordStrengthWrapper/PasswordStrengthWrapper";
+import { PasswordStrengthWrapper } from "../../../core/PasswordStrengthWrapper/PasswordStrengthWrapper";
 
 export default function AuthForm({ closeModal }: { closeModal: () => void }) {
   const {
@@ -21,7 +21,7 @@ export default function AuthForm({ closeModal }: { closeModal: () => void }) {
     formState: { errors },
   } = useForm();
   const [isLogin, setIsLogin] = useState(true);
-  
+
   const handleLogin = async (formData: FieldValues) => {
     const res = await login(formData);
     toaster.create({
@@ -86,25 +86,23 @@ export default function AuthForm({ closeModal }: { closeModal: () => void }) {
               })}
             />
           </Field>
-          {
-            !isLogin && (
-              <Field
-                label="Username"
-                invalid={!!errors.username}
-                errorText={errors.username?.message?.toString()}
-              >
-                <Input
-                  {...register("username", {
-                    required: "Username is required",
-                    minLength: {
-                      value: 3,
-                      message: "Username must have at least 3 characters",
-                    },
-                  })}
-                />
-              </Field>
-            )
-          }
+          {!isLogin && (
+            <Field
+              label="Username"
+              invalid={!!errors.username}
+              errorText={errors.username?.message?.toString()}
+            >
+              <Input
+                {...register("username", {
+                  required: "Username is required",
+                  minLength: {
+                    value: 3,
+                    message: "Username must have at least 3 characters",
+                  },
+                })}
+              />
+            </Field>
+          )}
           <Field
             label="Password"
             invalid={!!errors.password}
@@ -125,7 +123,10 @@ export default function AuthForm({ closeModal }: { closeModal: () => void }) {
                 width="100%"
                 justifyContent="end"
               >
-                <PasswordStrengthWrapper isShown={isLogin} control={control}/>
+                <PasswordStrengthWrapper
+                  isShown={isLogin}
+                  control={control}
+                />
               </Flex>
             )}
           </Field>
@@ -147,7 +148,7 @@ export default function AuthForm({ closeModal }: { closeModal: () => void }) {
               </Field>
             </>
           )}
-          
+
           <Flex>
             <Button type="submit">{isLogin ? "Login" : "Sign Up"}</Button>
             <Button

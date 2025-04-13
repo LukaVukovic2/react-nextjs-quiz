@@ -1,4 +1,9 @@
-import { DialogBody, DialogCloseTrigger, DialogContent, DialogRoot } from "@/components/ui/dialog";
+import {
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogRoot,
+} from "@/components/ui/dialog";
 import AuthForm from "../AuthForm/AuthForm";
 
 interface IAuthModalProps {
@@ -7,7 +12,11 @@ interface IAuthModalProps {
   children?: React.ReactNode;
 }
 
-export default function AuthModal({ dialogVisible, setDialogVisible, children }: IAuthModalProps) {
+export default function AuthModal({
+  dialogVisible,
+  setDialogVisible,
+  children,
+}: IAuthModalProps) {
   return (
     <DialogRoot
       open={dialogVisible}
@@ -16,7 +25,7 @@ export default function AuthModal({ dialogVisible, setDialogVisible, children }:
       <DialogContent>
         <DialogBody>
           {children}
-          <AuthForm closeModal={() => setDialogVisible(false)}/>
+          <AuthForm closeModal={() => setDialogVisible(false)} />
         </DialogBody>
         <DialogCloseTrigger />
       </DialogContent>

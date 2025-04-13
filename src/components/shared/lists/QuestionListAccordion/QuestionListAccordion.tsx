@@ -4,7 +4,7 @@ import {
   AccordionItemTrigger,
   AccordionRoot,
 } from "@/components/ui/accordion";
-import AnswerGroupBox from "../../core/AnswerGroupBox/AnswerGroupBox";
+import AnswerGroupBox from "@/components/core/AnswerGroupBox/AnswerGroupBox";
 import { Qa } from "@/typings/qa";
 
 export default function QuestionListAccordion({ qaList }: { qaList: Qa[] }) {

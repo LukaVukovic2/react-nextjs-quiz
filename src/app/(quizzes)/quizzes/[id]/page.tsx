@@ -1,6 +1,21 @@
-import QuizTabs from "@/components/shared/QuizTabs/QuizTabs";
+import QuizLayout from "@/components/shared/layouts/QuizLayout/QuizLayout";
 import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
+
+type Props = {
+  params: Promise<{id: string}>;
+}
+
+export const generateMetadata = async ({ params }: Props) => {
+  const { id } = await params;
+  const supabase = await createClient();
+  const { data: title } = await supabase.rpc("get_quiz_title", { quiz_id: id });
+  
+  return {
+    title,
+    description: `Quiz App - ${title}`,
+  };
+};
 
 export default async function QuizPage({ params }: { params: { id: string } }) {
   const { id: quizid } = params;
@@ -30,7 +45,7 @@ export default async function QuizPage({ params }: { params: { id: string } }) {
     notFound();
 
   return (
-    <QuizTabs
+    <QuizLayout
       quizContent={quizContent}
       topResults={topResults}
       questTypes={questTypes}

@@ -1,5 +1,5 @@
 "use server";
-import { getUser } from "@/components/shared/utils/actions/user/getUser";
+import { getUser } from "@/utils/actions/user/getUser";
 import { revalidatePath } from "next/cache";
 import { QuizBasic } from "@/typings/quiz";
 import { createClient } from "../../supabase/server";

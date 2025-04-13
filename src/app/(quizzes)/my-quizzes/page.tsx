@@ -1,7 +1,10 @@
 import MyQuizzes from "@/components/features/quizzes/MyQuizzes/MyQuizzes";
 import { getUser } from "@/utils/actions/user/getUser";
 import { createClient } from "@/utils/supabase/server";
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
+
+export const metadata: Metadata = { title: "Quiz App - My Quizzes" };
 
 export default async function MyQuizzesPage() {
   const supabase = await createClient();

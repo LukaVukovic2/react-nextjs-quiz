@@ -8,6 +8,15 @@ interface ITypePageProps {
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
+export const generateMetadata = ({ searchParams }: ITypePageProps) => {
+  const { name } = searchParams as { name: string };
+
+  return {
+    title: `Quiz App - ${name}`,
+    description: `Quiz App - ${name}`,
+  };
+}
+
 export default async function TypePage({params, searchParams}: ITypePageProps) {
   const { id } = params;
   const supabase = await createClient();

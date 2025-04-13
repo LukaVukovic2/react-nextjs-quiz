@@ -8,7 +8,7 @@ import { CheckCircleIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import { Flex, VStack } from "@chakra-ui/react";
 import { ControllerRenderProps, FieldValues } from "react-hook-form";
 import clsx from "clsx";
-import { getLetterByIndex } from "@/components/shared/utils/getLetterByIndex";
+import { getLetterByIndex } from "@/utils/functions/getLetterByIndex";
 import "../QuizGameplaySwiper.scss";
 
 interface IRadioGroupProps {

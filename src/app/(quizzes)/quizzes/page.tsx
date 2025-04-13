@@ -1,16 +1,17 @@
 import CookieDataChecker from "@/components/core/CookieDataChecker/CookieDataChecker";
 import { ToasterWrapper } from "@/components/core/ToasterWrapper/ToasterWrapper";
-import HomeLayout from "@/components/shared/HomeLayout/HomeLayout";
+import HomeLayout from "@/components/shared/layouts/HomeLayout/HomeLayout";
 import { createClient } from "@/utils/supabase/server";
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
+
+export const metadata: Metadata = { title: "Quiz App - Categories" };
 
 interface IQuizListPageProps {
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-export default async function Home({
-  searchParams,
-}: IQuizListPageProps) {
+export default async function Home({ searchParams }: IQuizListPageProps) {
   const supabase = await createClient();
   const { data: types, error } = await supabase.rpc("get_quiz_types");
 

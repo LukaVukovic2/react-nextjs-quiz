@@ -6,7 +6,7 @@ import { User } from "@/typings/user";
 import QuizGameplaySection from "@/components/features/gameplay/QuizGameplaySection/QuizGameplaySection";
 import { Flex, Tabs } from "@chakra-ui/react";
 import { lazy, Suspense, useState } from "react";
-import "./QuizTabs.css";
+import "./QuizLayout.css";
 import { Review } from "@/typings/review";
 import { useUser } from "@/utils/hooks/useUser";
 import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
@@ -22,7 +22,7 @@ const QuizReviewList = lazy(
   () => import("@/components/features/reviews/QuizReviewList/QuizReviewList")
 );
 
-interface IQuizTabsProps {
+interface IQuizLayoutProps {
   quizContent: QuizContent;
   topResults: Result[];
   questTypes: QuestionType[];
@@ -32,12 +32,12 @@ interface IQuizTabsProps {
   }[];
 }
 
-export default function QuizTabs({
+export default function QuizLayout({
   quizContent,
   topResults,
   questTypes,
   reviews,
-}: IQuizTabsProps) {
+}: IQuizLayoutProps) {
   const [isTopResult, setIsTopResult] = useState(false);
   const highlightTab = (value: boolean) => setIsTopResult(value);
   const { user: activeUser } = useUser();

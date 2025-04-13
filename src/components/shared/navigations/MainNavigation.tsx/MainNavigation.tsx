@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import "./MainNavigation.css";
 import { useState } from "react";
-import AuthModal from "../AuthModal/AuthModal";
+import AuthModal from "../../auth/AuthModal/AuthModal";
 import { logout } from "@/utils/actions/auth/logout";
 import { toaster } from "@/components/ui/toaster";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -16,8 +16,8 @@ import { Logo } from "@/components/core/Logo/Logo";
 import { useUser } from "@/utils/hooks/useUser";
 
 export const navItems = [
-  { text: 'Create Quiz', href: '/quizzes/new' },
-  { text: 'My Quizzes', href: '/my-quizzes' },
+  { text: "Create Quiz", href: "/quizzes/new" },
+  { text: "My Quizzes", href: "/my-quizzes" },
 ];
 
 export default function MainNavigation() {
@@ -58,8 +58,7 @@ export default function MainNavigation() {
           as={Flex}
           alignItems="center"
         >
-          {
-            username ? (
+          {username ? (
             <Link
               href="/my-profile"
               className={clsx({

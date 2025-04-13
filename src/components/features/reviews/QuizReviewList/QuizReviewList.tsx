@@ -1,7 +1,7 @@
 "use client";
 import { Review } from "@/typings/review";
 import QuizReviewItem from "../QuizReviewItem/QuizReviewItem";
-import ListPagination from "@/components/shared/ListPagination/ListPagination";
+import ListPagination from "@/components/shared/lists/ListPagination/ListPagination";
 import { useSearchParams } from "next/navigation";
 import { User } from "@/typings/user";
 
