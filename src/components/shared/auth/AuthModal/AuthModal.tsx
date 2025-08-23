@@ -27,7 +27,7 @@ export default function AuthModal({
           {children}
           <AuthForm closeModal={() => setDialogVisible(false)} />
         </DialogBody>
-        <DialogCloseTrigger />
+        <DialogCloseTrigger border="4px solid white" />
       </DialogContent>
     </DialogRoot>
   );

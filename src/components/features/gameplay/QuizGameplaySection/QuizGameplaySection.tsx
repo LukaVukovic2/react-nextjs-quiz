@@ -117,7 +117,7 @@ export default function QuizGameplaySection({
       setDialogVisible(true);
     } else {
       const success = await updateLeaderboard(result);
-      highlightTab(success);
+      if(success) highlightTab(success);
       timeoutRef.current = setTimeout(() => {
         highlightTab(false);
       }, 10000);

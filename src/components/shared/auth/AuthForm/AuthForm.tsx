@@ -11,6 +11,7 @@ import { toaster } from "@/components/ui/toaster";
 import { deleteCookie } from "cookies-next";
 import { checkCookieItems } from "@/utils/functions/checkCookieItems";
 import { PasswordStrengthWrapper } from "../../../core/PasswordStrengthWrapper/PasswordStrengthWrapper";
+import AlertWrapper from "@/components/core/AlertWrapper/AlertWrapper";
 
 export default function AuthForm({ closeModal }: { closeModal: () => void }) {
   const {
@@ -20,7 +21,7 @@ export default function AuthForm({ closeModal }: { closeModal: () => void }) {
     control,
     formState: { errors },
   } = useForm();
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin] = useState(true);
 
   const handleLogin = async (formData: FieldValues) => {
     const res = await login(formData);
@@ -59,10 +60,15 @@ export default function AuthForm({ closeModal }: { closeModal: () => void }) {
     else await handleRegister(formData);
   });
 
-  const toggleForm = () => setIsLogin((prev) => !prev);
+  //const toggleForm = () => setIsLogin((prev) => !prev);
 
   return (
     <>
+      <AlertWrapper 
+        title="Signing up is temporary disabled. Use test credentials to sign in. Email: user@example.com - Password: user123"
+        status="warning"
+      />
+
       <Heading size="h3">{isLogin ? "Login" : "Sign Up"}</Heading>
 
       <form onSubmit={onSubmit}>
@@ -153,7 +159,7 @@ export default function AuthForm({ closeModal }: { closeModal: () => void }) {
             <Button type="submit">{isLogin ? "Login" : "Sign Up"}</Button>
             <Button
               type="button"
-              onClick={toggleForm}
+              disabled={isLogin}
               visual="ghost"
             >
               {isLogin ? "Create new account" : "Already have an account?"}

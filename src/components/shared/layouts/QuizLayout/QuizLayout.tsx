@@ -12,8 +12,7 @@ import { useUser } from "@/utils/hooks/useUser";
 import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
 import { ConfettiComponent as Confetti } from "@/components/core/Confetti/Confetti";
 const QuizLeaderboard = lazy(
-  () =>
-    import("@/components/features/leaderboard/QuizLeaderboard/QuizLeaderboard")
+  () => import("@/components/features/leaderboard/QuizLeaderboard/QuizLeaderboard")
 );
 const QuizReviewForm = lazy(
   () => import("@/components/features/reviews/QuizReviewForm/QuizReviewForm")

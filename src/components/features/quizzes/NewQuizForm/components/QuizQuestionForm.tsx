@@ -7,7 +7,6 @@ import { Field } from "@/components/ui/field";
 import QuestionListAccordion from "@/components/shared/lists/QuestionListAccordion/QuestionListAccordion";
 import QuestionTypeForm from "./QuestionTypeForm";
 import { v4 as uuidv4 } from "uuid";
-import "../NewQuizForm.css";
 import { Answer } from "@/typings/answer";
 import { Qa } from "@/typings/qa";
 

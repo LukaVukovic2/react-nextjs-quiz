@@ -3,14 +3,14 @@ import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
 
 type Props = {
-  params: Promise<{id: string}>;
-}
+  params: Promise<{ id: string }>;
+};
 
 export const generateMetadata = async ({ params }: Props) => {
   const { id } = await params;
   const supabase = await createClient();
   const { data: title } = await supabase.rpc("get_quiz_title", { quiz_id: id });
-  
+
   return {
     title,
     description: `Quiz App - ${title}`,
@@ -32,7 +32,7 @@ export default async function QuizPage({ params }: { params: { id: string } }) {
     supabase.rpc("get_question_types"),
     supabase.rpc("get_reviews_and_reviewers", { quizid }),
   ]);
-  
+
   if (
     !quizContent ||
     !quizContent?.quiz ||

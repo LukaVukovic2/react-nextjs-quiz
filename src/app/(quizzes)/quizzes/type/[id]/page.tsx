@@ -15,9 +15,12 @@ export const generateMetadata = ({ searchParams }: ITypePageProps) => {
     title: `Quiz App - ${name}`,
     description: `Quiz App - ${name}`,
   };
-}
+};
 
-export default async function TypePage({params, searchParams}: ITypePageProps) {
+export default async function TypePage({
+  params,
+  searchParams,
+}: ITypePageProps) {
   const { id } = params;
   const supabase = await createClient();
   const { data: quizzes, error } = await supabase.rpc("get_quizzes_by_type", {
@@ -26,11 +29,12 @@ export default async function TypePage({params, searchParams}: ITypePageProps) {
 
   if (!quizzes || !quizzes.length || error) notFound();
   return (
-    <QuizList
-      quizzes={quizzes}
-    >
-      <Heading as="h1" size="4xl">
-        {searchParams?.name}  
+    <QuizList quizzes={quizzes}>
+      <Heading
+        as="h1"
+        size="4xl"
+      >
+        {searchParams?.name}
       </Heading>
     </QuizList>
   );

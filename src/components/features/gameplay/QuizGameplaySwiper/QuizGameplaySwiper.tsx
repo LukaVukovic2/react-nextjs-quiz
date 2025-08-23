@@ -54,7 +54,7 @@ export default function QuizGameplaySwiper({
       const question = questions[index];
 
       return renderToStaticMarkup(
-        <RenderBullet
+      <RenderBullet
           index={index}
           className={className}
           selectedAns={selectedAnswers.get(question.id)}
