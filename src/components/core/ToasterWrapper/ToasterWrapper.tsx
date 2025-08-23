@@ -28,4 +28,4 @@ export const ToasterWrapper = ({ title, type }: IToasterWrapperProps) => {
     return () => clearTimeout(timer);
   }, [title, type]);
   return null;
-};  
+};

@@ -1,4 +1,4 @@
-import ErrorNotFound from "@/components/shared/ErrorNotFound/ErrorNotFound";
+import ErrorNotFound from "@/components/shared/utilities/ErrorNotFound/ErrorNotFound";
 import { Button } from "@/styles/theme/components/button";
 import Link from "next/link";
 

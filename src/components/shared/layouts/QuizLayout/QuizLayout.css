@@ -1,0 +1,25 @@
+.chakra-tabs__root {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  flex: 1;
+}
+
+.chakra-tabs__content{
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.tab {
+  transition: background-color 0.5s ease, color 0.5s ease, font-weight 0.5s ease, border 0.5s ease, border-radius 0.5s ease;
+  font-weight: normal;
+}
+
+.highlighted {
+  background-color: var(--chakra-colors-primary);
+  color: var(--chakra-colors-primary-contrast);
+  font-weight: bold;
+  border: 1px solid var(--chakra-colors-secondary);
+  border-radius: 0.5rem;
+}

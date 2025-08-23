@@ -1,4 +1,5 @@
-import { formatToMMSS } from "@/components/shared/utils/formatTime";
+import { PlayStatus } from "@/typings/playStatus";
+import { formatToMMSS } from "@/utils/functions/formatTime";
 import { DialogBody, DialogContent, DialogRoot } from "@/components/ui/dialog";
 import { Button } from "@/styles/theme/components/button";
 import { Flex, HStack, StackSeparator, Text } from "@chakra-ui/react";
@@ -6,22 +7,31 @@ import { useSearchParams } from "next/navigation";
 import { Dispatch, SetStateAction } from "react";
 
 interface IQuizPauseModalProps {
-  isPaused: boolean;
-  setIsPaused: Dispatch<SetStateAction<boolean>>;
   title: string;
+  playStatus: PlayStatus;
+  setPlayStatus: Dispatch<SetStateAction<PlayStatus>>;
 }
 
 export default function QuizPauseModal({
-  isPaused,
-  setIsPaused,
   title,
+  playStatus,
+  setPlayStatus,
 }: IQuizPauseModalProps) {
   const params = useSearchParams();
   const timeLeft = params.get("timeLeft");
+  const isPaused = playStatus === "paused";
+  const handleOpenChange = (e: { open: boolean }) => {
+    if (e.open) {
+      setPlayStatus("paused");
+    } else {
+      resumeQuiz();
+    }
+  };
+  const resumeQuiz = () => setPlayStatus("playing");
   return (
     <DialogRoot
       open={isPaused}
-      onOpenChange={(e) => setIsPaused(e.open)}
+      onOpenChange={handleOpenChange}
       size="full"
       placement="center"
       motionPreset="slide-in-bottom"
@@ -43,14 +53,19 @@ export default function QuizPauseModal({
             fontWeight="bold"
             border={1}
           >
-            <Text textTransform="uppercase" color="danger.400">Quiz paused</Text>
+            <Text
+              textTransform="uppercase"
+              color="danger.400"
+            >
+              Quiz paused
+            </Text>
             <Text>{title}</Text>
             <Text textTransform="uppercase">
               {timeLeft ? formatToMMSS(+timeLeft) + " remaining" : ""}
             </Text>
           </HStack>
           <Button
-            onClick={() => setIsPaused(false)}
+            onClick={resumeQuiz}
             type="button"
           >
             Resume

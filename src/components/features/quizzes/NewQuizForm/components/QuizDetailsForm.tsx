@@ -1,7 +1,7 @@
-import { QuizType } from "@/app/typings/quiz_type";
+import { QuizType } from "@/typings/quiz";
 import SelectOption from "@/components/core/SelectOption/SelectOption";
-import { formatToMMSS } from "@/components/shared/utils/formatTime";
-import { timeOptions } from "@/components/shared/utils/timeOptions";
+import { formatToMMSS } from "@/utils/functions/formatTime";
+import { timeOptions } from "@/utils/timeOptions";
 import { FormControl } from "@chakra-ui/form-control";
 import { createListCollection, Flex, Input } from "@chakra-ui/react";
 import debounce from "debounce";
@@ -30,7 +30,10 @@ export default function QuizDetailsForm({ quizTypes }: IQuizDetailsFormProps) {
         <Input
           placeholder="Title"
           {...register("title", { required: true })}
-          onChange={debounce(() => trigger("title"), 500)}
+          onChange={debounce((e) => {
+            register("title").onChange(e);
+            trigger("title");
+          }, 500)}
         />
       </FormControl>
       <FormControl>
@@ -45,7 +48,9 @@ export default function QuizDetailsForm({ quizTypes }: IQuizDetailsFormProps) {
                 onChange: (e) => field.onChange(e[0]),
               }}
               list={timeOptions}
-              defaultMessage={field.value ? formatToMMSS(field.value) : "Select time"}
+              defaultMessage={
+                field.value ? formatToMMSS(field.value) : "Select time"
+              }
             />
           )}
         />

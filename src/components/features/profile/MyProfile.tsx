@@ -1,8 +1,6 @@
 "use client";
 import { Card, Flex, Float, Input, chakra, Image, Container } from "@chakra-ui/react";
-import { Button } from "@/styles/theme/components/button";
-import { updateUserData } from "@/components/shared/utils/actions/user/updateUserData";
-import { useEffect, useRef, useState } from "react";
+import { updateUserData } from "@/utils/actions/user/updateUserData";
 import { toaster } from "@/components/ui/toaster";
 import { FormLabel } from "@chakra-ui/form-control";
 import {
@@ -14,6 +12,7 @@ import {
 import { InputGroup } from "@/components/ui/input-group";
 import { LuFileUp } from "react-icons/lu";
 import { CloseButton } from "@/components/ui/close-button";
+import { SubmitStatusButton } from "@/components/core/SubmitStatusButton/SubmitStatusButton";
 
 interface IMyProfileProps {
   id: string;
@@ -24,40 +23,19 @@ interface IMyProfileProps {
 }
 
 export default function MyProfile({ id, profile }: IMyProfileProps) {
-  const formRef = useRef<HTMLFormElement>(null);
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-  if (!isClient) return null;
-  
-  const avatarSrc = profile?.avatar || "https://fakeimg.pl/100x100/";
+  const handleSubmit = async (data: FormData) => {
+    const success = await updateUserData(data);
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    const formData = new FormData(formRef.current || undefined);
-    const success = await updateUserData(formData);
-
-    if (success) {
-      toaster.create({
-        title: "Profile updated",
-        type: "success",
-        duration: 3000,
-      });
-      formRef.current?.reset();
-    } else {
-      toaster.create({
-        title: "Failed to update profile",
-        type: "error",
-        duration: 3000,
-      });
-    }
+    toaster.create({
+      title: success ? "Profile updated" : "Failed to update profile",
+      type: success ? "success" : "error",
+      duration: 3000,
+    })
   };
 
   return (
     <chakra.form
-      ref={formRef}
-      onSubmit={handleSubmit}
+      action={handleSubmit}
     >
       <Container
         maxW="xl"
@@ -79,7 +57,7 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
               placement="top-center"
             >
               <Image
-                src={avatarSrc}
+                src={profile?.avatar || "https://placehold.co/100x100?text=No+Image+Found"}
                 alt="profile avatar"
                 width={100}
                 height={100}
@@ -135,7 +113,11 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
                 name="id"
                 value={id}
               />
-              <Button type="submit">Save Changes</Button>
+              <SubmitStatusButton
+                loadingText="Updating..."
+              >
+                Save Changes
+              </SubmitStatusButton>
             </Flex>
           </Card.Body>
         </Card.Root>

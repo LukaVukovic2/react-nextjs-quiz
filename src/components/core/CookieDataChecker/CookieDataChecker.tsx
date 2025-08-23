@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
-import { createClient } from "@/components/shared/utils/supabase/client";
-import { checkCookieItems } from "@/components/shared/utils/checkCookieItems";
+import { createClient } from "@/utils/supabase/client";
+import { checkCookieItems } from "@/utils/functions/checkCookieItems";
 
 export default function CookieDataChecker() {
   const supabase = createClient();

@@ -1,24 +1,19 @@
-import { Result } from "@/app/typings/result";
-import { getUser } from "@/components/shared/utils/actions/user/getUser";
+import { Result } from "@/typings/result";
 import { Box, Flex } from "@chakra-ui/react";
-import { User } from "@supabase/supabase-js";
-import { useEffect, useState } from "react";
 import "./QuizLeaderboard.css";
 import clsx from "clsx";
-import LeaderboardRecord from "./components/LeaderboardRecord";
+import LeaderboardRecord from "../LeaderboardRecord.tsx/LeaderboardRecord";
+import { User } from "@/typings/user";
 
-export default function Leaderboard({ topResults = [] }: { topResults: Result[] }) {
-  const [user, setUser] = useState<User | null>(null);+
-  useEffect(() => {
-    async function fetchUser() {
-      const {
-        data: { user },
-      } = await getUser();
-      setUser(user);
-    }
-    fetchUser();
-  }, []);
+interface ILeaderboardProps {
+  topResults: Result[];
+  activeUser: User | null;
+}
 
+export default function Leaderboard({
+  topResults = [],
+  activeUser,
+}: ILeaderboardProps) {
   return (
     <Flex
       flexDirection="column"
@@ -48,7 +43,7 @@ export default function Leaderboard({ topResults = [] }: { topResults: Result[] 
             <LeaderboardRecord
               result={topResults[index] || null}
               index={index}
-              user={user}
+              activeUser={activeUser}
             />
           </Box>
         ))}
@@ -60,14 +55,14 @@ export default function Leaderboard({ topResults = [] }: { topResults: Result[] 
             key={topResults[index + 3]?.id || index}
             justifyContent="space-between"
             className={clsx({
-              'leaderboard-record': true,
-              highlight: user?.id === topResults[index + 3]?.user_id,
+              "leaderboard-record": true,
+              highlight: activeUser?.id === topResults[index + 3]?.user_id,
             })}
           >
             <LeaderboardRecord
               result={topResults[index + 3]}
               index={index + 3}
-              user={user}
+              activeUser={activeUser}
             />
           </Box>
         ))}

@@ -5,17 +5,20 @@ import { Swiper as SwiperCore } from "swiper";
 import CheckboxGroup from "./components/CheckboxGroup";
 import RadioGroup from "./components/RadioGroup";
 import ShortAnswerInput from "./components/ShortAnswerInput";
-import { Question } from "@/app/typings/question";
-import { QuestionType } from "@/app/typings/question_type";
-import { Answer } from "@/app/typings/answer";
+import { Question, QuestionType } from "@/typings/question";
+import { Answer } from "@/typings/answer";
 import { Keyboard, Pagination } from "swiper/modules";
+import { renderToStaticMarkup } from "react-dom/server";
+import RenderBullet from "./components/RenderBullet";
+import { PlayStatus } from "@/typings/playStatus";
+import { chakra } from "@chakra-ui/react";
 
 interface IQuizGameplaySwiperProps {
   questions: Question[];
   questTypes: QuestionType[];
   selectedAnswers: Map<string, string[] | null>;
   groupedAnswers: { [key: string]: Answer[] };
-  isFinished: boolean;
+  playStatus: PlayStatus;
   handleSelectAnswer: (
     questionId: string,
     answerId: string[],
@@ -23,11 +26,8 @@ interface IQuizGameplaySwiperProps {
   ) => void;
   resetKey: number;
   setIsTransitioning: React.Dispatch<React.SetStateAction<boolean>>;
-  pagination: {
-    clickable: boolean;
-    renderBullet: (index: number, className: string) => string;
-  };
   swiperRef: React.MutableRefObject<SwiperCore | null>;
+  correctAnswers: Answer[];
   control: Control<FieldValues>;
 }
 
@@ -36,14 +36,37 @@ export default function QuizGameplaySwiper({
   questTypes,
   selectedAnswers,
   groupedAnswers,
-  isFinished,
+  playStatus,
   handleSelectAnswer,
   resetKey,
   setIsTransitioning,
-  pagination,
   swiperRef,
+  correctAnswers,
   control,
 }: IQuizGameplaySwiperProps) {
+  const isFinished = playStatus === "finished";
+  const pagination = {
+    clickable: true,
+    renderBullet: function (index: number, className: string) {
+      const typeName = questTypes.find(
+        (type) => type.id === questions[index].id_quest_type
+      )?.type_name;
+      const question = questions[index];
+
+      return renderToStaticMarkup(
+      <RenderBullet
+          index={index}
+          className={className}
+          selectedAns={selectedAnswers.get(question.id)}
+          correctAnswers={correctAnswers.filter(
+            (answer) => answer.question_id === question.id
+          )}
+          typeName={typeName}
+          isFinished={isFinished}
+        />
+      );
+    },
+  };
   return (
     <Swiper
       pagination={pagination}
@@ -93,29 +116,30 @@ export default function QuizGameplaySwiper({
                   resetKey,
                 };
                 return (
-                  (typeName === "Single choice" && (
-                    <RadioGroup
-                      {...commonProps}
-                      answerOptions={answerOptions}
-                      selectedAnsId={(selectedAnsId ?? "") as string}
-                    />
-                  )) ||
-                  (typeName === "Multiple choice" && (
-                    <CheckboxGroup
-                      {...commonProps}
-                      answerOptions={answerOptions}
-                      selectedAnsIds={(selectedAnsId ?? []) as string[]}
-                    />
-                  )) || (
-                    <ShortAnswerInput
-                      {...commonProps}
-                      acceptableAnswers={answerOptions}
-                    />
-                  )
+                  <chakra.div mb={7}>
+                    {(typeName === "Single choice" && (
+                      <RadioGroup
+                        {...commonProps}
+                        answerOptions={answerOptions}
+                        selectedAnsId={(selectedAnsId ?? "") as string}
+                      />
+                    )) ||
+                      (typeName === "Multiple choice" && (
+                        <CheckboxGroup
+                          {...commonProps}
+                          answerOptions={answerOptions}
+                          selectedAnsIds={(selectedAnsId ?? []) as string[]}
+                        />
+                      )) || (
+                        <ShortAnswerInput
+                          {...commonProps}
+                          acceptableAnswers={answerOptions}
+                        />
+                      )}
+                  </chakra.div>
                 );
               }}
             />
-            <br />
           </SwiperSlide>
         );
       })}

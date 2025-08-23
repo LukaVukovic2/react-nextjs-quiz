@@ -1,46 +1,34 @@
 "use client";
 import { Button } from "@/styles/theme/components/button";
-import {
-  MenuRoot,
-  MenuItem,
-  MenuContent,
-  MenuTrigger,
-} from "@/components/ui/menu";
-import QuizUpdateForm from "../QuizUpdateForm/QuizUpdateForm";
-import { deleteQuiz } from "@/components/shared/utils/actions/quiz/deleteQuiz";
-import { useState } from "react";
-import { Question } from "@/app/typings/question";
-import { Answer } from "@/app/typings/answer";
-import { Quiz } from "@/app/typings/quiz";
-import {
-  DialogBody,
-  DialogCloseTrigger,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogRoot,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { deleteQuiz } from "@/utils/actions/quiz/deleteQuiz";
+import { lazy, Suspense, useState } from "react";
+import { QuizBasic } from "@/typings/quiz";
 import { toaster } from "@/components/ui/toaster";
-import { QuizType } from "@/app/typings/quiz_type";
-import "./QuizMenuDropdown.css";
+import { QuizType } from "@/typings/quiz";
+import { Qa } from "@/typings/qa";
+import { DialogContentWrapper } from "@/components/core/DialogContentWrapper/DialogContentWrapper";
+import { Dialog, Text, Menu } from "@chakra-ui/react";
+import { FaEllipsisV } from "react-icons/fa";
+import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
+
+const QuizUpdateForm = lazy(() => import("../QuizUpdateForm/QuizUpdateForm"));
 
 interface QuizMenuDropdownProps {
-  quiz: Quiz;
+  quiz: QuizBasic;
   quizType: QuizType;
-  questions_and_answers: Array<{
-    question: Question;
-    answers: Answer[];
-  }>;
+  qaList: Qa[];
 }
 
 export default function QuizMenuDropdown({
   quiz,
   quizType,
-  questions_and_answers,
+  qaList,
 }: QuizMenuDropdownProps) {
   const [openEdit, setOpenEdit] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+
+  const toggleEditDialog = () => setOpenEdit(!openEdit);
+  const toggleDeleteDialog = () => setOpenDelete(!openDelete);
 
   const handleQuizDelete = async (id: string) => {
     const success = await deleteQuiz(id);
@@ -52,52 +40,54 @@ export default function QuizMenuDropdown({
   };
 
   return (
-    <MenuRoot>
-      <MenuTrigger
-        px={4}
-        py={2}
-        transition="all 0.2s"
-        borderRadius="md"
-        borderWidth="1px"
-        _hover={{ bg: "gray.400" }}
-        _expanded={{ bg: "blue.400" }}
-        _focus={{ boxShadow: "outline" }}
-        cursor="pointer"
+    <>
+      <Menu.Root>
+        <Menu.Trigger
+          px={4}
+          py={2}
+          transition="all 0.2s"
+          borderRadius="md"
+          borderWidth="1px"
+          _hover={{ bg: "gray.400" }}
+          _expanded={{ bg: "blue.400" }}
+          _focus={{ boxShadow: "outline" }}
+          cursor="pointer"
+        >
+          <FaEllipsisV />
+        </Menu.Trigger>
+        <Menu.Positioner>
+          <Menu.Content>
+            <Menu.Item
+              value="Edit"
+              valueText="Edit"
+              onClick={toggleEditDialog}
+            >
+              Edit
+            </Menu.Item>
+            <Menu.Item
+              value="Delete"
+              valueText="Delete"
+              onClick={toggleDeleteDialog}
+              color="fg.error"
+              _hover={{ bg: "bg.error", color: "fg.error" }}
+            >
+              Delete
+            </Menu.Item>
+          </Menu.Content>
+        </Menu.Positioner>
+      </Menu.Root>
+      <Dialog.Root
+        lazyMount
+        open={openDelete}
+        onOpenChange={toggleDeleteDialog}
       >
-        <i className="fa-solid fa-ellipsis-vertical"></i>
-      </MenuTrigger>
-      <MenuContent>
-        <MenuItem
-          className="menu-item"
-          value="Edit"
-          valueText="Edit"
-          onClick={() => setOpenEdit(true)}
-        >
-          Edit
-        </MenuItem>
-        <MenuItem
-          className="menu-item"
-          value="Delete"
-          valueText="Delete"
-          onClick={() => setOpenDelete(true)}
-        >
-          Delete
-        </MenuItem>
-
-        <DialogRoot
-          motionPreset="slide-in-bottom"
-          open={openDelete}
-          onOpenChange={(e) => setOpenDelete(e.open)}
-        >
-          <DialogContent>
-            <DialogCloseTrigger />
-            <DialogHeader>
-              <DialogTitle>Delete Quiz</DialogTitle>
-            </DialogHeader>
-            <DialogBody>Are you sure you want to delete this quiz?</DialogBody>
-            <DialogFooter>
+        <DialogContentWrapper
+          title="Delete Quiz"
+          body={<Text>Are you sure you want to delete this quiz?</Text>}
+          footer={
+            <>
               <Button
-                onClick={() => setOpenDelete(false)}
+                onClick={toggleDeleteDialog}
                 visual="outline"
                 autoFocus
               >
@@ -110,30 +100,37 @@ export default function QuizMenuDropdown({
               >
                 Yes
               </Button>
-            </DialogFooter>
-          </DialogContent>
-        </DialogRoot>
+            </>
+          }
+        />
+      </Dialog.Root>
 
-        <DialogRoot
-          open={openEdit}
-          onOpenChange={(e) => setOpenEdit(e.open)}
-        >
-          <DialogContent>
-            <DialogCloseTrigger />
-            <DialogHeader>
-              <DialogTitle>Update Quiz</DialogTitle>
-            </DialogHeader>
-            <DialogBody>
+      <Dialog.Root
+        lazyMount
+        open={openEdit}
+        onOpenChange={toggleEditDialog}
+      >
+        <DialogContentWrapper
+          title="Update Quiz"
+          body={
+            <Suspense
+              fallback={
+                <LoadingSpinner
+                  text="Setting quiz form..."
+                  scale={0.85}
+                />
+              }
+            >
               <QuizUpdateForm
                 quiz={quiz}
                 quizType={quizType}
-                questions_and_answers={questions_and_answers}
-                onClose={() => setOpenEdit(false)}
+                qaList={qaList}
+                closeDialog={toggleEditDialog}
               />
-            </DialogBody>
-          </DialogContent>
-        </DialogRoot>
-      </MenuContent>
-    </MenuRoot>
+            </Suspense>
+          }
+        />
+      </Dialog.Root>
+    </>
   );
 }

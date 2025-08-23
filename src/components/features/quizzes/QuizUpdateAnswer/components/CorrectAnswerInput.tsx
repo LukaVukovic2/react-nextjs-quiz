@@ -1,6 +1,6 @@
 import { useFormContext } from "react-hook-form";
-import { Answer } from "@/app/typings/answer";
-import { Question } from "@/app/typings/question";
+import { Answer } from "@/typings/answer";
+import { Question } from "@/typings/question";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import clsx from "clsx";
 
@@ -9,11 +9,7 @@ interface IQuestionStartElementProps {
   question: Question;
   questType: string;
   correctCount: number;
-  changeCorrectAnswer: (
-    questionId: string,
-    answerId: string,
-    questionType: string
-  ) => void;
+  changeCorrectAnswer: (questionId: string, answer: Answer) => void;
 }
 
 export default function CorrectAnswerInput({
@@ -43,7 +39,7 @@ export default function CorrectAnswerInput({
       {...register(`correctAnswer${answer.id}`)}
       onChange={(e) => {
         if (!e.target.checked && correctCount === 1) return;
-        changeCorrectAnswer(question.id, answer.id, questType);
+        changeCorrectAnswer(question.id, answer);
       }}
       className={clsx({
         checkbox: questType === "Multiple choice",

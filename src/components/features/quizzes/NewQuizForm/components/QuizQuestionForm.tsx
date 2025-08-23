@@ -1,34 +1,35 @@
 import { useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { QuestionType } from "@/app/typings/question_type";
+import { QuestionType } from "@/typings/question";
 import SelectOption from "@/components/core/SelectOption/SelectOption";
 import { chakra, createListCollection, Flex } from "@chakra-ui/react";
-import { Question } from "@/app/typings/question";
 import { Field } from "@/components/ui/field";
-import QuestionListAccordion from "@/components/shared/QuestionListAccordion/QuestionListAccordion";
+import QuestionListAccordion from "@/components/shared/lists/QuestionListAccordion/QuestionListAccordion";
 import QuestionTypeForm from "./QuestionTypeForm";
 import { v4 as uuidv4 } from "uuid";
-import "../NewQuizForm.css";
-import { Answer } from "@/app/typings/answer";
+import { Answer } from "@/typings/answer";
+import { Qa } from "@/typings/qa";
 
 interface IQuizQuestionFormProps {
-  questions: Question[];
-  setQuestions: React.Dispatch<React.SetStateAction<Question[]>>;
+  qaList: Qa[];
+  setQaList: React.Dispatch<React.SetStateAction<Qa[]>>;
   questTypes: QuestionType[];
   quizId: string;
 }
 
 export default function QuizQuestionForm({
-  questions,
-  setQuestions,
+  qaList,
+  setQaList,
   questTypes,
   quizId,
 }: IQuizQuestionFormProps) {
-  const [currentQuestion, setCurrentQuestion] = useState<Question>({
-    id: uuidv4(),
-    title: "",
-    quiz_id: quizId,
-    id_quest_type: "",
+  const [currentQa, setCurrentQa] = useState<Qa>({
+    question: {
+      id: uuidv4(),
+      title: "",
+      quiz_id: quizId,
+      id_quest_type: "",
+    },
     answers: [],
   });
 
@@ -49,9 +50,9 @@ export default function QuizQuestionForm({
         answer: "",
         correct_answer: true,
         question_id,
-      }
-    ] 
-    if(typeName === "Single choice" || typeName === "Multiple choice") {
+      },
+    ];
+    if (typeName === "Single choice" || typeName === "Multiple choice") {
       blankAnswers.push({
         id: uuidv4(),
         answer: "",
@@ -60,10 +61,10 @@ export default function QuizQuestionForm({
       });
     }
 
-    setCurrentQuestion((prev) => {
+    setCurrentQa((prev) => {
       return {
         ...prev,
-        answers: blankAnswers
+        answers: blankAnswers,
       };
     });
   };
@@ -94,11 +95,14 @@ export default function QuizQuestionForm({
                   value: field.value || [],
                   onChange: (e) => {
                     field.onChange(e);
-                    setCurrentQuestion((prev) => ({
+                    setCurrentQa((prev) => ({
                       ...prev,
-                      id_quest_type: e[0],
+                      question: {
+                        ...prev.question,
+                        id_quest_type: e[0],
+                      },
                     }));
-                    initializeCurrentAnswers(e[0], currentQuestion.id);
+                    initializeCurrentAnswers(e[0], currentQa.question.id);
                   },
                 }}
               />
@@ -109,11 +113,11 @@ export default function QuizQuestionForm({
           flexDirection="column"
           gap={4}
         >
-          {currentQuestion.id_quest_type && (
+          {currentQa.question.id_quest_type && (
             <QuestionTypeForm
-              setQuestions={setQuestions}
-              currentQuestion={currentQuestion}
-              setCurrentQuestion={setCurrentQuestion}
+              setQaList={setQaList}
+              currentQa={currentQa}
+              setCurrentQa={setCurrentQa}
               questTypes={questTypes}
               initializeCurrentAnswers={initializeCurrentAnswers}
             />
@@ -121,7 +125,7 @@ export default function QuizQuestionForm({
         </Flex>
       </Flex>
       <chakra.div flex={1}>
-        <QuestionListAccordion questions={questions} />
+        <QuestionListAccordion qaList={qaList} />
       </chakra.div>
     </Flex>
   );

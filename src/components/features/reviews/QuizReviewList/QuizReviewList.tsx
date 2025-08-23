@@ -1,9 +1,9 @@
 "use client";
-import { Review } from "@/app/typings/review";
+import { Review } from "@/typings/review";
 import QuizReviewItem from "../QuizReviewItem/QuizReviewItem";
-import Pagination from "@/components/shared/Pagination/Pagination";
+import ListPagination from "@/components/shared/lists/ListPagination/ListPagination";
 import { useSearchParams } from "next/navigation";
-import { User } from "@/app/typings/user";
+import { User } from "@/typings/user";
 
 interface IQuizReviewListProps {
   id: string;
@@ -13,8 +13,10 @@ interface IQuizReviewListProps {
   }[];
 }
 
-export default function QuizReviewList({id, reviews}: IQuizReviewListProps) {
+export default function QuizReviewList({ id, reviews }: IQuizReviewListProps) {
   const searchParams = useSearchParams();
+
+  if (!reviews.length) return <div>No reviews found</div>;
   const offset = 5;
 
   const page = searchParams.get("page");
@@ -24,7 +26,7 @@ export default function QuizReviewList({id, reviews}: IQuizReviewListProps) {
   const to = from + offset - 1;
   const reviewsByPage = reviews?.slice(from - 1, to);
 
-  return reviews && reviewsByPage && reviewsByPage.length ? (
+  return (
     <>
       {reviewsByPage.map((review) => (
         <QuizReviewItem
@@ -32,9 +34,11 @@ export default function QuizReviewList({id, reviews}: IQuizReviewListProps) {
           review={review}
         />
       ))}
-      <Pagination id={id} currentPage={currentPage} totalPages={Math.ceil(reviews.length / offset)}/>
+      <ListPagination
+        baseHref={`/quizzes/${id}`}
+        currentPage={currentPage}
+        totalPages={Math.ceil(reviews.length / offset)}
+      />
     </>
-  ) : (
-    <div>No reviews found</div>
   );
 }

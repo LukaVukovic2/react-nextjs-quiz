@@ -1,3 +1,4 @@
+import { PlayStatus } from "@/typings/playStatus";
 import { Button } from "@/styles/theme/components/button";
 import { Flex } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
@@ -5,22 +6,29 @@ import { FaPause } from "react-icons/fa";
 import { FaRepeat } from "react-icons/fa6";
 
 interface IQuizGameplayFooterProps {
-  isFinished: boolean;
-  setIsFinished: (isFinished: boolean) => void;
   resetQuiz: () => void;
-  setIsPaused: Dispatch<SetStateAction<boolean>>;
+  playStatus: PlayStatus;
+  setPlayStatus: Dispatch<SetStateAction<PlayStatus>>;
 }
 
 export default function QuizGameplayFooter({
-  isFinished,
-  setIsFinished,
   resetQuiz,
-  setIsPaused,
+  playStatus,
+  setPlayStatus,
 }: IQuizGameplayFooterProps) {
+  const finishQuiz = () => setPlayStatus("finished");
+  const pauseQuiz = () => {
+    if (playStatus === "playing") {
+      setPlayStatus("paused");
+    } else if (playStatus === "paused") {
+      setPlayStatus("playing");
+    }
+  };
+  const isFinished = playStatus === "finished";
   return (
     <Flex justifyContent="space-between">
       <Button
-        onClick={() => setIsFinished(true)}
+        onClick={finishQuiz}
         disabled={isFinished}
       >
         Finish quiz
@@ -36,7 +44,7 @@ export default function QuizGameplayFooter({
       ) : (
         <Button
           type="button"
-          onClick={() => setIsPaused(prev => !prev)}
+          onClick={pauseQuiz}
         >
           <FaPause />
         </Button>

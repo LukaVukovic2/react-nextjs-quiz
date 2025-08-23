@@ -1,6 +1,6 @@
-import { Answer } from "@/app/typings/answer";
-import { Question } from "@/app/typings/question";
-import { getLetterByIndex } from "@/components/shared/utils/getLetterByIndex";
+import { Answer } from "@/typings/answer";
+import { Question } from "@/typings/question";
+import { getLetterByIndex } from "@/utils/functions/getLetterByIndex";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CheckCircleIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import {
@@ -48,7 +48,10 @@ export default function CheckboxGroup(props: ICheckboxGroupProps) {
         }}
         key={resetKey}
       >
-        <Fieldset.Legend fontSize="xs" ml={2}>
+        <Fieldset.Legend
+          fontSize="xs"
+          ml={2}
+        >
           You can select multiple answers
         </Fieldset.Legend>
         <Fieldset.Content gap={0}>
@@ -66,9 +69,9 @@ export default function CheckboxGroup(props: ICheckboxGroupProps) {
                 cursor={isFinished ? "not-allowed" : "pointer"}
                 className={clsx({
                   default: true,
-                  selected: isChecked && !props.isFinished,
+                  selected: isChecked && !isFinished,
                   correct: isFinished && answer.correct_answer,
-                  incorrect: isChecked && props.isFinished && !isCorrect,
+                  incorrect: isChecked && isFinished && !isCorrect,
                 })}
               >
                 <Flex

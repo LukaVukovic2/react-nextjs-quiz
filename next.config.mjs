@@ -1,4 +1,9 @@
 const nextConfig = {
+  logging: {
+    fetches: {
+      fullUrl: true,
+    }
+  },
   images: {
     remotePatterns: [
       {
@@ -10,10 +15,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "yihokqocgijpqfemclfy.supabase.co",
         pathname: "**"
-      },
+      }, 
       {
         protocol: "https",
-        hostname: "fakeimg.pl",
+        hostname: "placehold.co",
         pathname: "**"
       }
     ]

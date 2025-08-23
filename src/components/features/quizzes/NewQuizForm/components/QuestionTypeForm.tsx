@@ -1,26 +1,27 @@
-import { Question } from "@/app/typings/question";
-import { QuestionType } from "@/app/typings/question_type";
-import ChoiceQuestionInput from "@/components/shared/ChoiceQuestionInput/ChoiceQuestionInput";
-import ShortAnswerOptionInput from "@/components/shared/ShortAnswerOptionInput/ShortAnswerOptionInput";
+import { Qa } from "@/typings/qa";
+import { QuestionType } from "@/typings/question";
+import ChoiceQuestionInput from "@/components/features/quizzes/NewQuizForm/components/ChoiceQuestionInput";
+import ShortAnswerOptionInput from "@/components/features/quizzes/NewQuizForm/components/ShortAnswerOptionInput";
 import { Field } from "@/components/ui/field";
 import { Button } from "@/styles/theme/components/button";
 import { FormControl } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/react";
+import debounce from "debounce";
 import { useFormContext } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 
 interface IQuestionTypeFormProps {
-  setQuestions: React.Dispatch<React.SetStateAction<Question[]>>;
-  currentQuestion: Question;
-  setCurrentQuestion: React.Dispatch<React.SetStateAction<Question>>;
+  setQaList: React.Dispatch<React.SetStateAction<Qa[]>>;
+  currentQa: Qa;
+  setCurrentQa: React.Dispatch<React.SetStateAction<Qa>>;
   questTypes: QuestionType[];
   initializeCurrentAnswers: (typeId: string, questionId: string) => void;
 }
 
 export default function QuestionTypeForm({
-  setQuestions,
-  currentQuestion,
-  setCurrentQuestion,
+  setQaList,
+  currentQa,
+  setCurrentQa,
   questTypes,
   initializeCurrentAnswers,
 }: IQuestionTypeFormProps) {
@@ -34,36 +35,40 @@ export default function QuestionTypeForm({
     const currentAnswer = {
       id: uuidv4(),
       answer: "",
-      correct_answer: type_name === "Short answer" ? true : false,
-      question_id: currentQuestion.id,
+      correct_answer: type_name === "Short answer",
+      question_id: currentQa.question.id,
     };
-    setCurrentQuestion((prev) => {
+    setCurrentQa((prev) => {
       return {
         ...prev,
         answers: [...(prev.answers || []), currentAnswer],
       };
     });
-    trigger(`correctAnswer_${currentQuestion.id}`);
-    trigger(`answer${currentAnswer.id}`);
+    trigger([
+      `answer${currentAnswer.id}`,
+      `correctAnswer_${currentQa.question.id}`,
+    ]);
   };
 
   const addNewQuestion = () => {
     const id = uuidv4();
-    setQuestions((prev) => [...prev, currentQuestion]);
-    setCurrentQuestion((prev) => ({
-      ...prev,
-      id,
-      title: "",
+    setQaList((prev) => [...prev, currentQa]);
+    setCurrentQa((prev) => ({
+      question: {
+        ...prev.question,
+        id,
+        title: "",
+      },
       answers: [],
     }));
     trigger();
-    initializeCurrentAnswers(currentQuestion.id_quest_type, id);
+    initializeCurrentAnswers(currentQa.question.id_quest_type, id);
   };
 
   const changeCorrectAnswer = (answerId: string, selectedTypeName: string) => {
-    setCurrentQuestion((prev) => ({
+    setCurrentQa((prev) => ({
       ...prev,
-      answers: (prev.answers || []).map((ans) => ({
+      answers: prev.answers.map((ans) => ({
         ...ans,
         correct_answer:
           selectedTypeName === "Single choice"
@@ -73,25 +78,25 @@ export default function QuestionTypeForm({
             : ans.correct_answer,
       })),
     }));
-    trigger(`correctAnswer_${currentQuestion.id}`);
+    trigger(`correctAnswer_${currentQa.question.id}`);
   };
 
   const changeQuestionTitle = (title: string) => {
-    setCurrentQuestion((prev) => ({
+    setCurrentQa((prev) => ({
       ...prev,
-      title,
+      question: {
+        ...prev.question,
+        title,
+      },
     }));
-    trigger("questionTitle");
+    trigger(`q_title${currentQa.question.id}`);
   };
 
-  const updateAnswer = (
-    value: string,
-    answerId: string
-  ) => {
-    setCurrentQuestion((prev) => {
+  const updateAnswer = (value: string, answerId: string) => {
+    setCurrentQa((prev) => {
       return {
         ...prev,
-        answers: (prev.answers ?? []).map((ans) => {
+        answers: prev.answers.map((ans) => {
           if (ans.id === answerId) {
             return {
               ...ans,
@@ -105,20 +110,20 @@ export default function QuestionTypeForm({
   };
 
   const deleteAnswer = (answerId: string) => {
-    setCurrentQuestion((prev) => {
+    setCurrentQa((prev) => {
       return {
         ...prev,
-        answers: (prev.answers ?? []).filter((ans) => ans.id !== answerId),
+        answers: prev.answers.filter((ans) => ans.id !== answerId),
       };
     });
   };
 
   const selectedTypeName =
-    questTypes.find((type) => type.id === currentQuestion.id_quest_type)
+    questTypes.find((type) => type.id === currentQa.question.id_quest_type)
       ?.type_name || "";
 
   const commonProps = {
-    currentQuestion,
+    currentQa,
     updateAnswer,
     deleteAnswer,
   };
@@ -130,10 +135,16 @@ export default function QuestionTypeForm({
           <FormControl>
             <Field>
               <Input
+                key={currentQa.question.id}
                 placeholder="Question title"
-                value={currentQuestion.title}
-                {...register("questionTitle", { required: true })}
-                onChange={(e) => changeQuestionTitle(e.target.value)}
+                defaultValue={currentQa.question.title}
+                {...register(`q_title${currentQa.question.id}`, {
+                  required: true,
+                })}
+                onChange={debounce((e) => {
+                  register(`q_title${currentQa.question.id}`).onChange(e);
+                  changeQuestionTitle(e.target.value);
+                }, 500)}
                 autoComplete="off"
               />
             </Field>

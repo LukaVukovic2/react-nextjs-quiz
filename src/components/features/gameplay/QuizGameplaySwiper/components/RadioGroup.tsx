@@ -1,5 +1,5 @@
-import { Answer } from "@/app/typings/answer";
-import { Question } from "@/app/typings/question";
+import { Answer } from "@/typings/answer";
+import { Question } from "@/typings/question";
 import {
   Radio,
   RadioGroup as RadioGroupComponent,
@@ -8,7 +8,7 @@ import { CheckCircleIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import { Flex, VStack } from "@chakra-ui/react";
 import { ControllerRenderProps, FieldValues } from "react-hook-form";
 import clsx from "clsx";
-import { getLetterByIndex } from "@/components/shared/utils/getLetterByIndex";
+import { getLetterByIndex } from "@/utils/functions/getLetterByIndex";
 import "../QuizGameplaySwiper.scss";
 
 interface IRadioGroupProps {
@@ -25,16 +25,15 @@ interface IRadioGroupProps {
   resetKey: number;
 }
 
-export default function RadioGroup(props: IRadioGroupProps) {
-  const {
-    isFinished,
-    selectedAnsId,
-    answerOptions,
-    handleSelectAnswer,
-    question,
-    field,
-    resetKey,
-  } = props;
+export default function RadioGroup({
+  isFinished,
+  selectedAnsId,
+  answerOptions,
+  handleSelectAnswer,
+  question,
+  field,
+  resetKey,
+}: IRadioGroupProps) {
   return (
     <RadioGroupComponent
       disabled={isFinished}
@@ -59,6 +58,7 @@ export default function RadioGroup(props: IRadioGroupProps) {
           const isCorrect =
             answer?.correct_answer && selectedAnsId === answer.id;
           const isChecked = selectedAnsId === answer.id;
+
           return (
             <Radio
               m={1}
@@ -69,9 +69,9 @@ export default function RadioGroup(props: IRadioGroupProps) {
               cursor={isFinished ? "not-allowed" : "pointer"}
               className={clsx({
                 default: true,
-                selected: isChecked && !props.isFinished,
+                selected: isChecked && !isFinished,
                 correct: isFinished && answer.correct_answer,
-                incorrect: isChecked && props.isFinished && !isCorrect,
+                incorrect: isChecked && isFinished && !isCorrect,
               })}
               w="100%"
             >
