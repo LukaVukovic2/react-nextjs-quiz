@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 import { loginTest } from './utils';
 
 test('Quiz creation', async ({ page }) => {
+  const nextBtn = page.getByRole('button').getByText('Next');
   await test.step('Basic quiz info', async () => {
     const titleInput = page.getByRole('textbox', { name: 'Title' }); 
     await page.goto('/quizzes/new');
@@ -10,7 +11,7 @@ test('Quiz creation', async ({ page }) => {
     await page.getByRole('option', { name: '00:30' }).click();
     await page.getByRole('combobox').filter({ hasText: 'Select quiz type' }).click();
     await page.getByRole('option', { name: 'Culture' }).click();
-    await page.getByRole('button', {name: 'Next'}).click();
+    await nextBtn.click();
   })
 
   await test.step('Defining Q&As', async () => {
@@ -42,7 +43,7 @@ test('Quiz creation', async ({ page }) => {
     await page.locator('input[name^="answer"]').nth(1).fill('option2');
     await addQuestionBtn.click();
 
-    await page.getByRole('button', { name: 'Next' }).click();
+    await nextBtn.click();
   })
 
   await test.step('Authenticating and creating quiz', async () => {
