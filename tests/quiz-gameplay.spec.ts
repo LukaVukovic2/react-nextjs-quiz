@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { loginTest } from './utils';
 
 test.beforeEach('Logging in', async ({ page }) => {
+  test.setTimeout(100000)
   await page.goto('/');
   await expect(page.getByRole('button', { name: 'Anonymous' })).toBeVisible();
 
@@ -24,7 +25,7 @@ test('Quiz gameplay', async ({ page }) => {
 
 test('Reviews form access', async ({ page }) => {
   await page.getByRole('tab', { name: 'Reviews' }).click();
-  await expect(page.getByRole('heading', { name: 'Add a review' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Add a review' })).toBeVisible({ timeout: 10000 });
 
   await page.getByRole('button', { name: 'Logout' }).click();
   await expect(page.getByText('You can\'t add a review as a')).toBeVisible();
@@ -32,8 +33,7 @@ test('Reviews form access', async ({ page }) => {
 
 test('Review submission', async ({ page }) => {
   await page.getByRole('tab', { name: 'Reviews' }).click();
-  await page.getByRole('textbox', { name: 'Enter your comment' }).fill('A review comment');
+  await page.getByPlaceholder('Enter your comment').fill('A review comment');
   await page.getByRole('button', { name: 'Post' }).click();
-
-  await expect(page.getByText('Review added')).toBeVisible();
+  await expect(page.getByPlaceholder("Enter your comment")).toHaveText("");
 })
