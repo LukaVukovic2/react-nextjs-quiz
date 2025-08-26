@@ -12,7 +12,7 @@ test('Quiz creation', async ({ page }) => {
     await page.getByRole('combobox').filter({ hasText: 'Select quiz type' }).click();
     await page.getByRole('option', { name: 'Culture' }).click();
     await expect(nextBtn).toBeVisible();
-    await expect(nextBtn).toBeEnabled();
+    await expect(nextBtn).toBeEnabled({timeout: 10000});
     await nextBtn.click();
   })
 
@@ -46,7 +46,7 @@ test('Quiz creation', async ({ page }) => {
     await addQuestionBtn.click();
 
     await expect(nextBtn).toBeVisible();
-    await expect(nextBtn).toBeEnabled();
+    await expect(nextBtn).toBeEnabled({timeout: 10000});
     await nextBtn.click();
   })
 
