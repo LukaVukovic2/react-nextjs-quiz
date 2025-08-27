@@ -35,12 +35,8 @@ export default function QuizReviewForm() {
   return (
     <chakra.div mb={5}>
       {
-        user?.is_anonymous ? (
-        <AlertWrapper
-          status="warning"
-          title="You can't add a review as a guest"
-        />
-      ) : (
+        user?.is_anonymous === false ? (
+        
         <Card.Root>
           <Card.Header>
             <Heading
@@ -76,6 +72,11 @@ export default function QuizReviewForm() {
             </chakra.form>
           </Card.Body>
         </Card.Root>
+      ) : (
+        <AlertWrapper
+          status="warning"
+          title="You can't add a review as a guest"
+        />
       )}
     </chakra.div>
   );
