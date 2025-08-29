@@ -8,6 +8,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FaUserSecret } from "react-icons/fa";
 import { LuLogIn, LuLogOut } from "react-icons/lu";
+import styles from "./NavigationItems.module.css";
 
 export const navItems = [
   { text: "Create Quiz", href: "/quizzes/new" },
@@ -18,9 +19,15 @@ interface INavigationItemsProps {
   openDialog: () => void;
   user: User | null | undefined;
   username: string | null | undefined;
+  closeDrawer?: (open: boolean) => void;
 }
 
-export default function NavigationItems({openDialog, user, username}: INavigationItemsProps) {
+export default function NavigationItems({
+  openDialog,
+  user,
+  username,
+  closeDrawer
+}: INavigationItemsProps) {
   const path = usePathname();
 
   const handleLogout = async () => {
@@ -32,6 +39,7 @@ export default function NavigationItems({openDialog, user, username}: INavigatio
         duration: 5000,
       });
     }
+    closeDrawer && closeDrawer(false);
   };
 
   return (
@@ -46,13 +54,14 @@ export default function NavigationItems({openDialog, user, username}: INavigatio
           <Link
             href="/my-profile"
             className={clsx({
-              "nav-link": true,
-              active: path === "/my-profile",
+              [styles.navLink]: true,
+              [styles.active]: path === "/my-profile",
             })}
           >
             <Button
               visual="ghost"
               type="button"
+              onClick={() => closeDrawer && closeDrawer(false)}
             >
               Hello, {username}
             </Button>
@@ -61,7 +70,7 @@ export default function NavigationItems({openDialog, user, username}: INavigatio
           <Flex
             alignItems="center"
             gap={2}
-            className="nav-link"
+            className={styles.navLink}
           >
             <Button
               visual="ghost"
@@ -81,12 +90,13 @@ export default function NavigationItems({openDialog, user, username}: INavigatio
           <Link
             key={item.href}
             href={item.href}
-            className={clsx({ "nav-link": true, active: activePath })}
+            className={clsx({ [styles.navLink]: true, [styles.active]: activePath })}
           >
             <Button
               visual="ghost"
               type="button"
               color={activePath ? "tertiary" : "inherit"}
+              onClick={() => closeDrawer && closeDrawer(false)}
             >
               {item.text}
             </Button>
@@ -97,14 +107,15 @@ export default function NavigationItems({openDialog, user, username}: INavigatio
         loading={user === undefined}
         height="30px"
         as={Flex}
-        justifyContent="center"
+        justifyContent="flex-end"
         alignItems="center"
+        flex={1}
       >
         {user?.is_anonymous === false ? (
           <Button
             visual="ghost"
             type="submit"
-            className="nav-link"
+            className={styles.navLink}
             onClick={handleLogout}
           >
             Logout
@@ -114,7 +125,7 @@ export default function NavigationItems({openDialog, user, username}: INavigatio
           <Button
             visual="ghost"
             type="button"
-            className="nav-link"
+            className={styles.navLink}
             onClick={openDialog}
           >
             Login

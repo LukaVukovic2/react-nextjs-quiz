@@ -1,0 +1,9 @@
+.navLink{
+  border-radius: var(--chakra-radii-soft);
+  font-weight: var(--chakra-font-weights-semibold);
+}
+
+.active{
+  background-color: var(--chakra-colors-primary);
+  color: var(--chakra-colors-light-800);
+}

@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Flex, SkeletonText } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import { Logo } from "@/components/core/Logo/Logo";
 import { useEffect, useState } from "react";
 import AuthModal from "../../auth/AuthModal/AuthModal";
@@ -9,6 +9,7 @@ import SidebarNavigation from "../../navigations/SidebarNavigation/SidebarNaviga
 import { useMediaQuery } from "usehooks-ts";
 import NavigationItems from "../../navigations/NavigationItems/NavigationItems";
 import { useUser } from "@/utils/hooks/useUser";
+import SkeletonNavigation from "../../navigations/SkeletonNavigation/SkeletonNavigation";
 
 export const navItems = [
   { text: "Create Quiz", href: "/quizzes/new" },
@@ -24,38 +25,50 @@ export default function Header() {
     setIsMounted(true);
   }, []);
   const openDialog = () => setDialogVisible(true);
-  const navigation = <NavigationItems openDialog={openDialog} user={user} username={username}/> 
+  const navigation = (
+    <NavigationItems
+      openDialog={openDialog}
+      user={user}
+      username={username}
+    />
+  );
 
   return (
     <Flex
-      justifyContent="space-between"
       className={styles.header}
       alignItems="center"
-      gap={2}
+      justifyContent="center"
     >
-      <Flex flex={1}>
+      <Flex
+        flex={1}
+        maxWidth="1000px"
+        gap={2}
+      >
         <Link href="/">
-          <Logo height="45px" />
-        </Link>
-
-        {isMounted ? (
-          desktopMode ? (
-            <Flex alignItems="center">
-              {navigation}
-            </Flex>
-          ) : (
-            <SidebarNavigation>
-              {navigation}
-            </SidebarNavigation>
-          )
-        ) : (
-          <SkeletonText
-            noOfLines={1}
-            flex={1}
-            m={2}
-            width="50%"
+          <Logo
+            height="45px"
           />
-        )}
+        </Link>
+        {
+          isMounted ? (
+            desktopMode ? (
+              <Flex
+                alignItems="center"
+                justifyContent="space-between"
+                flex={1}
+              >
+                {navigation}
+              </Flex>
+            ) : (
+              <Flex
+                flex={1}
+                justifyContent="flex-end"
+              >
+                <SidebarNavigation>{navigation}</SidebarNavigation>
+              </Flex>
+            )
+          ) : <SkeletonNavigation />
+        }
       </Flex>
 
       {dialogVisible && (
