@@ -26,7 +26,7 @@ export default function NavigationItems({
   openDialog,
   user,
   username,
-  closeDrawer
+  closeDrawer,
 }: INavigationItemsProps) {
   const path = usePathname();
 
@@ -41,6 +41,11 @@ export default function NavigationItems({
     }
     closeDrawer && closeDrawer(false);
   };
+
+  const btnStyle = {
+    visual: "ghost" as const,
+    className: styles.btn
+  }
 
   return (
     <>
@@ -59,7 +64,7 @@ export default function NavigationItems({
             })}
           >
             <Button
-              visual="ghost"
+              {...btnStyle}
               type="button"
               onClick={() => closeDrawer && closeDrawer(false)}
             >
@@ -73,7 +78,7 @@ export default function NavigationItems({
             className={styles.navLink}
           >
             <Button
-              visual="ghost"
+              {...btnStyle}
               type="button"
               onClick={openDialog}
             >
@@ -90,10 +95,13 @@ export default function NavigationItems({
           <Link
             key={item.href}
             href={item.href}
-            className={clsx({ [styles.navLink]: true, [styles.active]: activePath })}
+            className={clsx({
+              [styles.navLink]: true,
+              [styles.active]: activePath,
+            })}
           >
             <Button
-              visual="ghost"
+              {...btnStyle}
               type="button"
               color={activePath ? "tertiary" : "inherit"}
               onClick={() => closeDrawer && closeDrawer(false)}
@@ -113,9 +121,9 @@ export default function NavigationItems({
       >
         {user?.is_anonymous === false ? (
           <Button
-            visual="ghost"
+            {...btnStyle}
             type="submit"
-            className={styles.navLink}
+            className={`${styles.navLink} ${btnStyle.className}`}
             onClick={handleLogout}
           >
             Logout
@@ -123,9 +131,9 @@ export default function NavigationItems({
           </Button>
         ) : (
           <Button
-            visual="ghost"
+            {...btnStyle}
             type="button"
-            className={styles.navLink}
+            className={`${styles.navLink} ${btnStyle.className}`}
             onClick={openDialog}
           >
             Login

@@ -76,6 +76,7 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
                   name="username"
                   defaultValue={profile?.username}
                   bg="light.100"
+                  maxLength={20}
                 />
               </div>
 

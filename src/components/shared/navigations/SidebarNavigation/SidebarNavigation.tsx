@@ -33,7 +33,7 @@ export default function SidebarNavigation({
                       alignItems="flex-end"
                       direction="column"
                       flex={1}
-                      gap={1}
+                      gap={3}
                       my={12}
                     >
                       {navigation}
