@@ -1,7 +1,7 @@
 import { Qa } from "@/typings/qa";
 import { QuestionType } from "@/typings/question";
-import ChoiceQuestionInput from "@/components/features/quizzes/NewQuizForm/components/ChoiceQuestionInput";
-import ShortAnswerOptionInput from "@/components/features/quizzes/NewQuizForm/components/ShortAnswerOptionInput";
+import ChoiceQuestionInput from "@/components/features/create-quiz/NewQuizForm/components/ChoiceQuestionInput";
+import ShortAnswerOptionInput from "@/components/features/create-quiz/NewQuizForm/components/ShortAnswerOptionInput";
 import { Field } from "@/components/ui/field";
 import { Button } from "@/styles/theme/components/button";
 import { FormControl } from "@chakra-ui/form-control";

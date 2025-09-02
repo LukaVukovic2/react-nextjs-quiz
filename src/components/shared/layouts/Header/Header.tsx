@@ -43,6 +43,7 @@ export default function Header() {
         flex={1}
         maxWidth="1000px"
         gap={2}
+        px={3}
       >
         <Link href="/">
           <Logo

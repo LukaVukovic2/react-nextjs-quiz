@@ -5,6 +5,7 @@ import { QuizBasic } from "@/typings/quiz";
 import { createClient } from "../../supabase/server";
 import { Question } from "@/typings/question";
 import { Answer } from "@/typings/answer";
+import { capitalizeFirstLetter } from "@/utils/functions/capitalizeFirstLetter";
 
 interface FormData {
   quiz: QuizBasic;
@@ -24,6 +25,7 @@ export const createQuiz = async ({
 
   const new_quiz = {
     ...quiz,
+    title: capitalizeFirstLetter(quiz.title),
     user_id: user?.id,
   };
   const { error } = await supabase.rpc("create_quiz", {

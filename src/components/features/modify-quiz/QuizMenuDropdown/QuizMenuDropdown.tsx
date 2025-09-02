@@ -11,7 +11,9 @@ import { Dialog, Text, Menu } from "@chakra-ui/react";
 import { FaEllipsisV } from "react-icons/fa";
 import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
 
-const QuizUpdateForm = lazy(() => import("../QuizUpdateForm/QuizUpdateForm"));
+const QuizUpdateForm = lazy(
+  () => import("../../modify-quiz/QuizUpdateForm/QuizUpdateForm")
+);
 
 interface QuizMenuDropdownProps {
   quiz: QuizBasic;

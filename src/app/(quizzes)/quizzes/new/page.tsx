@@ -1,4 +1,4 @@
-import NewQuizForm from "@/components/features/quizzes/NewQuizForm/NewQuizForm";
+import NewQuizForm from "@/components/features/create-quiz/NewQuizForm/NewQuizForm";
 import { createClient } from "@/utils/supabase/server";
 import { Metadata } from "next";
 

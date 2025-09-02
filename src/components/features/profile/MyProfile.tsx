@@ -57,7 +57,7 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
               placement="top-center"
             >
               <Image
-                src={profile?.avatar || "https://placehold.co/100x100?text=No+Image+Found"}
+                src={profile?.avatar || process.env.NEXT_PUBLIC_PLACEHOLDER_IMG}
                 alt="profile avatar"
                 width={100}
                 height={100}

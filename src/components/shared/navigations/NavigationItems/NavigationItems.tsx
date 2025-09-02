@@ -66,6 +66,7 @@ export default function NavigationItems({
             <Button
               {...btnStyle}
               type="button"
+              color={path === "/my-profile" ? "tertiary" : "inherit"}
               onClick={() => closeDrawer && closeDrawer(false)}
             >
               Hello, {username}

@@ -1,11 +1,11 @@
-import QuizList from "@/components/features/quizzes/QuizList/QuizList";
+import CategoryHeader from "@/components/features/category/CategoryHeader/CategoryHeader";
+import QuizList from "@/components/features/category/QuizList/QuizList";
 import { createClient } from "@/utils/supabase/server";
-import { Heading } from "@chakra-ui/react";
 import { notFound } from "next/navigation";
 
 interface ITypePageProps {
   params: { id: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: { [key: string]: string };
 }
 
 export const generateMetadata = ({ searchParams }: ITypePageProps) => {
@@ -22,20 +22,25 @@ export default async function TypePage({
   searchParams,
 }: ITypePageProps) {
   const { id } = params;
+  const name = searchParams?.name || "Category image";
   const supabase = await createClient();
   const { data: quizzes, error } = await supabase.rpc("get_quizzes_by_type", {
     id_type: id,
   });
 
+  const { data: quizPlays } = await supabase.rpc("get_quizplays_by_type", {
+    id_type: id,
+  });
+
   if (!quizzes || !quizzes.length || error) notFound();
   return (
-    <QuizList quizzes={quizzes}>
-      <Heading
-        as="h1"
-        size="4xl"
-      >
-        {searchParams?.name}
-      </Heading>
-    </QuizList>
+    <>
+      <CategoryHeader
+        categoryName={name}
+        plays={quizPlays}
+        quizCount={quizzes.length}
+      />
+      <QuizList quizzes={quizzes} />
+    </>
   );
 }

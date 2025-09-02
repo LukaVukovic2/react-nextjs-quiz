@@ -1,4 +1,4 @@
-import MyQuizzes from "@/components/features/quizzes/MyQuizzes/MyQuizzes";
+import MyQuizzes from "@/components/features/modify-quiz/MyQuizzes/MyQuizzes";
 import { getUser } from "@/utils/actions/user/getUser";
 import { createClient } from "@/utils/supabase/server";
 import { Metadata } from "next";
