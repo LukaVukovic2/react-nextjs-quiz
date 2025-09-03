@@ -9,10 +9,17 @@ interface IStatBox {
 
 export default function StatBox({ title, value, children }: IStatBox) {
   return (
-    <Stat.Root as={Flex} justifyContent="center">
+    <Stat.Root
+      as={Flex}
+      justifyContent="center"
+      size={{ base: "sm", md: "lg" }}
+    >
       <Stat.Label>{title}</Stat.Label>
       <Stat.ValueText>
-        <Flex alignItems="center" gap={2}>
+        <Flex
+          alignItems="center"
+          gap={2}
+        >
           {children}
           {value}
         </Flex>

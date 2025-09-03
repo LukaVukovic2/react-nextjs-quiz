@@ -6,6 +6,7 @@ import { RxCalendar } from "react-icons/rx";
 import Link from "next/link";
 import TimeAgoComponent from "@/components/core/TimeAgo/TimeAgo";
 import { formatToMMSS } from "@/utils/functions/formatTime";
+import styles from "./QuizItem.module.css";
 
 export default function QuizItem({ quiz }: { quiz: QuizDetails }) {
   const avgRating = +quiz?.rating.toFixed(1);
@@ -26,33 +27,20 @@ export default function QuizItem({ quiz }: { quiz: QuizDetails }) {
     ) : (
       <FaRegStar size={20} />
     );
-
-  const styles = {
-    boxShadow: "none",
-    clipPath: `polygon(
-    7% 0%, 12.5% 10%, 18% 0%, 25% 10%, 32% 0%, 38% 10%, 44% 0%, 50% 10%,
-    56% 0%, 62.5% 10%, 68% 0%, 75% 10%, 82% 0%, 88% 10%, 94% 0%,
-    97.5% 7%, 100% 18%, 97.5% 32%, 100% 44%,
-    97.5% 56%, 100% 68%, 97.5% 82%, 100% 94%,
-    93% 100%, 87.5% 90%, 82% 100%, 75% 90%, 68% 100%, 62.5% 90%, 56% 100%, 50% 90%,
-    44% 100%, 38% 90%, 32% 100%, 25% 90%, 18% 100%, 12.5% 90%, 7% 100%, 0% 93%,
-    2.5% 82%,  0% 68%,  2.5% 56%,
-    0% 44%,  2.5% 32%,  0% 18%, 2.5% 7%`,
-  };
-
   return (
     <Card.Root
+      className={styles.card}
       variant="elevated"
-      position="relative"
-      flex={1}
-      px="2.5%"
     >
       <Card.Body>
         {avgRating > 4.5 && (
-          <Float offsetX={10}>
+          <Float
+            offsetX={15}
+            placement="top-start"
+          >
             <Tag.Root
               colorPalette="red"
-              style={styles}
+              className={styles.spikyBorder}
               size="lg"
             >
               <Tag.Label>Top Rated</Tag.Label>
@@ -63,8 +51,8 @@ export default function QuizItem({ quiz }: { quiz: QuizDetails }) {
           href={`/quizzes/${quiz.id}`}
           data-testid="quiz_link"
         >
-          <Text fontSize="xl">{quiz.title}</Text>
-          <Flex justifyContent="space-between">
+          <Text className={styles.title}>{quiz.title}</Text>
+          <Flex className={styles.container}>
             <Flex
               alignItems="center"
               gap={2}
@@ -84,7 +72,7 @@ export default function QuizItem({ quiz }: { quiz: QuizDetails }) {
               )}
             </Flex>
           </Flex>
-          <Flex justifyContent="space-between">
+          <Flex className={styles.container}>
             <Flex
               alignItems="center"
               gap={2}

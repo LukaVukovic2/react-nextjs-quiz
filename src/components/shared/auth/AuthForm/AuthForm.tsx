@@ -105,6 +105,7 @@ export default function AuthForm({ closeModal }: { closeModal: () => void }) {
                     value: 3,
                     message: "Username must have at least 3 characters",
                   },
+                  maxLength: 20
                 })}
               />
             </Field>

@@ -1,0 +1,45 @@
+.container{
+  justify-content: space-between;
+  gap: var(--chakra-spacing-6);
+}
+
+.image{
+  border-radius: 0.375rem 0 0 0;
+}
+
+.title{
+  font-size: var(--chakra-font-sizes-5xl);
+  line-height: 1.5;
+  size: var(--chakra-font-sizes-5xl);
+}
+
+.statContainer{
+  flex-direction: column;
+  justify-content: space-evenly;
+  flex: 1;
+}
+
+@media(max-width: 576px){
+  .image{
+    width: 100%;
+    border-radius: 0.375rem 0.375rem 0 0;
+  }
+  .container{
+    flex-direction: column;
+  }
+  .title{
+    font-size: var(--chakra-font-sizes-2xl);
+    width: 100%;
+  }
+  .statContainer{
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 0 var(--chakra-spacing-9);
+  }
+}
+
+@media(max-width: 360px){
+  .statContainer{
+    padding: 0 var(--chakra-spacing-6);
+  }
+}

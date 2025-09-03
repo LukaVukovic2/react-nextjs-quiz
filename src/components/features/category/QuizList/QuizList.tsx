@@ -7,7 +7,7 @@ export default function QuizList({ quizzes }: { quizzes: QuizDetails[] }) {
   return (
     <Flex
       direction="column"
-      gap="3"
+      gap="4"
     >
       {quizzes &&
         quizzes?.length > 0 &&

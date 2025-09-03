@@ -1,0 +1,48 @@
+.container{
+  justify-content: space-between;
+}
+
+.title{
+  font-size: var(--chakra-font-sizes-xl);
+}
+
+.card{
+  padding: 0 var(--chakra-spacing-7);
+  flex: 1;
+  position: relative;
+}
+
+.spikyBorder{
+  box-shadow: "none";
+  clip-path: polygon(
+    7% 0%, 12.5% 10%, 18% 0%, 25% 10%, 32% 0%, 38% 10%, 44% 0%, 50% 10%,
+    56% 0%, 62.5% 10%, 68% 0%, 75% 10%, 82% 0%, 88% 10%, 94% 0%,
+    97.5% 7%, 100% 18%, 97.5% 32%, 100% 44%,
+    97.5% 56%, 100% 68%, 97.5% 82%, 100% 94%,
+    93% 100%, 87.5% 90%, 82% 100%, 75% 90%, 68% 100%, 62.5% 90%, 56% 100%, 50% 90%,
+    44% 100%, 38% 90%, 32% 100%, 25% 90%, 18% 100%, 12.5% 90%, 7% 100%, 0% 93%,
+    2.5% 82%,  0% 68%,  2.5% 56%,
+    0% 44%,  2.5% 32%,  0% 18%, 2.5% 7%)
+}
+
+@media(max-width: 576px){
+  .container{
+    flex-direction: column;
+    justify-content: start;
+    gap: var(--chakra-spacing-1);
+    margin: var(--chakra-spacing-1) 0;
+  }
+  .card{
+    font-size: var(--chakra-font-sizes-xs);
+    padding: 0 var(--chakra-spacing-3);
+  }
+  .title{
+    font-size: var(--chakra-font-sizes-sm)
+  }
+}
+
+@media(max-width: 360px){
+  .card{
+    padding: 0;
+  }
+}

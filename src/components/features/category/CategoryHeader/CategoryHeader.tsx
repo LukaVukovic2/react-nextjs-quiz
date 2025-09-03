@@ -3,6 +3,7 @@ import { Flex, Heading } from "@chakra-ui/react";
 import Image from "next/image";
 import { BiJoystick } from "react-icons/bi";
 import { BsTrophy } from "react-icons/bs";
+import styles from "./CategoryHeader.module.css";
 
 interface ICategoryHeaderProps{
   categoryName: string | undefined;
@@ -13,34 +14,31 @@ interface ICategoryHeaderProps{
 export default function CategoryHeader({categoryName = "Category name", plays, quizCount}: ICategoryHeaderProps) {
   return (
     <Flex
-      justifyContent="space-between"
-      gap={6}
+      className={styles.container}
     >
       <Image
+        className={styles.image}
         src={`/category/${categoryName?.toLowerCase()}.png`}
         height="222"
         width="333"
         alt={categoryName}
         priority={true}
-        style={{borderRadius: "0.375rem 0 0 0"}}
       />
       <Flex
-        flexDir="column"
-        justifyContent="space-evenly"
-        flex={1}
+        className={styles.statContainer}
       >
         <Heading
           as="h1"
-          size="5xl"
+          className={styles.title}
         >
           {categoryName}
         </Heading>
         <StatBox title="Quiz count" value={quizCount || 0}>
-          <BsTrophy size={20} />
+          <BsTrophy />
         </StatBox>
 
         <StatBox title="Total plays" value={plays || 0}>
-          <BiJoystick size={20} />
+          <BiJoystick />
         </StatBox>
       </Flex>
     </Flex>
