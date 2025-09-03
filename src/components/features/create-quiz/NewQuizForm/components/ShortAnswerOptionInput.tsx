@@ -58,6 +58,7 @@ export default function ShortAnswerOptionInput({
               updateAnswer(e.target.value, ans.id);
             }, 500)}
             autoComplete="off"
+            maxLength={+(process.env.NEXT_PUBLIC_ANSWER_MAX_LENGTH ?? 50)}
           />
         </InputGroup>
       </Field>

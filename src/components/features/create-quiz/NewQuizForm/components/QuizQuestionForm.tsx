@@ -9,6 +9,7 @@ import QuestionTypeForm from "./QuestionTypeForm";
 import { v4 as uuidv4 } from "uuid";
 import { Answer } from "@/typings/answer";
 import { Qa } from "@/typings/qa";
+import { Heading } from "@/styles/theme/components/heading";
 
 interface IQuizQuestionFormProps {
   qaList: Qa[];
@@ -79,6 +80,9 @@ export default function QuizQuestionForm({
         gap={2}
         flex={1}
       >
+        <Heading>
+          Minimum 3 questions required
+        </Heading>
         <Field
           label="Choose question type"
           helperText="You can add different types of questions to your quiz"

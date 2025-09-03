@@ -19,5 +19,9 @@ export const globalCss = defineGlobalStyles({
 
   "main > *": {
     padding: "var(--chakra-spacing-3)"
+  },
+
+  ".css-78gcoq input": {
+    pointerEvents: "auto"
   }
 });

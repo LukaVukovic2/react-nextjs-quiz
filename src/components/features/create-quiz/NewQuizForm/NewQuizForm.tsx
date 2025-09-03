@@ -48,7 +48,7 @@ export default function NewQuizForm({
 
   const isAnonymous = getCookie("isAnonymous") === "true";
   const minQuizQuestionCount =
-    Number(process.env.NEXT_PUBLIC_MIN_QUIZ_QUESTION_COUNT) ?? 0;
+    Number(process.env.NEXT_PUBLIC_MIN_QUIZ_QUESTION_COUNT) ?? 3;
   const isFormValid =
     currentStep === 1 ? isValid : qaList.length >= minQuizQuestionCount;
 

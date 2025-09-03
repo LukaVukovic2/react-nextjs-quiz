@@ -146,6 +146,7 @@ export default function QuestionTypeForm({
                   changeQuestionTitle(e.target.value);
                 }, 500)}
                 autoComplete="off"
+                maxLength={+(process.env.NEXT_PUBLIC_QUESTION_MAX_LENGTH ?? 100)}
               />
             </Field>
           </FormControl>

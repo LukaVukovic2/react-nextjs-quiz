@@ -34,7 +34,7 @@ export default function QuizDetailsForm({ quizTypes }: IQuizDetailsFormProps) {
             register("title").onChange(e);
             trigger("title");
           }, 500)}
-          maxLength={100}
+          maxLength={+(process.env.NEXT_PUBLIC_TITLE_MAX_LENGTH ?? 100)}
         />
       </FormControl>
       <FormControl>
