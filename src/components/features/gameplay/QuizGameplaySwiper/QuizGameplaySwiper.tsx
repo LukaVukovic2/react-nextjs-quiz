@@ -117,7 +117,7 @@ export default function QuizGameplaySwiper({
                   resetKey,
                 };
                 return (
-                  <chakra.div mb={7} className={styles.answerWrapper}>
+                  <chakra.div className={styles.answerWrapper}>
                     {(typeName === "Single choice" && (
                       <RadioGroup
                         {...commonProps}

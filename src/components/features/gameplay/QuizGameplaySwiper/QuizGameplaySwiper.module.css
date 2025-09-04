@@ -4,6 +4,10 @@
   margin-bottom: 20px;
 }
 
+.answerWrapper{
+  margin-bottom: var(--chakra-spacing-7);
+}
+
 @media (max-width: 576px){
   .answerWrapper label{
     font-size: var(--chakra-font-sizes-xs);
