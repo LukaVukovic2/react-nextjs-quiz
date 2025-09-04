@@ -14,14 +14,18 @@ export const globalCss = defineGlobalStyles({
     maxWidth: "1000px",
     width: "100%",
     display: "flex",
-    flexDir: "column"
+    flexDir: "column",
   },
 
   "main > *": {
-    padding: "var(--chakra-spacing-3)"
+    padding: "var(--chakra-spacing-3)",
   },
 
   ".css-78gcoq input": {
-    pointerEvents: "auto"
-  }
+    pointerEvents: "auto",
+  },
+
+  ".chakra-stack .css-12cmhod .css-13vx2na": {
+    display: "none",
+  },
 });

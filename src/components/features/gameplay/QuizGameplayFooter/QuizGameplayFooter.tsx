@@ -4,6 +4,7 @@ import { Flex } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
 import { FaPause } from "react-icons/fa";
 import { FaRepeat } from "react-icons/fa6";
+import styles from "./QuizGameplayFooter.module.css";
 
 interface IQuizGameplayFooterProps {
   resetQuiz: () => void;
@@ -26,7 +27,11 @@ export default function QuizGameplayFooter({
   };
   const isFinished = playStatus === "finished";
   return (
-    <Flex justifyContent="space-between">
+    <Flex
+      justifyContent="space-between"
+      flex={1}
+      className={styles.buttonGroup}
+    >
       <Button
         onClick={finishQuiz}
         disabled={isFinished}

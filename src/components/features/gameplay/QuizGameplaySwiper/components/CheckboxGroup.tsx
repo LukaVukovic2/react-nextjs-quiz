@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import clsx from "clsx";
 import { ControllerRenderProps, FieldValues } from "react-hook-form";
-import "../QuizGameplaySwiper.scss";
+import styles from "../QuizGameplaySwiper.module.scss";
 
 interface ICheckboxGroupProps {
   field: ControllerRenderProps<FieldValues, string>;
@@ -36,6 +36,7 @@ export default function CheckboxGroup(props: ICheckboxGroupProps) {
     field,
     resetKey,
   } = props;
+  const { correct, incorrect, defaultly, selected } = styles;
   return (
     <Fieldset.Root>
       <CheckboxGroupComponent
@@ -68,10 +69,10 @@ export default function CheckboxGroup(props: ICheckboxGroupProps) {
                 readOnly={isFinished}
                 cursor={isFinished ? "not-allowed" : "pointer"}
                 className={clsx({
-                  default: true,
-                  selected: isChecked && !isFinished,
-                  correct: isFinished && answer.correct_answer,
-                  incorrect: isChecked && isFinished && !isCorrect,
+                  [defaultly]: true,
+                  [selected]: isChecked && !isFinished,
+                  [correct]: isFinished && answer.correct_answer,
+                  [incorrect]: isChecked && isFinished && !isCorrect,
                 })}
               >
                 <Flex

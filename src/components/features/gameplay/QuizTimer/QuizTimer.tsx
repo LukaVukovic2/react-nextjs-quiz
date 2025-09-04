@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
 import { useTimer } from "react-timer-hook";
-import "./QuizTimer.css";
 import clsx from "clsx";
 import { usePathname, useRouter } from "next/navigation";
 import { formatToSeconds } from "@/utils/functions/formatTime";
 import { PlayStatus } from "@/typings/playStatus";
+import styles from "./QuizTimer.module.css";
 
 interface IQuizTimerProps {
   quizTime: number;
@@ -58,7 +58,7 @@ export default function QuizTimer({
   return (
     <div
       className={clsx({
-        timer: true,
+        [styles.timer]: true,
         "fa-bounce": totalSeconds < 10 && playStatus === "playing",
       })}
     >

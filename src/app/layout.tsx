@@ -2,6 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Providers } from "./providers";
 import { Metadata } from "next";
 import Header from "@/components/shared/layouts/Header/Header";
+import "../styles/global.css";
 
 export const metadata: Metadata = {
   title: "Quiz App",

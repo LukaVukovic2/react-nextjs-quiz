@@ -9,7 +9,7 @@ import { Flex, VStack } from "@chakra-ui/react";
 import { ControllerRenderProps, FieldValues } from "react-hook-form";
 import clsx from "clsx";
 import { getLetterByIndex } from "@/utils/functions/getLetterByIndex";
-import "../QuizGameplaySwiper.scss";
+import styles from "../QuizGameplaySwiper.module.scss";
 
 interface IRadioGroupProps {
   field: ControllerRenderProps<FieldValues, string>;
@@ -34,6 +34,7 @@ export default function RadioGroup({
   field,
   resetKey,
 }: IRadioGroupProps) {
+  const { defaultly, correct, incorrect, selected } = styles;
   return (
     <RadioGroupComponent
       disabled={isFinished}
@@ -68,10 +69,10 @@ export default function RadioGroup({
               disabled={isFinished}
               cursor={isFinished ? "not-allowed" : "pointer"}
               className={clsx({
-                default: true,
-                selected: isChecked && !isFinished,
-                correct: isFinished && answer.correct_answer,
-                incorrect: isChecked && isFinished && !isCorrect,
+                [defaultly]: true,
+                [selected]: isChecked && !isFinished,
+                [correct]: isFinished && answer.correct_answer,
+                [incorrect]: isChecked && isFinished && !isCorrect,
               })}
               w="100%"
             >

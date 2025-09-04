@@ -1,0 +1,51 @@
+.css-13vx2na, .chakra-checkbox__control{
+  display: none;
+}
+
+.swiper-slide{
+  cursor: grab;
+  height: auto;
+}
+
+.swiper-pagination{
+  padding-bottom: 10px;
+}
+
+.swiper-pagination-bullet-active {
+  color: #fff;
+  background: #007aff;
+}
+
+.selectedAnswer {
+  background: rgba(0, 0, 0, 0.2);
+  color: black;
+}
+
+.wrongAnswer{
+  background: #f44336;
+  color: white;
+}
+
+.partiallyCorrect{
+  background: linear-gradient(135deg, #4CAF50 50%, #f44336 50%);
+  color: white;
+}
+
+.correctAnswer{
+  background: #4CAF50;
+  color: white;
+}
+
+.chakra-tabs__root {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  flex: 1;
+}
+
+.chakra-tabs__content{
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}

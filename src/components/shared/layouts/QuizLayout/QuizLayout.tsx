@@ -6,13 +6,14 @@ import { User } from "@/typings/user";
 import QuizGameplaySection from "@/components/features/gameplay/QuizGameplaySection/QuizGameplaySection";
 import { Flex, Tabs } from "@chakra-ui/react";
 import { lazy, Suspense, useState } from "react";
-import "./QuizLayout.css";
+import styles from "./QuizLayout.module.css";
 import { Review } from "@/typings/review";
 import { useUser } from "@/utils/hooks/useUser";
 import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
 import { ConfettiComponent as Confetti } from "@/components/core/Confetti/Confetti";
 const QuizLeaderboard = lazy(
-  () => import("@/components/features/leaderboard/QuizLeaderboard/QuizLeaderboard")
+  () =>
+    import("@/components/features/leaderboard/QuizLeaderboard/QuizLeaderboard")
 );
 const QuizReviewForm = lazy(
   () => import("@/components/features/reviews/QuizReviewForm/QuizReviewForm")
@@ -57,7 +58,7 @@ export default function QuizLayout({
         <Tabs.Trigger value="Gameplay">Gameplay</Tabs.Trigger>
         <Tabs.Trigger
           value="Leaderboard"
-          className={`tab ${isTopResult ? "highlighted fa-fade" : ""}`}
+          className={`${styles.tab} ${isTopResult ? styles.highlighted + " fa-fade" : ""}`}
         >
           Leaderboard
         </Tabs.Trigger>
@@ -88,7 +89,7 @@ export default function QuizLayout({
         <Tabs.Content value="Reviews">
           <Suspense fallback={<LoadingSpinner text="Loading reviews..." />}>
             <Flex
-              width="600px"
+              maxWidth="600px"
               direction="column"
             >
               <QuizReviewForm />

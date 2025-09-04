@@ -1,14 +1,14 @@
 import { Flex, Text } from "@chakra-ui/react";
-import "./QuizResultBox.css";
+import styles from "./QuizResultBox.module.css";
 
 interface IQuizResultBoxProps {
   title: string;
   value: string;
 }
 
-export default function QuizResultBox({title, value} : IQuizResultBoxProps) {
+export default function QuizResultBox({ title, value }: IQuizResultBoxProps) {
   return (
-    <Flex className="quiz-result-box" direction="column" alignItems="center">
+    <Flex className={styles.quizResultBox}>
       <Text>{title}</Text>
       <Text>{value}</Text>
     </Flex>

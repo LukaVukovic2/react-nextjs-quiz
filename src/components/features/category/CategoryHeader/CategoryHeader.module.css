@@ -28,7 +28,7 @@
     flex-direction: column;
   }
   .title{
-    font-size: var(--chakra-font-sizes-2xl);
+    font-size: var(--chakra-font-sizes-3xl);
     width: 100%;
   }
   .statContainer{
