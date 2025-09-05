@@ -14,9 +14,9 @@ import QuizUpdateAnswer from "../QuizUpdateAnswer/QuizUpdateAnswer";
 import QuizUpdateQuestion from "../QuizUpdateQuestion/QuizUpdateQuestion";
 import { QuizUpdateContext } from "@/utils/contexts/QuizUpdateContext";
 import QuizUpdateInfo from "../QuizUpdateInfo/QuizUpdateInfo";
-import "./QuizUpdateForm.css";
 import { Qa } from "@/typings/qa";
 import { SubmitButton } from "@/components/core/SubmitButton/SubmitButton";
+import styles from "./QuizUpdateForm.module.css";
 
 interface QuizUpdateFormProps {
   quiz: QuizBasic;
@@ -121,7 +121,7 @@ export default function QuizUpdateForm({
       <FormProvider {...methods}>
         <chakra.form
           overflowY="scroll"
-          height="70vh"
+          className={styles.form}
           onSubmit={handleSubmit(onSubmit)}
         >
           <QuizUpdateInfo

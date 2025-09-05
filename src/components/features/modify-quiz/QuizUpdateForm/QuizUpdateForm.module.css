@@ -1,0 +1,11 @@
+.form{
+  height: 70vh;
+  font-size: var(--chakra-font-sizes-md);
+}
+
+@media(max-width: 576px){
+  .form{
+    height: auto;
+    font-size: var(--chakra-font-sizes-sm);
+  }
+}

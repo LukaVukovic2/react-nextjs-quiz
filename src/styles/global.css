@@ -49,3 +49,15 @@
   justify-content: center;
   width: 100%;
 }
+
+.chakra-form-control .css-78gcoq{
+  pointer-events: auto;
+}
+.css-1fcpzq2 .short-answer {
+  padding-left: 12px;
+}
+
+.chakra-group .checkbox {
+  accent-color: green;
+  scale: 1.3;
+}

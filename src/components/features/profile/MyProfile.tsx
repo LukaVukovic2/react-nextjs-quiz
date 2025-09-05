@@ -1,5 +1,13 @@
 "use client";
-import { Card, Flex, Float, Input, chakra, Image, Container } from "@chakra-ui/react";
+import {
+  Card,
+  Flex,
+  Float,
+  Input,
+  chakra,
+  Image,
+  Container,
+} from "@chakra-ui/react";
 import { updateUserData } from "@/utils/actions/user/updateUserData";
 import { toaster } from "@/components/ui/toaster";
 import { FormLabel } from "@chakra-ui/form-control";
@@ -13,6 +21,7 @@ import { InputGroup } from "@/components/ui/input-group";
 import { LuFileUp } from "react-icons/lu";
 import { CloseButton } from "@/components/ui/close-button";
 import { SubmitStatusButton } from "@/components/core/SubmitStatusButton/SubmitStatusButton";
+import styles from "./MyProfile.module.css";
 
 interface IMyProfileProps {
   id: string;
@@ -30,28 +39,14 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
       title: success ? "Profile updated" : "Failed to update profile",
       type: success ? "success" : "error",
       duration: 3000,
-    })
+    });
   };
 
   return (
-    <chakra.form
-      action={handleSubmit}
-    >
-      <Container
-        maxW="xl"
-      >
-        <Card.Root
-          mt="75px"
-          position="relative"
-          rounded="soft"
-          bg="primary"
-          color="primaryContrast"
-          boxShadow="8px 8px 10px var(--chakra-colors-light-600)"
-          border="none"
-        >
-          <Card.Body
-            p={12}
-          >
+    <chakra.form action={handleSubmit}>
+      <Container maxW="xl">
+        <Card.Root className={styles.card}>
+          <Card.Body className={styles.cardBody}>
             <Float
               asChild
               placement="top-center"
@@ -105,7 +100,10 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
                       </FileUploadClearTrigger>
                     }
                   >
-                    <FileInput bg="light.100" cursor="pointer" />
+                    <FileInput
+                      bg="light.100"
+                      cursor="pointer"
+                    />
                   </InputGroup>
                 </FileUploadRoot>
               </Flex>
@@ -114,9 +112,7 @@ export default function MyProfile({ id, profile }: IMyProfileProps) {
                 name="id"
                 value={id}
               />
-              <SubmitStatusButton
-                loadingText="Updating..."
-              >
+              <SubmitStatusButton loadingText="Updating...">
                 Save Changes
               </SubmitStatusButton>
             </Flex>

@@ -9,6 +9,9 @@ import { QuestionType } from "@/typings/question";
 import { formatToMMSS } from "@/utils/functions/formatTime";
 import { Qa } from "@/typings/qa";
 import { createListCollection } from "@/utils/functions/createListCollection";
+import styles from "./MyQuizzes.module.css";
+import { useMediaQuery } from "usehooks-ts";
+import { FaRegClock } from "react-icons/fa";
 
 interface MyQuizzesProps {
   quizzes: Array<{
@@ -27,6 +30,7 @@ export default function MyQuizzes({
 }: MyQuizzesProps) {
   const questTypes = createListCollection(questTypesArr);
   const quizTypes = createListCollection(quizTypesArr);
+  const mobileMode = useMediaQuery("(max-width: 576px)");
 
   return (
     <TypeContext.Provider value={{ quizTypes, questTypes }}>
@@ -36,42 +40,36 @@ export default function MyQuizzes({
       >
         <Heading
           as="h1"
-          size="h1"
+          size={mobileMode ? "h2" : "h1"}
         >
           My Quizzes
         </Heading>
         <Box
           as="ul"
-          style={{
-            width: "500px",
-          }}
+          className={styles.myQuizList}
         >
-          {quizzes.map(
+          {quizzes.map(({ quiz, quizType }: { quiz: QuizBasic; quizType: QuizType }, index) => 
             (
-              { quiz, quizType }: { quiz: QuizBasic; quizType: QuizType },
-              index
-            ) => (
               <Box
                 as="li"
                 key={quiz.id}
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                mt="-1px"
-                style={{
-                  border: "1px solid lightgrey",
-                  padding: "10px",
-                }}
+                className={styles.myQuizItem}
               >
                 <div>
                   <Heading
                     as="h2"
-                    size="h5"
+                    size={mobileMode ? "h6" : "h5"}
                   >
                     {quiz.title}
                   </Heading>
                   <Text>{quizType.type_name}</Text>
-                  <Text>{formatToMMSS(+quiz.time)}</Text>
+                  <Flex
+                    alignItems="center"
+                    gap={1}
+                  >
+                    <FaRegClock />
+                    {formatToMMSS(+quiz.time)}
+                  </Flex>
                 </div>
                 <QuizMenuDropdown
                   quiz={quiz}

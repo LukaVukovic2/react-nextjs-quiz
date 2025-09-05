@@ -1,0 +1,20 @@
+.myQuizList {
+  max-width: 500px;
+  width: 100%;
+}
+
+.myQuizItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--chakra-spacing-2);
+  margin-top: -1px;
+  border: 1px solid lightgrey;
+  padding: var(--chakra-spacing-3);
+}
+
+@media (max-width: 576px) {
+  .myQuizItem {
+    font-size: var(--chakra-font-sizes-sm);
+  }
+}

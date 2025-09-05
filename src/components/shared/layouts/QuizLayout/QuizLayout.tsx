@@ -90,6 +90,7 @@ export default function QuizLayout({
           <Suspense fallback={<LoadingSpinner text="Loading reviews..." />}>
             <Flex
               maxWidth="600px"
+              flex={1}
               direction="column"
             >
               <QuizReviewForm />

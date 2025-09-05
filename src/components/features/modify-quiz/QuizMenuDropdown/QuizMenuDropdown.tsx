@@ -10,6 +10,7 @@ import { DialogContentWrapper } from "@/components/core/DialogContentWrapper/Dia
 import { Dialog, Text, Menu } from "@chakra-ui/react";
 import { FaEllipsisV } from "react-icons/fa";
 import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
+import { useMediaQuery } from "usehooks-ts";
 
 const QuizUpdateForm = lazy(
   () => import("../../modify-quiz/QuizUpdateForm/QuizUpdateForm")
@@ -31,6 +32,8 @@ export default function QuizMenuDropdown({
 
   const toggleEditDialog = () => setOpenEdit(!openEdit);
   const toggleDeleteDialog = () => setOpenDelete(!openDelete);
+
+  const mobileMode = useMediaQuery("(max-width: 576px)");
 
   const handleQuizDelete = async (id: string) => {
     const success = await deleteQuiz(id);
@@ -111,6 +114,7 @@ export default function QuizMenuDropdown({
         lazyMount
         open={openEdit}
         onOpenChange={toggleEditDialog}
+        size={mobileMode ? "full" : "md"}
       >
         <DialogContentWrapper
           title="Update Quiz"
