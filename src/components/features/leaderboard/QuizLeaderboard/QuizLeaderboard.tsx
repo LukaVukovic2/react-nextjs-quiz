@@ -1,9 +1,10 @@
 import { Result } from "@/typings/result";
 import { Box, Flex } from "@chakra-ui/react";
-import "./QuizLeaderboard.css";
 import clsx from "clsx";
 import LeaderboardRecord from "../LeaderboardRecord.tsx/LeaderboardRecord";
 import { User } from "@/typings/user";
+import styles from "./QuizLeaderboard.module.css";
+import PodiumGroup from "../PodiumGroup/PodiumGroup";
 
 interface ILeaderboardProps {
   topResults: Result[];
@@ -17,37 +18,32 @@ export default function Leaderboard({
   return (
     <Flex
       flexDirection="column"
-      width="600px"
       gap={4}
       color="#444"
+      className={styles.leaderboardWrapper}
     >
-      <Box
-        as="ul"
-        justifyContent="space-between"
-        alignItems="center"
-        gap={4}
-        className="flex-row"
-      >
+      <PodiumGroup>
         {Array.from({ length: 3 }).map((_, index) => (
           <Box
             as="li"
             flex={1}
             key={topResults[index]?.id ?? index}
             className={clsx({
-              podium: true,
-              firstPlace: index === 0,
-              secondPlace: index === 1,
-              thirdPlace: index === 2,
+              [styles.podium]: true,
+              [styles.firstPlace]: index === 0,
+              [styles.secondPlace]: index === 1,
+              [styles.thirdPlace]: index === 2,
             })}
           >
             <LeaderboardRecord
               result={topResults[index] || null}
-              index={index}
+              position={index + 1}
               activeUser={activeUser}
             />
           </Box>
         ))}
-      </Box>
+      </PodiumGroup>
+
       <Box as="ul">
         {Array.from({ length: 7 }).map((_, index) => (
           <Box
@@ -55,13 +51,14 @@ export default function Leaderboard({
             key={topResults[index + 3]?.id || index}
             justifyContent="space-between"
             className={clsx({
-              "leaderboard-record": true,
-              highlight: activeUser?.id === topResults[index + 3]?.user_id,
+              [styles.leaderboardRecord]: true,
+              [styles.highlight]:
+                activeUser?.id === topResults[index + 3]?.user_id,
             })}
           >
             <LeaderboardRecord
               result={topResults[index + 3]}
-              index={index + 3}
+              position={index + 4}
               activeUser={activeUser}
             />
           </Box>

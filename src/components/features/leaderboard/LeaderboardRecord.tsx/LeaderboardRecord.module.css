@@ -1,0 +1,19 @@
+.usernameFlex{
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 0 var(--chakra-spacing-3);
+}
+
+.largeText{
+  font-size: var(--chakra-font-sizes-xl);
+}
+
+.normalText{
+  font-size: var(--chakra-font-sizes-md);
+}
+
+.largeText, .normalText{
+  font-weight: var(--chakra-font-weights-semibold);
+}
