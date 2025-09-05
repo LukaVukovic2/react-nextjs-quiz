@@ -1,0 +1,20 @@
+.container{
+  display: flex;
+  flex-direction: column;
+  padding: var(--chakra-spacing-5) var(--chakra-spacing-1);
+  flex: 1;
+}
+
+.form{
+  flex-direction: column;
+  gap: var(--chakra-spacing-5);
+  margin: var(--chakra-spacing-5) var(--chakra-spacing-3);
+  flex: 1;
+}
+
+@media(max-width: 650px){
+  .btn{
+    padding: var(--chakra-spacing-2) var(--chakra-spacing-3);
+    font-size: var(--chakra-font-sizes-sm);
+  }
+}

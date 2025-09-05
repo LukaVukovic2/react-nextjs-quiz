@@ -2,7 +2,6 @@
   max-width: 600px;
   width: 100%;
   flex-direction: column;
-  flex-wrap: wrap;
   gap: var(--chakra-spacing-2);
 }
 

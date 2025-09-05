@@ -13,12 +13,13 @@ import QuizQuestionForm from "./components/QuizQuestionForm";
 import { QuizType } from "@/typings/quiz";
 import { QuestionType } from "@/typings/question";
 import QuestionListAccordion from "@/components/shared/lists/QuestionListAccordion/QuestionListAccordion";
-import { StepsContent } from "@/components/ui/steps";
 import { getCookie, setCookie } from "cookies-next";
 import AuthModal from "@/components/shared/auth/AuthModal/AuthModal";
 import AlertWrapper from "@/components/core/AlertWrapper/AlertWrapper";
 import { Qa } from "@/typings/qa";
 import { SubmitButton } from "@/components/core/SubmitButton/SubmitButton";
+import styles from "./NewQuizForm.module.css";
+import { Heading } from "@/styles/theme/components/heading";
 
 const steps = [
   { title: "General Quiz Info" },
@@ -111,26 +112,17 @@ export default function NewQuizForm({
       )}
       <Container
         maxW="3xl"
-        as={Flex}
-        flexDirection="column"
-        px={20}
-        py={5}
-        flex={1}
+        className={styles.container}
       >
         <FormProvider {...methods}>
           <StepperProgress
             currentStep={currentStep}
             setStep={changeStep}
             steps={steps}
-          >
-            <StepsContent index={2}>This is your Quiz!</StepsContent>
-          </StepperProgress>
+          />
           <chakra.form onSubmit={handleSubmit(onSubmit)}>
             <Flex
-              flexDirection="column"
-              gap={5}
-              my={5}
-              flex={1}
+              className={styles.form}
             >
               {currentStep === 1 && <QuizDetailsForm quizTypes={quizTypes} />}
               {currentStep === 2 && (
@@ -141,12 +133,18 @@ export default function NewQuizForm({
                   setQaList={setQaList}
                 />
               )}
-              {currentStep === 3 && <QuestionListAccordion qaList={qaList} />}
+              {currentStep === 3 && 
+                <>
+                  <Heading size="h4" as="h2">This is your Quiz!</Heading>
+                  <QuestionListAccordion qaList={qaList} />
+                </>
+              }
               <Flex justifyContent="space-between">
                 <Button
                   onClick={goToPrevStep}
                   disabled={currentStep === 1}
                   type="button"
+                  className={styles.btn}
                 >
                   Back
                 </Button>
@@ -155,6 +153,7 @@ export default function NewQuizForm({
                     onClick={goToNextStep}
                     disabled={!isFormValid}
                     type="button"
+                    className={styles.btn}
                   >
                     Next
                   </Button>
@@ -163,6 +162,7 @@ export default function NewQuizForm({
                     loading={isSubmitting}
                     loadingText="Creating..."
                     disabled={!isFormValid || isSubmitting}
+                    className={styles.btn}
                   >
                     Create Quiz
                   </SubmitButton>

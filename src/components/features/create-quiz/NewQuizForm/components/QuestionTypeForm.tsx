@@ -9,6 +9,7 @@ import { Input } from "@chakra-ui/react";
 import debounce from "debounce";
 import { useFormContext } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
+import styles from "../NewQuizForm.module.css";
 
 interface IQuestionTypeFormProps {
   setQaList: React.Dispatch<React.SetStateAction<Qa[]>>;
@@ -167,12 +168,14 @@ export default function QuestionTypeForm({
               visual="ghost"
               onClick={() => addNewAnswer(selectedTypeName)}
               disabled={!isValid}
+              className={styles.btn}
             >
               Add answer
             </Button>
             <Button
               disabled={!isValid}
               onClick={addNewQuestion}
+              className={styles.btn}
             >
               Add question
             </Button>

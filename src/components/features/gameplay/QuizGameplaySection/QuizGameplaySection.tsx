@@ -157,7 +157,6 @@ export default function QuizGameplaySection({
       <Flex
         justifyContent="space-between"
         alignItems="center"
-        flex={1}
         gap={2}
       >
         <QuizGameplayHeader
