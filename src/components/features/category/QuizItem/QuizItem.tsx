@@ -14,9 +14,9 @@ export default function QuizItem({ quiz }: { quiz: QuizDetails }) {
   const difficulty =
     avgScore > 90
       ? "Easy"
-      : avgRating > 50
+      : avgScore > 50
       ? "Medium"
-      : avgRating > 1
+      : avgScore > 1
       ? "Hard"
       : "Unknown";
   const Star =

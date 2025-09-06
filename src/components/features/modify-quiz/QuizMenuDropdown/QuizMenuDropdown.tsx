@@ -13,7 +13,7 @@ import LoadingSpinner from "@/components/core/LoadingSpinner/LoadingSpinner";
 import { useMediaQuery } from "usehooks-ts";
 
 const QuizUpdateForm = lazy(
-  () => import("../../modify-quiz/QuizUpdateForm/QuizUpdateForm")
+  () => import("../QuizUpdateForm/QuizUpdateForm")
 );
 
 interface QuizMenuDropdownProps {
