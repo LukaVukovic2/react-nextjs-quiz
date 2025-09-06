@@ -6,5 +6,26 @@ export const globalCss = defineGlobalStyles({
     display: "flex",
     flexWrap: "wrap",
     flexDirection: "column",
-  }
+  },
+
+  main: {
+    flex: 1,
+    margin: "0 auto",
+    maxWidth: "1000px",
+    width: "100%",
+    display: "flex",
+    flexDir: "column",
+  },
+
+  "main > *": {
+    padding: "var(--chakra-spacing-3)",
+  },
+
+  ".css-78gcoq input": {
+    pointerEvents: "auto",
+  },
+
+  ".chakra-stack .css-12cmhod .css-13vx2na": {
+    display: "none",
+  },
 });

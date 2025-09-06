@@ -7,16 +7,21 @@ interface StepInfoProps {
   description?: React.ReactNode
 }
 
+interface StepInfoPropsWithFontSize extends StepInfoProps {
+  fontSize?: string
+}
+
 export interface StepsItemProps
   extends Omit<ChakraSteps.ItemProps, "title">,
     StepInfoProps {
   completedIcon?: React.ReactNode
   icon?: React.ReactNode
+  fontSize?: string
 }
 
 export const StepsItem = React.forwardRef<HTMLDivElement, StepsItemProps>(
   function StepsItem(props, ref) {
-    const { title, description, completedIcon, icon, ...rest } = props
+    const { title, description, completedIcon, icon, fontSize, ...rest } = props
     return (
       <ChakraSteps.Item {...rest} ref={ref}>
         <ChakraSteps.Trigger>
@@ -26,7 +31,7 @@ export const StepsItem = React.forwardRef<HTMLDivElement, StepsItemProps>(
               incomplete={icon || <ChakraSteps.Number />}
             />
           </ChakraSteps.Indicator>
-          <StepInfo title={title} description={description} />
+          <StepInfo title={title} description={description} fontSize={fontSize}/>
         </ChakraSteps.Trigger>
         <ChakraSteps.Separator />
       </ChakraSteps.Item>
@@ -34,8 +39,8 @@ export const StepsItem = React.forwardRef<HTMLDivElement, StepsItemProps>(
   },
 )
 
-const StepInfo = (props: StepInfoProps) => {
-  const { title, description } = props
+const StepInfo = (props: StepInfoPropsWithFontSize) => {
+  const { title, description, fontSize } = props
 
   if (title && description) {
     return (
@@ -48,7 +53,7 @@ const StepInfo = (props: StepInfoProps) => {
 
   return (
     <>
-      {title && <ChakraSteps.Title>{title}</ChakraSteps.Title>}
+      {title && <ChakraSteps.Title fontSize={fontSize}>{title}</ChakraSteps.Title>}
       {description && (
         <ChakraSteps.Description>{description}</ChakraSteps.Description>
       )}

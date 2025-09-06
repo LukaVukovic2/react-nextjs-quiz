@@ -17,7 +17,6 @@ import QuizGameplaySwiper from "../QuizGameplaySwiper/QuizGameplaySwiper";
 import QuizPauseModal from "../QuizPauseModal/QuizPauseModal";
 import "swiper/css/pagination";
 import "swiper/css";
-import "./QuizGameplaySection.css";
 import AuthModal from "@/components/shared/auth/AuthModal/AuthModal";
 import { topResultCheck } from "@/utils/actions/leaderboard/topResultCheck";
 import AlertWrapper from "@/components/core/AlertWrapper/AlertWrapper";
@@ -30,6 +29,8 @@ import {
   groupAnswersByQuestion,
   initializeSelectedAnswers,
 } from "./QuizGameplaySection.utils";
+import styles from "./QuizGameplaySection.module.css";
+import "./QuizGameplaySection.css";
 
 interface IQuizGameplayProps {
   quizContent: QuizContent;
@@ -117,7 +118,7 @@ export default function QuizGameplaySection({
       setDialogVisible(true);
     } else {
       const success = await updateLeaderboard(result);
-      if(success) highlightTab(success);
+      if (success) highlightTab(success);
       timeoutRef.current = setTimeout(() => {
         highlightTab(false);
       }, 10000);
@@ -140,12 +141,7 @@ export default function QuizGameplaySection({
   };
 
   return (
-    <Flex
-      gap={1}
-      wrap="wrap"
-      flexDirection="column"
-      width="600px"
-    >
+    <Flex className={styles.quizWrapper}>
       {dialogVisible && (
         <AuthModal
           dialogVisible={dialogVisible}
@@ -161,6 +157,7 @@ export default function QuizGameplaySection({
       <Flex
         justifyContent="space-between"
         alignItems="center"
+        gap={2}
       >
         <QuizGameplayHeader
           quiz={quiz}
@@ -185,8 +182,8 @@ export default function QuizGameplaySection({
           flex={1}
           justifyContent="center"
           alignItems="center"
-          flexWrap="wrap"
           direction="column"
+          gap={3}
         >
           <Flex
             alignItems="center"
@@ -197,7 +194,7 @@ export default function QuizGameplaySection({
           <chakra.div flex={1}></chakra.div>
         </Flex>
       ) : (
-        <chakra.form width="100%">
+        <chakra.form className={styles.swiperWrapper}>
           <QuizGameplaySwiper
             questions={questions}
             questTypes={questTypes}

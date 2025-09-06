@@ -13,7 +13,6 @@ export const DialogContentWrapper = ({ title, body, footer }: IDialogContentWrap
       <Dialog.Backdrop />
         <Dialog.Positioner>
         <Dialog.Content>
-          <Dialog.CloseTrigger />
           <Dialog.Header>
             <Dialog.Title>{title}</Dialog.Title>
           </Dialog.Header>

@@ -12,6 +12,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import RenderBullet from "./components/RenderBullet";
 import { PlayStatus } from "@/typings/playStatus";
 import { chakra } from "@chakra-ui/react";
+import styles from "./QuizGameplaySwiper.module.css";
 
 interface IQuizGameplaySwiperProps {
   questions: Question[];
@@ -54,7 +55,7 @@ export default function QuizGameplaySwiper({
       const question = questions[index];
 
       return renderToStaticMarkup(
-      <RenderBullet
+        <RenderBullet
           index={index}
           className={className}
           selectedAns={selectedAnswers.get(question.id)}
@@ -74,7 +75,7 @@ export default function QuizGameplaySwiper({
       keyboard={{
         enabled: true,
       }}
-      className="mySwiper swiper"
+      className={"mySwiper " + styles.swiper}
       onSwiper={(swiper) => (swiperRef.current = swiper)}
       onTransitionStart={() => setIsTransitioning(true)}
       onTransitionEnd={() => setIsTransitioning(false)}
@@ -116,7 +117,7 @@ export default function QuizGameplaySwiper({
                   resetKey,
                 };
                 return (
-                  <chakra.div mb={7}>
+                  <chakra.div className={styles.answerWrapper}>
                     {(typeName === "Single choice" && (
                       <RadioGroup
                         {...commonProps}

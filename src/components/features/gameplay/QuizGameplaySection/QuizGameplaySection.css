@@ -1,14 +1,6 @@
 .swiper {
   padding-bottom: 20px;
-  border-radius: 10px;
   background-color: white;
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-}
-
-.swiper-slide{
-  cursor: grab;
-  height: auto;
 }
 
 .swiper-pagination-bullet {
@@ -21,16 +13,6 @@
   opacity: 1;
   background: none;
   box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.1);
-}
-
-.swiper .swiper-pagination{
-  white-space: nowrap;
-  width: 100%;
-  overflow-x: auto;
-}
-
-.swiper-pagination{
-  padding-bottom: 10px;
 }
 
 .selectedAnswer {

@@ -1,0 +1,5 @@
+@media(max-width: 576px){
+  .buttonGroup button{
+    font-size: var(--chakra-font-sizes-xs);
+  }
+}

@@ -3,10 +3,14 @@ import { Flex, Text } from "@chakra-ui/react";
 import { QuizType } from "@/typings/quiz";
 import Link from "next/link";
 import React from "react";
+import styles from "./QuizTypeBox.module.css";
 
 export default function QuizTypeBox({ type }: { type: QuizType }) {
   return (
-    <Link href={`/quizzes/type/${type.id}?name=${type.type_name}`}>
+    <Link
+      href={`/quizzes/type/${type.id}?name=${type.type_name}`}
+      className={styles.categoryBox}
+    >
       <Flex
         flexDirection="column"
         gap={3}

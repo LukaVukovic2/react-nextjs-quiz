@@ -1,117 +1,78 @@
 import { Result } from "@/typings/result";
 import { User } from "@/typings/user";
 import { formatToMMSS } from "@/utils/functions/formatTime";
-import { Tag } from "@/components/ui/tag";
 import { Flex, Float, Text, chakra } from "@chakra-ui/react";
+import NewRecordTag from "../NewRecordTag/NewRecordTag";
+import styles from "./LeaderboardRecord.module.css";
+
+const stylesFloat = {
+  offsetY: -5,
+  placement: "top-center" as const
+}
 
 export default function LeaderboardRecord({
   result,
-  index,
+  position,
   activeUser,
 }: {
-  index: number;
+  position: number;
   result: Result | null;
   activeUser: User | null;
 }) {
-  const recentResultCheck = (created_at: Date) => {
-    const created_at_date = new Date(created_at);
-    const now = new Date();
-    const diff = now.getTime() - created_at_date.getTime();
-    if (diff < 5 * 60 * 1000) return true;
-
-    return false;
-  };
-
   return (
-    <>
-      {result ? (
-        <>
-          <Flex
-            flex={2}
-            alignItems="baseline"
-          >
-            {index >= 3 && (
-              <Text
-                w={6}
-                textAlign="right"
-              >
-                {index + 1 + "."}
-              </Text>
-            )}
+    result ? (
+      <>
+        <Flex
+          flex={2}
+          alignItems="baseline"
+        >
+          {position >= 4 && <Text w={6} textAlign="right">{position + "."}</Text>}
 
-            <Flex
-              position="relative"
-              alignItems="center"
-              justifyContent="center"
-              flexWrap="wrap"
-              px={3}
-            >
-              {index === 3 && (
-                <Float
-                  placement="top-start"
-                  offsetY={-5}
-                  offsetX={10}
-                >
-                  <Text fontSize="xs">Username</Text>
-                </Float>
-              )}
-              {result.username}
-
-              {activeUser?.id == result.user_id &&
-                recentResultCheck(result.created_at ?? new Date()) && (
-                  <Tag
-                    colorPalette="orange"
-                    variant="solid"
-                    ml={2}
-                  >
-                    NEW!
-                  </Tag>
-                )}
-            </Flex>
-          </Flex>
-
-          <Flex
-            flex={1}
-            fontWeight="bolder"
-            fontSize={index < 3 ? "20px" : "17px"}
-          >
-            <chakra.div
-              position="relative"
-              w={10}
-              textAlign="center"
-            >
-              {index === 3 && (
-                <Float
-                  placement="top-center"
-                  offsetY={-5}
-                >
-                  <Text
-                    fontSize="xs"
-                    fontWeight="normal"
-                  >
-                    Score
-                  </Text>
-                </Float>
-              )}
-              {result.score}
-            </chakra.div>
-          </Flex>
-
-          <chakra.div position="relative">
-            {index === 3 && (
-              <Float
-                placement="top-center"
-                offsetY={-5}
-              >
-                <Text fontSize="xs">Time</Text>
+          <Flex className={styles.usernameFlex}>
+            {position === 4 && (
+              <Float {...stylesFloat} offsetX={10}>
+                <Text fontSize="xs">Username</Text>
               </Float>
             )}
-            {formatToMMSS(result.time)}
+            <Text lineClamp="1" wordBreak="break-all">{result.username}</Text>
+
+            {activeUser?.id == result.user_id && <NewRecordTag createdAt={result?.created_at}/>}
+          </Flex>
+        </Flex>
+
+        <Flex
+          flex={1}
+          className={position <= 3 ? styles.largeText : styles.normalText}
+        >
+          <chakra.div
+            position="relative"
+            w={10}
+            textAlign="center"
+          >
+            {position === 4 && (
+              <Float {...stylesFloat}>
+                <Text
+                  fontSize="xs"
+                >
+                  Score
+                </Text>
+              </Float>
+            )}
+            {result.score}
           </chakra.div>
-        </>
-      ) : (
-        <chakra.div ml={4}>---</chakra.div>
-      )}
-    </>
+        </Flex>
+
+        <chakra.div position="relative">
+          {position === 4 && (
+            <Float {...stylesFloat}>
+              <Text fontSize="xs">Time</Text>
+            </Float>
+          )}
+          {formatToMMSS(result.time)}
+        </chakra.div>
+      </>
+    ) : (
+      <chakra.div ml={4}>---</chakra.div>
+    )
   );
 }

@@ -1,0 +1,20 @@
+.card{
+  position: relative;
+  margin-top: 75px;
+  background-color: var(--chakra-colors-primary);
+  color: var(--chakra-colors-primaryContrast);
+  box-shadow: 8px 8px 10px var(--chakra-colors-light-600);
+  border: none;
+  border-radius: var(--chakra-radii-soft);
+}
+
+.cardBody{
+  padding: var(--chakra-spacing-12);
+}
+
+@media(max-width: 576px){
+  .cardBody{
+    padding: var(--chakra-spacing-10) var(--chakra-spacing-4);
+    font-size: var(--chakra-font-sizes-sm);
+  }
+}

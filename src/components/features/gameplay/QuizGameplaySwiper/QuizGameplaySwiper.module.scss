@@ -1,0 +1,31 @@
+.defaultly{
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 500px;
+  border: 1px solid lightgrey;
+  color: #444;
+}
+
+.selected{
+  background-color: teal;
+  color: whitesmoke;
+}
+
+.common {
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.511);
+  color: white;
+}
+
+.correct {
+  @extend .common;
+  background-color: #28a745;
+}
+
+.incorrect {
+  @extend .common;
+  background-color: #dc3545;
+}
+
+.focused{
+  outline: auto;
+}

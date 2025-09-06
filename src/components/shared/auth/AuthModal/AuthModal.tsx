@@ -5,6 +5,8 @@ import {
   DialogRoot,
 } from "@/components/ui/dialog";
 import AuthForm from "../AuthForm/AuthForm";
+import { useMediaQuery } from "usehooks-ts";
+import { Flex } from "@chakra-ui/react";
 
 interface IAuthModalProps {
   dialogVisible: boolean;
@@ -17,13 +19,15 @@ export default function AuthModal({
   setDialogVisible,
   children,
 }: IAuthModalProps) {
+  const mobileMode = useMediaQuery("(max-width: 576px)");
   return (
     <DialogRoot
       open={dialogVisible}
       onOpenChange={(prev) => setDialogVisible(!prev)}
+      size={mobileMode ? "full" : "md"}
     >
       <DialogContent>
-        <DialogBody>
+        <DialogBody as={Flex} flexDirection="column" justifyContent="center">
           {children}
           <AuthForm closeModal={() => setDialogVisible(false)} />
         </DialogBody>

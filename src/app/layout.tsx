@@ -1,7 +1,9 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Providers } from "./providers";
-import MainNavigation from "@/components/shared/navigations/MainNavigation.tsx/MainNavigation";
 import { Metadata } from "next";
+import Header from "@/components/shared/layouts/Header/Header";
+import "../styles/global.css";
+import Footer from "@/components/shared/layouts/Footer/Footer";
 
 export const metadata: Metadata = {
   title: "Quiz App",
@@ -50,9 +52,12 @@ export default function RootLayout({
       </head>
       <body>
         <Providers>
-          <MainNavigation />
-          {children}
+          <Header />
+          <main>
+            {children}
+          </main>
           <Toaster />
+          <Footer />
         </Providers>
       </body>
     </html>
