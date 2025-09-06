@@ -1,13 +1,15 @@
 import { Button } from "@/styles/theme/components/button";
 import { CloseButton, Drawer, DrawerContext, Flex } from "@chakra-ui/react";
-import { cloneElement, isValidElement, ReactNode } from "react";
+import { cloneElement, isValidElement, ReactElement } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
+
+interface ISidebarNavigationProps {
+  children: ReactElement<{ closeDrawer?: (open: boolean) => void }>;
+};
 
 export default function SidebarNavigation({
   children,
-}: {
-  children: ReactNode;
-}) {
+}: ISidebarNavigationProps) {
   return (
     <Drawer.Root>
       <Drawer.Backdrop />
