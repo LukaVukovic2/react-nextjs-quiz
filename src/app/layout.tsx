@@ -3,6 +3,7 @@ import { Providers } from "./providers";
 import { Metadata } from "next";
 import Header from "@/components/shared/layouts/Header/Header";
 import "../styles/global.css";
+import Footer from "@/components/shared/layouts/Footer/Footer";
 
 export const metadata: Metadata = {
   title: "Quiz App",
@@ -56,6 +57,7 @@ export default function RootLayout({
             {children}
           </main>
           <Toaster />
+          <Footer />
         </Providers>
       </body>
     </html>

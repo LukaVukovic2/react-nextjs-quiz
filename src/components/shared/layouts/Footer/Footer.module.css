@@ -1,0 +1,15 @@
+.footer {
+  border-top: 1px solid var(--chakra-colors-light-800);
+  padding: var(--chakra-spacing-6) 0;
+  display: flex;
+  justify-content: space-between;
+  font-weight: var(--chakra-font-weights-bold);
+  letter-spacing: 1.5px;
+  color: var(--chakra-colors-dark-400);
+  margin-top: var(--chakra-spacing-11);
+}
+
+.footer > *{
+  max-width: 1000px;
+  margin: 0 auto;
+}
